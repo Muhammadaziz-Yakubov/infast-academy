@@ -1,0 +1,171 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model User {
+  id           String   @id @default(uuid())
+  username     String   @unique
+  email        String?  @unique
+  passwordHash String
+  name         String
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+}
+
+model Course {
+  id             String    @id @default(uuid())
+  name           String    @unique
+  price          Float
+  durationMonths Int       @default(6)
+  description    String?
+  status         String    @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  groups         Group[]
+  students       Student[]
+  exams          Exam[]
+}
+
+model Teacher {
+  id        String   @id @default(uuid())
+  firstName String
+  lastName  String
+  phone     String
+  status    String   @default("ACTIVE") // ACTIVE, INACTIVE
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  groups    Group[]
+}
+
+model Group {
+  id             String          @id @default(uuid())
+  name           String          @unique
+  courseId       String
+  teacherId      String
+  room           String
+  telegramChatId String?
+  status         String          @default("ACTIVE") // ACTIVE, COMPLETED, PAUSED
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  course         Course          @relation(fields: [courseId], references: [id])
+  teacher        Teacher         @relation(fields: [teacherId], references: [id])
+  schedules      GroupSchedule[]
+  students       Student[]
+  attendances    Attendance[]
+  exams          Exam[]
+}
+
+model GroupSchedule {
+  id        String @id @default(uuid())
+  groupId   String
+  dayOfWeek String // Dushanba, Seshanba, Chorshanba, Payshanba, Juma, Shanba, Yakshanba
+  startTime String // e.g. "14:00"
+  endTime   String // e.g. "15:30"
+  group     Group  @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
+
+model Student {
+  id            String       @id @default(uuid())
+  firstName     String
+  lastName      String
+  phone         String
+  parentPhone   String?
+  birthDate     DateTime?
+  courseId      String
+  groupId       String
+  joinedDate    DateTime     @default(now())
+  monthlyFee    Float?       // Custom fee override if present
+  paymentDueDay Int          @default(5)
+  status        String       @default("ACTIVE") // ACTIVE, PAUSED, LEFT, COMPLETED
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  course        Course       @relation(fields: [courseId], references: [id])
+  group         Group        @relation(fields: [groupId], references: [id])
+  attendances   Attendance[]
+  payments      Payment[]
+  examResults   ExamResult[]
+}
+
+model Attendance {
+  id        String   @id @default(uuid())
+  studentId String
+  groupId   String
+  date      String   // YYYY-MM-DD format
+  status    String   // PRESENT, ABSENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+  group     Group    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+
+  @@unique([studentId, groupId, date])
+}
+
+model Payment {
+  id              String   @id @default(uuid())
+  studentId       String
+  amount          Float
+  paymentDate     DateTime @default(now())
+  periodStartDate DateTime
+  periodEndDate   DateTime
+  paymentMethod   String   @default("CASH") // CASH, CARD, CLICK, PAYME, OTHER
+  notes           String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+  student         Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+}
+
+model Exam {
+  id            String       @id @default(uuid())
+  name          String
+  courseId      String
+  groupId       String
+  examDate      DateTime
+  startTime     String
+  endTime       String
+  room          String
+  maxScore      Float        @default(100)
+  passingScore  Float        @default(60)
+  description   String?
+  isPublished   Boolean      @default(false)
+  publicExamId  String       @unique @default(uuid())
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+  course        Course       @relation(fields: [courseId], references: [id])
+  group         Group        @relation(fields: [groupId], references: [id])
+  results       ExamResult[]
+}
+
+model ExamResult {
+  id        String   @id @default(uuid())
+  examId    String
+  studentId String
+  score     Float?   // Null means ABSENT
+  status    String   // PASSED, FAILED, ABSENT
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  exam      Exam     @relation(fields: [examId], references: [id], onDelete: Cascade)
+  student   Student  @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  @@unique([examId, studentId])
+}
+
+model Notification {
+  id        String   @id @default(uuid())
+  title     String
+  message   String
+  type      String   @default("INFO") // SUCCESS, WARNING, DANGER, INFO
+  isRead    Boolean  @default(false)
+  createdAt DateTime @default(now())
+}
+
+model SystemSetting {
+  id        String   @id @default(uuid())
+  key       String   @unique
+  value     String
+  updatedAt DateTime @updatedAt
+}

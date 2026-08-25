@@ -1,0 +1,111 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body {
+    @apply bg-slate-100 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 font-sans antialiased selection:bg-infast-500 selection:text-white transition-colors duration-200;
+  }
+}
+
+/* Comprehensive Seamless Dark Mode Overrides */
+.dark .bg-white {
+  background-color: #0f172a;
+}
+
+.dark .bg-slate-50 {
+  background-color: #1e293b;
+}
+
+.dark .bg-slate-100 {
+  background-color: #1e293b;
+}
+
+.dark .border-slate-100,
+.dark .border-slate-200 {
+  border-color: #1e293b;
+}
+
+.dark .text-slate-900,
+.dark .text-slate-800 {
+  color: #f8fafc;
+}
+
+.dark .text-slate-700,
+.dark .text-slate-600 {
+  color: #cbd5e1;
+}
+
+.dark .text-slate-500,
+.dark .text-slate-400 {
+  color: #94a3b8;
+}
+
+.dark input,
+.dark select,
+.dark textarea {
+  background-color: #1e293b;
+  color: #f8fafc;
+  border-color: #334155;
+}
+
+.dark input::placeholder,
+.dark textarea::placeholder {
+  color: #64748b;
+}
+
+/* Soft Pill Badges Dark Mode Overrides */
+.dark .bg-infast-50 {
+  background-color: rgba(249, 115, 22, 0.15);
+  color: #fb923c;
+}
+
+.dark .bg-emerald-50,
+.dark .bg-emerald-100 {
+  background-color: rgba(16, 185, 129, 0.15);
+  color: #34d399;
+}
+
+.dark .bg-rose-50,
+.dark .bg-rose-100 {
+  background-color: rgba(244, 63, 94, 0.15);
+  color: #fb7185;
+}
+
+.dark .bg-sky-50,
+.dark .bg-sky-100 {
+  background-color: rgba(14, 165, 233, 0.15);
+  color: #38bdf8;
+}
+
+.dark .bg-amber-50,
+.dark .bg-amber-100 {
+  background-color: rgba(245, 158, 11, 0.15);
+  color: #fbbf24;
+}
+
+/* Table Row Hover */
+.dark tr:hover {
+  background-color: #1e293b;
+}
+
+/* Skeleton animation */
+.skeleton {
+  @apply bg-slate-200 dark:bg-slate-800 animate-pulse rounded-2xl;
+}
+
+/* Custom Scrollbar styling */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(148, 163, 184, 0.7);
+}
