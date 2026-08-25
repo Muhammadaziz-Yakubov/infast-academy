@@ -109,17 +109,12 @@ export function calculatePaymentPeriods(
     let status: "PAID" | "OVERDUE" | "PENDING";
     let statusText: string;
 
-    const daysSinceJoined = Math.floor((new Date().getTime() - joinedDate.getTime()) / (1000 * 60 * 60 * 24));
-    const isPastCompletedMonth = daysSinceJoined > 20 && i < currentMonthCount;
-
-    if (remainingPaidAmount >= monthlyFee || isPastCompletedMonth) {
+    if (remainingPaidAmount >= monthlyFee) {
       status = "PAID";
       statusText = "To'langan";
-      if (remainingPaidAmount >= monthlyFee) {
-        remainingPaidAmount -= monthlyFee;
-      }
+      remainingPaidAmount -= monthlyFee;
     } else {
-      if (todayStr >= dueDateStr) {
+      if (todayStr >= dueDateStr || i === 1) {
         status = "OVERDUE";
         statusText = "Qarzdor";
         totalDebt += (monthlyFee - remainingPaidAmount);
