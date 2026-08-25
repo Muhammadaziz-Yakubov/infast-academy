@@ -154,13 +154,9 @@ export default function StudentDetailPage() {
                 <span className="text-slate-500">Ota-ona telefoni:</span>
                 <span className="font-bold text-slate-900 font-mono">{student.parentPhone || '-'}</span>
               </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-50">
+              <div className="flex justify-between py-1.5">
                 <span className="text-slate-500">Tug'ilgan sana:</span>
                 <span className="font-semibold text-slate-900">{formatDateUz(student.birthDate)}</span>
-              </div>
-              <div className="flex justify-between py-1.5">
-                <span className="text-slate-500">Qo'shilgan sana:</span>
-                <span className="font-semibold text-slate-900">{formatDateUz(student.joinedDate)}</span>
               </div>
             </div>
 

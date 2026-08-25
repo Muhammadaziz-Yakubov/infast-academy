@@ -429,9 +429,6 @@ export default function StudentsPage() {
                             <p className="font-bold text-slate-900 group-hover:text-infast-600 transition-colors">
                               {s.firstName} {s.lastName}
                             </p>
-                            <p className="text-[10px] text-slate-400 font-normal">
-                              Qo'shilgan: {formatDateUz(s.joinedDate)}
-                            </p>
                           </div>
                         </Link>
                       </td>
