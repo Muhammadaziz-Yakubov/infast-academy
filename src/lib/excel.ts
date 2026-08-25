@@ -122,7 +122,6 @@ export function generateSampleExcelBuffer(): Buffer {
       "Tug'ilgan sana": "2003-08-20",
       "Kurs": "Backend Node.js",
       "Guruh": "Backend 01",
-      "Qo'shilgan sana": "2025-10-10",
       "Oylik to'lov": 900000,
       "To'lov kuni": 10
     }
@@ -156,7 +155,6 @@ export function generateStudentsExportBuffer(students: any[]): Buffer {
       "To'lov Holati": paymentInfo.paymentStatus === 'PAID' ? "To'langan" : paymentInfo.paymentStatus === 'OVERDUE' ? "Qarzdor" : "Kutilmoqda",
       "Qarzdorlik Summasi": paymentInfo.totalDebt,
       "Holati": s.status === 'ACTIVE' ? "Faol" : s.status === 'PAUSED' ? "Muzlatilgan" : s.status === 'LEFT' ? "Tark etgan" : "Tugatgan",
-      "Qo'shilgan Sana": new Date(s.joinedDate).toLocaleDateString('uz-UZ'),
     };
   });
 

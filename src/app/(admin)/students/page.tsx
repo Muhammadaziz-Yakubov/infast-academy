@@ -595,16 +595,7 @@ export default function StudentsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Qo'shilgan sana</label>
-                  <input
-                    type="date"
-                    value={formData.joinedDate}
-                    onChange={(e) => setFormData({ ...formData, joinedDate: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Maxsus Oylik Fee</label>
                   <input
@@ -736,16 +727,7 @@ export default function StudentsPage() {
                 </div>
               </div>
 
-              <div className="grid grid-cols-3 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Qo'shilgan sana</label>
-                  <input
-                    type="date"
-                    value={editFormData.joinedDate}
-                    onChange={(e) => setEditFormData({ ...editFormData, joinedDate: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  />
-                </div>
+              <div className="grid grid-cols-2 gap-3">
                 <div>
                   <label className="block font-bold text-slate-700 mb-1">Maxsus Oylik Fee</label>
                   <input
