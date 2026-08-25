@@ -6,7 +6,6 @@ import { Course } from '@/models/Course';
 import { Payment } from '@/models/Payment';
 import { Attendance } from '@/models/Attendance';
 import { Exam } from '@/models/Exam';
-import { Teacher } from '@/models/Teacher';
 import { calculateCourseMonth, calculatePaymentPeriods, isGroupScheduledOnDate } from '@/lib/calculations';
 import { format, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
 
@@ -86,8 +85,7 @@ export async function GET() {
 
     // 5. Today's Scheduled Classes
     const allGroups = await Group.find({ status: 'ACTIVE' })
-      .populate('courseId', 'name')
-      .populate('teacherId', 'firstName lastName');
+      .populate('courseId', 'name');
 
     const todayClasses: any[] = [];
     allGroups.forEach((g) => {
@@ -97,7 +95,6 @@ export async function GET() {
           id: g._id.toString(),
           groupName: g.name,
           courseName: (g.courseId as any)?.name || '-',
-          teacherName: (g.teacherId as any) ? `${(g.teacherId as any).firstName || ''} ${(g.teacherId as any).lastName || ''}`.trim() : '-',
           time: sched ? `${sched.startTime || '14:00'} - ${sched.endTime || '16:00'}` : '-',
           room: g.room || '-',
         });

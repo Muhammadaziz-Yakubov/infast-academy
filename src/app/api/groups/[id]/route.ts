@@ -9,8 +9,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
   try {
     await connectToDatabase();
     const group = await Group.findById(params.id)
-      .populate('courseId', 'name price durationMonths')
-      .populate('teacherId', 'firstName lastName phone');
+      .populate('courseId', 'name price durationMonths');
 
     if (!group) {
       return NextResponse.json({ error: "Guruh topilmadi" }, { status: 404 });

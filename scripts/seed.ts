@@ -3,7 +3,6 @@ import dotenv from "dotenv";
 dotenv.config();
 
 import { Course } from "../src/models/Course";
-import { Teacher } from "../src/models/Teacher";
 import { Group } from "../src/models/Group";
 import { Student } from "../src/models/Student";
 import { Payment } from "../src/models/Payment";
@@ -21,7 +20,6 @@ async function seed() {
 
   // Clear existing collections
   await Course.deleteMany({});
-  await Teacher.deleteMany({});
   await Group.deleteMany({});
   await Student.deleteMany({});
   await Payment.deleteMany({});
@@ -59,28 +57,10 @@ async function seed() {
 
   console.log("Created Courses.");
 
-  // 2. Create Teachers
-  const teacher1 = await Teacher.create({
-    firstName: "Nigora",
-    lastName: "Yakubova",
-    phone: "+998901112233",
-    status: "ACTIVE",
-  });
-
-  const teacher2 = await Teacher.create({
-    firstName: "Rustam",
-    lastName: "Qodirov",
-    phone: "+998902223344",
-    status: "ACTIVE",
-  });
-
-  console.log("Created Teachers.");
-
-  // 3. Create Groups
+  // 2. Create Groups
   const groupFrontend1 = await Group.create({
     name: "Frontend 01",
     courseId: frontendCourse._id,
-    teacherId: teacher1._id,
     room: "Xona 101",
     telegramChatId: "-1001234567890",
     status: "ACTIVE",
@@ -94,8 +74,7 @@ async function seed() {
   const groupBackend1 = await Group.create({
     name: "Backend 01",
     courseId: backendCourse._id,
-    teacherId: teacher2._id,
-    room: "Xona 202",
+    room: "Xona 102",
     telegramChatId: "-1009876543210",
     status: "ACTIVE",
     schedules: [

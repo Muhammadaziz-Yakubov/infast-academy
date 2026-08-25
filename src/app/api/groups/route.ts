@@ -3,7 +3,6 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Group } from '@/models/Group';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
-import { Teacher } from '@/models/Teacher';
 
 export async function GET() {
   try {
@@ -11,7 +10,6 @@ export async function GET() {
 
     const groups = await Group.find({})
       .populate('courseId', 'name price')
-      .populate('teacherId', 'firstName lastName phone')
       .sort({ createdAt: -1 });
 
     const groupIds = groups.map((g) => g._id);
@@ -40,9 +38,9 @@ export async function POST(request: Request) {
     await connectToDatabase();
     const body = await request.json();
 
-    const { name, courseId, teacherId, room, telegramChatId, schedules, status } = body;
+    const { name, courseId, room, telegramChatId, schedules, status } = body;
 
-    if (!name || !courseId || !teacherId || !room || !schedules || schedules.length === 0) {
+    if (!name || !courseId || !room || !schedules || schedules.length === 0) {
       return NextResponse.json({ error: "Barcha majburiy maydonlar va jadvalni to'ldiring" }, { status: 400 });
     }
 
@@ -54,7 +52,6 @@ export async function POST(request: Request) {
     const newGroup = await Group.create({
       name: name.trim(),
       courseId,
-      teacherId,
       room,
       telegramChatId: telegramChatId ? telegramChatId.trim() : undefined,
       schedules,

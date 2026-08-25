@@ -3,7 +3,6 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { Group } from '@/models/Group';
 import { Course } from '@/models/Course';
-import { Teacher } from '@/models/Teacher';
 
 export const dynamic = 'force-dynamic';
 
@@ -17,14 +16,13 @@ export async function GET(req: Request) {
         students: [],
         groups: [],
         courses: [],
-        teachers: [],
       });
     }
 
     await connectToDatabase();
     const regex = new RegExp(query, 'i');
 
-    const [students, groups, courses, teachers] = await Promise.all([
+    const [students, groups, courses] = await Promise.all([
       Student.find({
         $or: [
           { firstName: regex },
@@ -43,19 +41,10 @@ export async function GET(req: Request) {
         ],
       })
         .populate('courseId', 'name')
-        .populate('teacherId', 'firstName lastName')
         .limit(6),
 
       Course.find({
         name: regex,
-      }).limit(5),
-
-      Teacher.find({
-        $or: [
-          { firstName: regex },
-          { lastName: regex },
-          { phone: regex },
-        ],
       }).limit(5),
     ]);
 
@@ -63,7 +52,6 @@ export async function GET(req: Request) {
       students,
       groups,
       courses,
-      teachers,
     });
   } catch (error: any) {
     console.error("Global Search API Error:", error);
