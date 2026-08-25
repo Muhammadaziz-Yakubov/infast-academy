@@ -89,7 +89,7 @@ export default function GroupDetailPage() {
             </span>
             <h2 className="text-2xl font-extrabold text-slate-900 mt-2">{group.name}</h2>
             <p className="text-xs text-slate-500 font-medium mt-1">
-              Ustoz: <strong className="text-slate-800">{group.teacherId ? `${group.teacherId.firstName} ${group.teacherId.lastName}` : '-'}</strong> • Xona: <strong className="text-slate-800">{group.room}</strong>
+              Ustoz: <strong className="text-slate-800">Muhammadaziz Yakubov</strong> • Xona: <strong className="text-slate-800">{group.room}</strong>
             </p>
           </div>
 

@@ -17,74 +17,37 @@ import {
   X,
 } from 'lucide-react';
 
+const DAYS = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
+
 export default function GroupsPage() {
   const [groups, setGroups] = useState<any[]>([]);
   const [courses, setCourses] = useState<any[]>([]);
-  const [teachers, setTeachers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState<any>(null);
 
-  const [editFormData, setEditFormData] = useState({
-    name: '',
-    courseId: '',
-    teacherId: '',
-    room: '',
-    telegramChatId: '',
-    status: 'ACTIVE',
-    schedules: [] as any[],
-  });
-
-  const handleOpenEditModal = (group: any) => {
-    setEditingGroup(group);
-    setEditFormData({
-      name: group.name || '',
-      courseId: group.courseId?._id || group.courseId || '',
-      teacherId: group.teacherId?._id || group.teacherId || '',
-      room: group.room || '',
-      telegramChatId: group.telegramChatId || '',
-      status: group.status || 'ACTIVE',
-      schedules: group.schedules ? JSON.parse(JSON.stringify(group.schedules)) : [],
-    });
-    setShowEditModal(true);
-  };
-
-  const handleEditSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!editingGroup) return;
-    try {
-      const res = await fetch(`/api/groups/${editingGroup._id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editFormData),
-      });
-
-      if (res.ok) {
-        setShowEditModal(false);
-        fetchInitial();
-      } else {
-        const err = await res.json();
-        alert(err.error || "Xatolik");
-      }
-    } catch (e: any) {
-      alert(e.message);
-    }
-  };
-
+  // Add form state
   const [formData, setFormData] = useState({
     name: '',
     courseId: '',
-    teacherId: '',
     room: '',
     telegramChatId: '',
     status: 'ACTIVE',
-    schedules: [
-      { dayOfWeek: 'Dushanba', startTime: '14:00', endTime: '15:30' },
-      { dayOfWeek: 'Chorshanba', startTime: '14:00', endTime: '15:30' },
-      { dayOfWeek: 'Juma', startTime: '14:00', endTime: '15:30' },
-    ],
   });
+  const [selectedDays, setSelectedDays] = useState<string[]>(["Dushanba", "Chorshanba", "Juma"]);
+  const [timeRange, setTimeRange] = useState({ startTime: '14:00', endTime: '15:30' });
+
+  // Edit form state
+  const [editFormData, setEditFormData] = useState({
+    name: '',
+    courseId: '',
+    room: '',
+    telegramChatId: '',
+    status: 'ACTIVE',
+  });
+  const [editSelectedDays, setEditSelectedDays] = useState<string[]>([]);
+  const [editTimeRange, setEditTimeRange] = useState({ startTime: '14:00', endTime: '15:30' });
 
   useEffect(() => {
     fetchInitial();
@@ -92,23 +55,16 @@ export default function GroupsPage() {
 
   const fetchInitial = async () => {
     try {
-      const [gRes, cRes, tRes] = await Promise.all([
+      const [gRes, cRes] = await Promise.all([
         fetch('/api/groups'),
         fetch('/api/courses'),
-        fetch('/api/teachers'),
       ]);
 
-      if (gRes.ok) {
+      if (gRes.ok && cRes.ok) {
         const gData = await gRes.json();
-        setGroups(gData.groups || []);
-      }
-      if (cRes.ok) {
         const cData = await cRes.json();
+        setGroups(gData.groups || []);
         setCourses(cData.courses || []);
-      }
-      if (tRes.ok) {
-        const tData = await tRes.json();
-        setTeachers(tData.teachers || []);
       }
     } catch (e) {
       console.error(e);
@@ -119,15 +75,82 @@ export default function GroupsPage() {
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (selectedDays.length === 0) {
+      alert("Kamida bitta dars kunini tanlang!");
+      return;
+    }
+
+    const schedules = selectedDays.map((day) => ({
+      dayOfWeek: day,
+      startTime: timeRange.startTime || '14:00',
+      endTime: timeRange.endTime || '15:30',
+    }));
+
     try {
       const res = await fetch('/api/groups', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({ ...formData, schedules }),
       });
 
       if (res.ok) {
         setShowAddModal(false);
+        setFormData({ name: '', courseId: '', room: '', telegramChatId: '', status: 'ACTIVE' });
+        setSelectedDays(["Dushanba", "Chorshanba", "Juma"]);
+        setTimeRange({ startTime: '14:00', endTime: '15:30' });
+        fetchInitial();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Xatolik");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
+  const handleOpenEditModal = (group: any) => {
+    setEditingGroup(group);
+    setEditFormData({
+      name: group.name || '',
+      courseId: group.courseId?._id || group.courseId || '',
+      room: group.room || '',
+      telegramChatId: group.telegramChatId || '',
+      status: group.status || 'ACTIVE',
+    });
+
+    const days = group.schedules ? group.schedules.map((s: any) => s.dayOfWeek) : [];
+    const firstSched = group.schedules?.[0];
+    setEditSelectedDays(days);
+    setEditTimeRange({
+      startTime: firstSched?.startTime || '14:00',
+      endTime: firstSched?.endTime || '15:30',
+    });
+    setShowEditModal(true);
+  };
+
+  const handleEditSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!editingGroup) return;
+    if (editSelectedDays.length === 0) {
+      alert("Kamida bitta dars kunini tanlang!");
+      return;
+    }
+
+    const schedules = editSelectedDays.map((day) => ({
+      dayOfWeek: day,
+      startTime: editTimeRange.startTime || '14:00',
+      endTime: editTimeRange.endTime || '15:30',
+    }));
+
+    try {
+      const res = await fetch(`/api/groups/${editingGroup._id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ ...editFormData, schedules }),
+      });
+
+      if (res.ok) {
+        setShowEditModal(false);
         fetchInitial();
       } else {
         const err = await res.json();
@@ -148,28 +171,21 @@ export default function GroupsPage() {
     }
   };
 
-  const toggleDaySchedule = (day: string) => {
-    const exists = formData.schedules.some((s) => s.dayOfWeek === day);
-    if (exists) {
-      setFormData({
-        ...formData,
-        schedules: formData.schedules.filter((s) => s.dayOfWeek !== day),
-      });
+  const toggleAddDay = (day: string) => {
+    if (selectedDays.includes(day)) {
+      setSelectedDays(selectedDays.filter((d) => d !== day));
     } else {
-      setFormData({
-        ...formData,
-        schedules: [...formData.schedules, { dayOfWeek: day, startTime: '14:00', endTime: '15:30' }],
-      });
+      setSelectedDays([...selectedDays, day]);
     }
   };
 
-  const updateScheduleTime = (index: number, field: 'startTime' | 'endTime', value: string) => {
-    const updatedSchedules = [...formData.schedules];
-    updatedSchedules[index] = { ...updatedSchedules[index], [field]: value };
-    setFormData({ ...formData, schedules: updatedSchedules });
+  const toggleEditDay = (day: string) => {
+    if (editSelectedDays.includes(day)) {
+      setEditSelectedDays(editSelectedDays.filter((d) => d !== day));
+    } else {
+      setEditSelectedDays([...editSelectedDays, day]);
+    }
   };
-
-  const DAYS = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
 
   return (
     <div className="flex-1 pb-12">
@@ -280,48 +296,32 @@ export default function GroupsPage() {
               </button>
             </div>
 
-            <form onSubmit={handleAddSubmit} className="space-y-3 text-xs">
+            <form onSubmit={handleAddSubmit} className="space-y-3.5 text-xs">
               <div>
                 <label className="block font-bold text-slate-700 mb-1">Guruh nomi *</label>
                 <input
                   type="text"
                   required
-                  placeholder="Frontend 05"
+                  placeholder="Masalan: Frontend 05"
                   value={formData.name}
                   onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Kurs *</label>
-                  <select
-                    required
-                    value={formData.courseId}
-                    onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  >
-                    <option value="">Kursni tanlang</option>
-                    {courses.map((c) => (
-                      <option key={c._id} value={c._id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Ustoz *</label>
-                  <select
-                    required
-                    value={formData.teacherId}
-                    onChange={(e) => setFormData({ ...formData, teacherId: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  >
-                    <option value="">Ustozni tanlang</option>
-                    {teachers.map((t) => (
-                      <option key={t._id} value={t._id}>{t.firstName} {t.lastName}</option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Kurs *</label>
+                <select
+                  required
+                  value={formData.courseId}
+                  onChange={(e) => setFormData({ ...formData, courseId: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                >
+                  <option value="">Kursni tanlang</option>
+                  {courses.map((c) => (
+                    <option key={c._id} value={c._id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -340,7 +340,7 @@ export default function GroupsPage() {
                   <label className="block font-bold text-slate-700 mb-1">Telegram Group Chat ID</label>
                   <input
                     type="text"
-                    placeholder="-1001234567890"
+                    placeholder="-100123456789"
                     value={formData.telegramChatId}
                     onChange={(e) => setFormData({ ...formData, telegramChatId: e.target.value })}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
@@ -348,58 +348,54 @@ export default function GroupsPage() {
                 </div>
               </div>
 
-              {/* Schedule Days Selector */}
-              <div>
-                <label className="block font-bold text-slate-700 mb-1.5">Dars kunlarini tanlang *</label>
-                <div className="flex flex-wrap gap-1.5">
-                  {DAYS.map((day) => {
-                    const isSelected = formData.schedules.some((s) => s.dayOfWeek === day);
-                    return (
-                      <button
-                        type="button"
-                        key={day}
-                        onClick={() => toggleDaySchedule(day)}
-                        className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
-                          isSelected ? 'bg-infast-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-                        }`}
-                      >
-                        {day}
-                      </button>
-                    );
-                  })}
-                </div>
-              </div>
-
-              {/* Per-Day Time Settings */}
-              {formData.schedules.length > 0 && (
-                <div className="space-y-2 pt-2 border-t border-slate-100">
-                  <label className="block font-bold text-slate-700">Dars vaqtlarini belgilash (Boshlanishi - Tugashi):</label>
-                  <div className="space-y-2 max-h-40 overflow-y-auto pr-1">
-                    {formData.schedules.map((s, idx) => (
-                      <div key={s.dayOfWeek} className="flex items-center justify-between bg-slate-50 p-2 rounded-xl border border-slate-200 text-xs">
-                        <span className="font-bold text-slate-800 w-28">{s.dayOfWeek}:</span>
-                        <div className="flex items-center space-x-1.5">
-                          <input
-                            type="text"
-                            placeholder="14:00"
-                            value={s.startTime}
-                            onChange={(e) => updateScheduleTime(idx, 'startTime', e.target.value)}
-                            className="w-20 p-1.5 bg-white border border-slate-200 rounded-lg text-center font-mono font-bold focus:ring-1 focus:ring-infast-500"
-                          />
-                          <span className="font-bold text-slate-400">-</span>
-                          <input
-                            type="text"
-                            placeholder="15:30"
-                            value={s.endTime}
-                            onChange={(e) => updateScheduleTime(idx, 'endTime', e.target.value)}
-                            className="w-20 p-1.5 bg-white border border-slate-200 rounded-lg text-center font-mono font-bold focus:ring-1 focus:ring-infast-500"
-                          />
-                        </div>
-                      </div>
-                    ))}
+              {/* Schedule Days & Unified Time Range */}
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Dars kunlarini tanlang *</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DAYS.map((day) => {
+                      const isSelected = selectedDays.includes(day);
+                      return (
+                        <button
+                          type="button"
+                          key={day}
+                          onClick={() => toggleAddDay(day)}
+                          className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
+                            isSelected ? 'bg-infast-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
-              )}
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Boshlanish vaqti *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="14:00"
+                      value={timeRange.startTime}
+                      onChange={(e) => setTimeRange({ ...timeRange, startTime: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Tugash vaqti *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="15:30"
+                      value={timeRange.endTime}
+                      onChange={(e) => setTimeRange({ ...timeRange, endTime: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-center"
+                    />
+                  </div>
+                </div>
+              </div>
 
               <div className="pt-4 flex justify-end space-x-2">
                 <button
@@ -444,35 +440,19 @@ export default function GroupsPage() {
                 />
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Kurs *</label>
-                  <select
-                    required
-                    value={editFormData.courseId}
-                    onChange={(e) => setEditFormData({ ...editFormData, courseId: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  >
-                    <option value="">Kursni tanlang</option>
-                    {courses.map((c) => (
-                      <option key={c._id} value={c._id}>{c.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">Ustoz *</label>
-                  <select
-                    required
-                    value={editFormData.teacherId}
-                    onChange={(e) => setEditFormData({ ...editFormData, teacherId: e.target.value })}
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
-                  >
-                    <option value="">Ustozni tanlang</option>
-                    {teachers.map((t) => (
-                      <option key={t._id} value={t._id}>{t.firstName} {t.lastName}</option>
-                    ))}
-                  </select>
-                </div>
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Kurs *</label>
+                <select
+                  required
+                  value={editFormData.courseId}
+                  onChange={(e) => setEditFormData({ ...editFormData, courseId: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                >
+                  <option value="">Kursni tanlang</option>
+                  {courses.map((c) => (
+                    <option key={c._id} value={c._id}>{c.name}</option>
+                  ))}
+                </select>
               </div>
 
               <div className="grid grid-cols-2 gap-3">
@@ -508,6 +488,55 @@ export default function GroupsPage() {
                   <option value="COMPLETED">Tugatgan (COMPLETED)</option>
                   <option value="PAUSED">Muzlatilgan (PAUSED)</option>
                 </select>
+              </div>
+
+              {/* Edit Schedule Days & Unified Time Range */}
+              <div className="space-y-3 pt-3 border-t border-slate-100">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Dars kunlarini tanlang *</label>
+                  <div className="flex flex-wrap gap-1.5">
+                    {DAYS.map((day) => {
+                      const isSelected = editSelectedDays.includes(day);
+                      return (
+                        <button
+                          type="button"
+                          key={day}
+                          onClick={() => toggleEditDay(day)}
+                          className={`px-3 py-1.5 rounded-xl font-bold transition-colors ${
+                            isSelected ? 'bg-infast-500 text-white shadow-sm' : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
+                          }`}
+                        >
+                          {day}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Boshlanish vaqti *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="14:00"
+                      value={editTimeRange.startTime}
+                      onChange={(e) => setEditTimeRange({ ...editTimeRange, startTime: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-center"
+                    />
+                  </div>
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Tugash vaqti *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="15:30"
+                      value={editTimeRange.endTime}
+                      onChange={(e) => setEditTimeRange({ ...editTimeRange, endTime: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-center"
+                    />
+                  </div>
+                </div>
               </div>
 
               <div className="pt-4 flex justify-end space-x-2">
