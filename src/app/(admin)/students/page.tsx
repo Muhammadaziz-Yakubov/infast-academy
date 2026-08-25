@@ -21,6 +21,7 @@ import {
   X,
   CreditCard,
   CheckSquare,
+  RefreshCw,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -53,6 +54,26 @@ export default function StudentsPage() {
     notes: '',
   });
   const [submittingBulk, setSubmittingBulk] = useState(false);
+  const [checkingPayments, setCheckingPayments] = useState(false);
+
+  const handleCheckPayments = async () => {
+    setCheckingPayments(true);
+    try {
+      const res = await fetch('/api/students/check-payments', { method: 'POST' });
+      if (res.ok) {
+        const data = await res.json();
+        alert(data.message || "To'lovlar tekshiruvi yakunlandi!");
+        fetchStudents();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert("Xatolik: " + e.message);
+    } finally {
+      setCheckingPayments(false);
+    }
+  };
 
   const handleSelectAll = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.checked) {
@@ -424,6 +445,16 @@ export default function StudentsPage() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={handleCheckPayments}
+              disabled={checkingPayments}
+              className="px-3.5 py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              title="Barcha talabalarning to'lov muddati va sanalarini tekshirish"
+            >
+              <RefreshCw className={`w-4 h-4 ${checkingPayments ? 'animate-spin' : ''}`} />
+              <span>{checkingPayments ? "Tekshirilmoqda..." : "To'lovlarni Tekshirish"}</span>
+            </button>
+
             <button
               onClick={() => setShowImportModal(true)}
               className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all"
