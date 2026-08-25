@@ -96,8 +96,8 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       // Send Telegram notification to group if telegramChatId exists
       const targetGroup = await Group.findById(exam.groupId);
       if (targetGroup && targetGroup.telegramChatId) {
-        const host = req.headers.get('x-forwarded-host') || req.headers.get('host');
-        const proto = req.headers.get('x-forwarded-proto') || 'https';
+        const host = request.headers.get('x-forwarded-host') || request.headers.get('host');
+        const proto = request.headers.get('x-forwarded-proto') || 'https';
         const dynamicUrl = host ? `${proto}://${host}` : 'http://localhost:3000';
         const appUrl = process.env.NEXT_PUBLIC_APP_URL || dynamicUrl;
         const publicResultUrl = `${appUrl}/result/${exam.publicExamId}`;
