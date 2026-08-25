@@ -5,6 +5,8 @@ import { Group } from '@/models/Group';
 import { Course } from '@/models/Course';
 import { Teacher } from '@/models/Teacher';
 
+export const dynamic = 'force-dynamic';
+
 export async function GET(req: Request) {
   try {
     const { searchParams } = new URL(req.url);
@@ -23,7 +25,6 @@ export async function GET(req: Request) {
     const regex = new RegExp(query, 'i');
 
     const [students, groups, courses, teachers] = await Promise.all([
-      // Search Students
       Student.find({
         $or: [
           { firstName: regex },
@@ -35,7 +36,6 @@ export async function GET(req: Request) {
         .populate('groupId', 'name')
         .limit(6),
 
-      // Search Groups
       Group.find({
         $or: [
           { name: regex },
@@ -46,12 +46,10 @@ export async function GET(req: Request) {
         .populate('teacherId', 'firstName lastName')
         .limit(6),
 
-      // Search Courses
       Course.find({
         name: regex,
       }).limit(5),
 
-      // Search Teachers
       Teacher.find({
         $or: [
           { firstName: regex },

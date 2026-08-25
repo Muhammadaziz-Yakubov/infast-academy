@@ -5,9 +5,11 @@ import { Group } from '@/models/Group';
 import { Course } from '@/models/Course';
 import { Payment } from '@/models/Payment';
 import { Attendance } from '@/models/Attendance';
-import { Exam } from '@/models/Exam';
+import { Teacher } from '@/models/Teacher';
 import { calculateCourseMonth, calculatePaymentPeriods, isGroupScheduledOnDate } from '@/lib/calculations';
 import { format, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
+
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
