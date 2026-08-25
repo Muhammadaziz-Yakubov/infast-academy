@@ -32,7 +32,6 @@ const NAV_ITEMS = [
   { name: "To'lovlar", href: '/payments', icon: CreditCard },
   { name: 'Imtihonlar', href: '/exams', icon: GraduationCap },
   { name: 'Kurslar', href: '/courses', icon: BookOpen },
-  { name: "O'qituvchilar", href: '/teachers', icon: UserCheck },
   { name: 'Hisobotlar', href: '/reports', icon: BarChart3 },
   { name: 'Xabarnomalar', href: '/notifications', icon: Bell },
   { name: 'Sozlamalar', href: '/settings', icon: Settings },

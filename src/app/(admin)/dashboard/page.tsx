@@ -260,7 +260,7 @@ export default function DashboardPage() {
                   <div key={c.id} className="p-3.5 rounded-2xl bg-slate-50 border border-slate-100 flex items-center justify-between">
                     <div>
                       <p className="font-bold text-sm text-slate-900">{c.groupName}</p>
-                      <p className="text-xs text-slate-500 font-medium">{c.courseName} • Ustoz: {c.teacherName}</p>
+                      <p className="text-xs text-slate-500 font-medium">{c.courseName}</p>
                     </div>
                     <div className="text-right">
                       <p className="text-xs font-bold text-infast-600 bg-infast-50 px-2.5 py-1 rounded-lg inline-block">

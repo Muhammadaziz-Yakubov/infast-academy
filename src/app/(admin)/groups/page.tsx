@@ -209,7 +209,7 @@ export default function GroupsPage() {
                   <h3 className="text-lg font-extrabold text-slate-900">{g.name}</h3>
 
                   <div className="text-xs text-slate-600 space-y-1.5 font-medium">
-                    <p>Ustoz: <strong className="text-slate-900">{g.teacherId ? `${g.teacherId.firstName} ${g.teacherId.lastName}` : '-'}</strong></p>
+                    <p>Ustoz: <strong className="text-slate-900">Muhammadaziz Yakubov</strong></p>
                     <p className="flex items-center">
                       <MapPin className="w-3.5 h-3.5 mr-1 text-slate-400" />
                       {g.room}

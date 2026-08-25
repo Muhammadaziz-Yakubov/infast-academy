@@ -29,7 +29,6 @@ const QUICK_LINKS = [
   { name: "To'lovlar", href: '/payments', icon: CreditCard, desc: 'To\'lov qabul qilish va kvitansiyalar' },
   { name: 'Imtihonlar', href: '/exams', icon: GraduationCap, desc: 'Imtihonlar va baholash natijalari' },
   { name: 'Kurslar', href: '/courses', icon: BookOpen, desc: 'Mavjud ta\'lim yo\'nalishlari va narxlar' },
-  { name: "O'qituvchilar", href: '/teachers', icon: UserCheck, desc: 'O\'qituvchilar tarkibi va guruhlari' },
   { name: 'Sozlamalar', href: '/settings', icon: Settings, desc: 'Tizim va ma\'muriyat sozlamalari' },
 ];
 
