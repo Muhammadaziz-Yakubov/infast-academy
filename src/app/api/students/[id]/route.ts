@@ -69,13 +69,25 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     await connectToDatabase();
     const body = await request.json();
 
+    function parseDateSafely(val: any): Date | undefined {
+      if (!val) return undefined;
+      if (typeof val === 'string' && val.trim() === '') return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }
+
+    const updateData: any = { ...body };
+    if ('birthDate' in body) {
+      updateData.birthDate = parseDateSafely(body.birthDate);
+    }
+    if ('joinedDate' in body && body.joinedDate) {
+      const jd = parseDateSafely(body.joinedDate);
+      if (jd) updateData.joinedDate = jd;
+    }
+
     const updatedStudent = await Student.findByIdAndUpdate(
       params.id,
-      {
-        ...body,
-        birthDate: body.birthDate ? new Date(body.birthDate) : undefined,
-        joinedDate: body.joinedDate ? new Date(body.joinedDate) : undefined,
-      },
+      updateData,
       { new: true }
     );
 

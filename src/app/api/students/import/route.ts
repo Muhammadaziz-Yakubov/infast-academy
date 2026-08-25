@@ -45,16 +45,23 @@ export async function POST(request: Request) {
 
       const insertedStudents = [];
 
+      function parseDateSafely(val: any): Date | undefined {
+        if (!val) return undefined;
+        if (typeof val === 'string' && val.trim() === '') return undefined;
+        const d = new Date(val);
+        return isNaN(d.getTime()) ? undefined : d;
+      }
+
       for (const row of validRowsToImport) {
         const newStudent = await Student.create({
           firstName: row.data.firstName,
           lastName: row.data.lastName,
           phone: row.data.phone,
           parentPhone: row.data.parentPhone || undefined,
-          birthDate: row.data.birthDate ? new Date(row.data.birthDate) : undefined,
+          birthDate: parseDateSafely(row.data.birthDate),
           courseId: row.courseId,
           groupId: row.groupId,
-          joinedDate: row.data.joinedDate ? new Date(row.data.joinedDate) : new Date(),
+          joinedDate: parseDateSafely(row.data.joinedDate) || new Date(),
           monthlyFee: row.data.monthlyFee ? Number(row.data.monthlyFee) : undefined,
           paymentDueDay: row.data.paymentDueDay ? Number(row.data.paymentDueDay) : 5,
           status: "ACTIVE",

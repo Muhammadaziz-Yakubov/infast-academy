@@ -110,15 +110,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Tanlangan guruh topilmadi" }, { status: 400 });
     }
 
+    function parseDateSafely(val: any): Date | undefined {
+      if (!val) return undefined;
+      if (typeof val === 'string' && val.trim() === '') return undefined;
+      const d = new Date(val);
+      return isNaN(d.getTime()) ? undefined : d;
+    }
+
+    const parsedBirthDate = parseDateSafely(birthDate);
+    const parsedJoinedDate = parseDateSafely(joinedDate) || new Date();
+
     const newStudent = await Student.create({
       firstName,
       lastName,
       phone,
       parentPhone,
-      birthDate: birthDate ? new Date(birthDate) : undefined,
+      birthDate: parsedBirthDate,
       courseId,
       groupId,
-      joinedDate: joinedDate ? new Date(joinedDate) : new Date(),
+      joinedDate: parsedJoinedDate,
       monthlyFee: monthlyFee ? Number(monthlyFee) : undefined,
       paymentDueDay: paymentDueDay ? Number(paymentDueDay) : 5,
       status: status || "ACTIVE",
