@@ -172,17 +172,21 @@ export default function StudentDetailPage() {
                 <span className="font-bold text-slate-900">{student.groupId?.name || '-'}</span>
               </div>
               <div className="flex justify-between py-1.5 border-b border-slate-50">
-                <span className="text-slate-500">Joriy O'quv Oyi:</span>
-                <span className="font-bold text-sky-600 bg-sky-50 px-2 py-0.5 rounded-md">{student.currentCourseMonth}</span>
-              </div>
-              <div className="flex justify-between py-1.5 border-b border-slate-50">
                 <span className="text-slate-500">Oylik To'lov Narxi:</span>
                 <span className="font-bold text-slate-900">{formatMoneyUz(student.effectiveFee)}</span>
               </div>
-              <div className="flex justify-between py-1.5">
+              <div className="flex justify-between py-1.5 border-b border-slate-50">
                 <span className="text-slate-500">Har oylik to'lov kuni:</span>
                 <span className="font-bold text-infast-600">{student.paymentDueDay}-sana</span>
               </div>
+              {student.nextPaymentDueDate && (
+                <div className={`flex justify-between p-2.5 rounded-xl text-xs font-bold ${
+                  student.paymentStatus === 'PAID' ? 'bg-emerald-50 text-emerald-900 border border-emerald-100' : 'bg-rose-50 text-rose-900 border border-rose-100'
+                }`}>
+                  <span className="font-semibold">Keyingi to'lov sanasi:</span>
+                  <span className="font-extrabold font-mono">{formatDateUz(student.nextPaymentDueDate)}</span>
+                </div>
+              )}
             </div>
           </div>
         )}
@@ -190,6 +194,34 @@ export default function StudentDetailPage() {
         {/* Tab 2: Payments History & Periods */}
         {activeTab === 'payments' && (
           <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Status Banner */}
+            {student.nextPaymentDueDate && (
+              <div className={`p-4 rounded-3xl border flex items-center justify-between shadow-card ${
+                student.paymentStatus === 'PAID' ? 'bg-emerald-50/70 border-emerald-100 text-emerald-900' : 'bg-rose-50/70 border-rose-100 text-rose-900'
+              }`}>
+                <div className="flex items-center space-x-3">
+                  <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-lg text-white ${
+                    student.paymentStatus === 'PAID' ? 'bg-emerald-500' : 'bg-rose-500'
+                  }`}>
+                    {student.paymentStatus === 'PAID' ? '✓' : '!'}
+                  </div>
+                  <div>
+                    <p className="font-extrabold text-sm">
+                      {student.paymentStatus === 'PAID' ? "Ushbu oy uchun to'lov qilingan" : "Muddati o'tgan qarzdorlik mavjud"}
+                    </p>
+                    <p className="text-xs font-medium opacity-90 mt-0.5">
+                      Keyingi to'lov sanasi: <strong className="font-extrabold font-mono underline">{formatDateUz(student.nextPaymentDueDate)}</strong>
+                    </p>
+                  </div>
+                </div>
+                <span className={`px-3 py-1 rounded-xl text-xs font-bold ${
+                  student.paymentStatus === 'PAID' ? 'bg-emerald-200/60 text-emerald-900' : 'bg-rose-200/60 text-rose-900'
+                }`}>
+                  {student.paymentStatus === 'PAID' ? "To'langan" : "Qarzdor"}
+                </span>
+              </div>
+            )}
+
             {/* Independent Payment Periods Breakdown */}
             <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4">
               <h3 className="font-bold text-sm text-slate-900">Oylik To'lov Bosqichlari (Mustaqil Davrlar)</h3>

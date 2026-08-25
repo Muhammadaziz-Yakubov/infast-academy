@@ -67,12 +67,14 @@ export function calculatePaymentPeriods(
   periods: PaymentPeriodStatus[];
   totalDebt: number;
   paymentStatus: "PAID" | "OVERDUE" | "PARTIAL";
+  nextPaymentDueDate: string | null;
 } {
   if (!joinedDateInput) {
     return {
       periods: [],
       totalDebt: 0,
       paymentStatus: "PAID",
+      nextPaymentDueDate: null,
     };
   }
 
@@ -82,6 +84,7 @@ export function calculatePaymentPeriods(
       periods: [],
       totalDebt: 0,
       paymentStatus: "PAID",
+      nextPaymentDueDate: null,
     };
   }
 
@@ -147,10 +150,22 @@ export function calculatePaymentPeriods(
     paymentStatus = "PARTIAL";
   }
 
+  let nextPaymentDueDate: string | null = null;
+  const firstUnpaid = periods.find((p) => p.status !== "PAID");
+  if (firstUnpaid) {
+    nextPaymentDueDate = firstUnpaid.dueDate;
+  } else if (periods.length > 0) {
+    const lastPeriod = periods[periods.length - 1];
+    const lastDueDate = new Date(lastPeriod.dueDate);
+    lastDueDate.setMonth(lastDueDate.getMonth() + 1);
+    nextPaymentDueDate = format(lastDueDate, 'yyyy-MM-dd');
+  }
+
   return {
     periods,
     totalDebt,
     paymentStatus,
+    nextPaymentDueDate,
   };
 }
 
