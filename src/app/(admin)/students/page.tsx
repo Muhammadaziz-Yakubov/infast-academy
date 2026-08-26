@@ -563,7 +563,7 @@ export default function StudentsPage() {
                         </td>
                         <td className="py-3.5 px-4">
                           <span className="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-800 text-[11px]">
-                            {s.studentCode || 'INF-1001'}
+                            {s.studentCode || `INF-${s._id.slice(-4).toUpperCase()}`}
                           </span>
                         </td>
                         <td className="py-3.5 px-4">

@@ -36,7 +36,26 @@ export async function GET(request: Request) {
     const rawStudents = await Student.find(query)
       .populate('courseId', 'name price')
       .populate('groupId', 'name')
-      .sort({ createdAt: -1 });
+      .sort({ createdAt: 1 });
+
+    // Auto-ensure distinct unique studentCodes across all students
+    const usedCodes = new Set<string>();
+    let nextNum = 1001;
+
+    for (const s of rawStudents) {
+      if (!s.studentCode || usedCodes.has(s.studentCode)) {
+        while (usedCodes.has(`INF-${nextNum}`)) {
+          nextNum++;
+        }
+        const generated = `INF-${nextNum}`;
+        s.studentCode = generated;
+        usedCodes.add(generated);
+        Student.updateOne({ _id: s._id }, { $set: { studentCode: generated } }).exec();
+        nextNum++;
+      } else {
+        usedCodes.add(s.studentCode);
+      }
+    }
 
     const studentIds = rawStudents.map((s) => s._id);
     const payments = await Payment.find({ studentId: { $in: studentIds } });

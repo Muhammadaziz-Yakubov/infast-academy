@@ -99,7 +99,7 @@ export default function StudentDetailPage() {
                   {student.firstName} {student.lastName}
                 </h1>
                 <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 font-mono font-extrabold text-slate-800 text-xs border border-slate-200">
-                  ID: {student.studentCode || 'INF-1001'}
+                  ID: {student.studentCode || `INF-${student._id.slice(-4).toUpperCase()}`}
                 </span>
               </div>
               <p className="text-xs font-medium text-slate-500 mt-0.5">
