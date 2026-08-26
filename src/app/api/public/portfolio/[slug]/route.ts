@@ -77,7 +77,7 @@ export async function GET(
         stats: {
           attendancePercentage,
           avgExamPercentage,
-          totalExamsPassed: examResults.filter((r) => r.isPassed).length,
+          totalExamsPassed: examResults.filter((r) => r.status === 'PASSED').length,
           completedProjectsCount: (student.projects || []).length,
         },
       },
