@@ -49,9 +49,31 @@ export default function GroupsPage() {
   const [editSelectedDays, setEditSelectedDays] = useState<string[]>([]);
   const [editTimeRange, setEditTimeRange] = useState({ startTime: '14:00', endTime: '15:30' });
 
+  // Cron notification trigger state
+  const [sendingCron, setSendingCron] = useState(false);
+  const [cronReport, setCronReport] = useState<any>(null);
+
   useEffect(() => {
     fetchInitial();
   }, []);
+
+  const handleSendTodayReminders = async (force = false) => {
+    setSendingCron(true);
+    setCronReport(null);
+    try {
+      const res = await fetch('/api/telegram/cron', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ force }),
+      });
+      const data = await res.json();
+      setCronReport(data);
+    } catch (e: any) {
+      alert("Xatolik: " + e.message);
+    } finally {
+      setSendingCron(false);
+    }
+  };
 
   const fetchInitial = async () => {
     try {
@@ -192,15 +214,26 @@ export default function GroupsPage() {
       <Header title="Guruhlar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between">
+        <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between gap-3">
           <h2 className="font-bold text-base text-slate-900">Barcha O'quv Guruhlari</h2>
-          <button
-            onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
-          >
-            <Plus className="w-4 h-4" />
-            <span>Guruh Yaratish</span>
-          </button>
+          <div className="flex items-center space-x-2">
+            <button
+              onClick={() => handleSendTodayReminders(false)}
+              disabled={sendingCron}
+              className="px-3.5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              title="Bugun darsi bor guruhlarga Telegram eslatmasini yuborish"
+            >
+              <Send className="w-3.5 h-3.5" />
+              <span>{sendingCron ? "Yuborilmoqda..." : "Bugungi Dars Eslatmasi"}</span>
+            </button>
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Guruh Yaratish</span>
+            </button>
+          </div>
         </div>
 
         {/* Groups Cards Grid */}
@@ -555,6 +588,79 @@ export default function GroupsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+      {/* Modal: Telegram Cron Report */}
+      {cronReport && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center space-x-2">
+                <Send className="w-5 h-5 text-sky-500" />
+                <h3 className="font-bold text-base text-slate-900">Dars Eslatmalari Hisoboti</h3>
+              </div>
+              <button onClick={() => setCronReport(null)} className="p-1.5 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-sky-50 rounded-2xl border border-sky-100 font-bold text-sky-900">
+                {cronReport.message || "Xabarnoma yuborish yakunlandi"}
+                {cronReport.uzbekDayName && <span className="block text-[11px] font-normal text-sky-700 mt-0.5">Bugungi kun (O'zbekiston): {cronReport.uzbekDayName}</span>}
+              </div>
+
+              {/* Sent list */}
+              {cronReport.details && cronReport.details.length > 0 && (
+                <div className="space-y-1.5">
+                  <p className="font-bold text-slate-700">Yuborilgan guruhlar ({cronReport.details.length}):</p>
+                  <div className="max-h-40 overflow-y-auto space-y-1 pr-1">
+                    {cronReport.details.map((d: any, idx: number) => (
+                      <div key={idx} className="p-2.5 rounded-xl bg-emerald-50 border border-emerald-100 flex items-center justify-between font-medium">
+                        <span className="font-bold text-emerald-950">{d.groupName}</span>
+                        {d.sent ? (
+                          <span className="text-[10px] bg-emerald-200 text-emerald-900 font-bold px-2 py-0.5 rounded-md">✓ Yuborildi</span>
+                        ) : (
+                          <span className="text-[10px] bg-rose-100 text-rose-800 font-bold px-2 py-0.5 rounded-md">❌ {d.error || 'Xato'}</span>
+                        )}
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Skipped list */}
+              {cronReport.skipped && cronReport.skipped.length > 0 && (
+                <div className="space-y-1.5 pt-2 border-t border-slate-100">
+                  <p className="font-bold text-slate-500">O'tkazib yuborilgan guruhlar ({cronReport.skipped.length}):</p>
+                  <div className="max-h-32 overflow-y-auto space-y-1 pr-1">
+                    {cronReport.skipped.map((s: any, idx: number) => (
+                      <div key={idx} className="p-2 rounded-xl bg-slate-50 border border-slate-200 flex items-center justify-between text-slate-600">
+                        <span className="font-bold text-slate-800">{s.groupName}</span>
+                        <span className="text-[10px] text-slate-400">{s.reason}</span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+
+            <div className="pt-3 border-t border-slate-100 flex items-center justify-between">
+              <button
+                onClick={() => handleSendTodayReminders(true)}
+                disabled={sendingCron}
+                className="text-[11px] text-slate-500 hover:text-slate-800 underline font-semibold"
+              >
+                Barcha faol guruhlarga majburiy yuborish (Force)
+              </button>
+              <button
+                onClick={() => setCronReport(null)}
+                className="px-4 py-2 bg-slate-900 text-white font-bold text-xs rounded-xl"
+              >
+                Yopish
+              </button>
+            </div>
           </div>
         </div>
       )}

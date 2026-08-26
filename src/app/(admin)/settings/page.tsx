@@ -51,6 +51,22 @@ export default function SettingsPage() {
     }
   };
 
+  const [sendingCron, setSendingCron] = useState(false);
+
+  const handleTriggerCron = async () => {
+    setSendingCron(true);
+    setTelegramStatus(null);
+    try {
+      const res = await fetch('/api/telegram/cron', { method: 'POST' });
+      const data = await res.json();
+      setTelegramStatus(data);
+    } catch (e: any) {
+      setTelegramStatus({ success: false, error: e.message });
+    } finally {
+      setSendingCron(false);
+    }
+  };
+
   const handleTestTelegram = async () => {
     setTestingTelegram(true);
     setTelegramStatus(null);
@@ -148,6 +164,19 @@ export default function SettingsPage() {
                 >
                   <Send className="w-4 h-4" />
                   <span>{testingTelegram ? "Yuborilmoqda..." : "Guruhga Sinov Xabari Yuborish"}</span>
+                </button>
+              </div>
+
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <span className="text-xs text-slate-500 font-medium">Barcha darsi bor guruhlarga xabarnoma yuborishni sinash:</span>
+                <button
+                  type="button"
+                  onClick={handleTriggerCron}
+                  disabled={sendingCron}
+                  className="px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-colors whitespace-nowrap border border-emerald-200"
+                >
+                  <Send className="w-4 h-4 text-emerald-600" />
+                  <span>{sendingCron ? "Yuborilmoqda..." : "Bugungi Dars Eslatmasini Hozir Yuborish"}</span>
                 </button>
               </div>
 

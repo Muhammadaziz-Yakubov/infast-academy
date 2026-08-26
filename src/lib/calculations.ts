@@ -170,6 +170,58 @@ export function calculatePaymentPeriods(
 }
 
 /**
+ * Gets exact Uzbek day name for a given date in Asia/Tashkent timezone.
+ */
+export function getUzbekDayNameForDate(targetDateInput?: Date | string | null): string {
+  const date = !targetDateInput
+    ? new Date()
+    : typeof targetDateInput === 'string'
+    ? new Date(targetDateInput)
+    : targetDateInput;
+
+  if (isNaN(date.getTime())) return '';
+
+  try {
+    const weekdayEn = date.toLocaleDateString('en-US', {
+      weekday: 'long',
+      timeZone: 'Asia/Tashkent',
+    });
+
+    const map: Record<string, string> = {
+      Monday: 'Dushanba',
+      Tuesday: 'Seshanba',
+      Wednesday: 'Chorshanba',
+      Thursday: 'Payshanba',
+      Friday: 'Juma',
+      Saturday: 'Shanba',
+      Sunday: 'Yakshanba',
+    };
+
+    return map[weekdayEn] || UZBEK_DAYS_MAP[date.getDay()] || '';
+  } catch (e) {
+    return UZBEK_DAYS_MAP[date.getDay()] || '';
+  }
+}
+
+/**
+ * Normalizes day string to canonical Uzbek day name for flexible matching.
+ */
+export function normalizeDayName(dayInput?: string | null): string {
+  if (!dayInput) return '';
+  const clean = dayInput.trim().toLowerCase();
+
+  if (clean.includes('du') || clean.includes('mon')) return 'Dushanba';
+  if (clean.includes('se') || clean.includes('tue')) return 'Seshanba';
+  if (clean.includes('cho') || clean.includes('wed')) return 'Chorshanba';
+  if (clean.includes('pa') || clean.includes('thu')) return 'Payshanba';
+  if (clean.includes('ju') || clean.includes('fri')) return 'Juma';
+  if (clean.includes('sha') || clean.includes('sat')) return 'Shanba';
+  if (clean.includes('yak') || clean.includes('sun')) return 'Yakshanba';
+
+  return clean;
+}
+
+/**
  * BUSINESS RULE 2, 3, 16: Schedule matching for group lessons.
  */
 export function isGroupScheduledOnDate(
@@ -177,16 +229,17 @@ export function isGroupScheduledOnDate(
   targetDateInput?: Date | string | null
 ): boolean {
   if (!schedules || !Array.isArray(schedules) || schedules.length === 0) return false;
-  if (!targetDateInput) return false;
 
-  const targetDate = typeof targetDateInput === 'string' ? new Date(targetDateInput) : targetDateInput;
-  if (isNaN(targetDate.getTime())) return false;
+  const currentUzbekDay = getUzbekDayNameForDate(targetDateInput || new Date());
+  if (!currentUzbekDay) return false;
 
-  const dayIndex = targetDate.getDay();
-  const uzbekDayName = UZBEK_DAYS_MAP[dayIndex];
-  if (!uzbekDayName) return false;
+  const targetNormalized = normalizeDayName(currentUzbekDay);
 
-  return schedules.some((s) => s && s.dayOfWeek && s.dayOfWeek.toLowerCase() === uzbekDayName.toLowerCase());
+  return schedules.some((s) => {
+    if (!s || !s.dayOfWeek) return false;
+    const sNorm = normalizeDayName(s.dayOfWeek);
+    return sNorm === targetNormalized || s.dayOfWeek.trim().toLowerCase() === currentUzbekDay.toLowerCase();
+  });
 }
 
 export function isDateInFuture(dateStr: string): boolean {
