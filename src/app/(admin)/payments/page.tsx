@@ -3,6 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { formatMoneyUz, formatDateUz } from '@/lib/utils';
+import { ReceiptModal } from '@/components/payments/ReceiptModal';
 import {
   CreditCard,
   Plus,
@@ -12,6 +13,7 @@ import {
   User,
   X,
   CheckCircle2,
+  FileText,
 } from 'lucide-react';
 
 export default function PaymentsPage() {
@@ -19,6 +21,7 @@ export default function PaymentsPage() {
   const [students, setStudents] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
+  const [selectedPaymentForReceipt, setSelectedPaymentForReceipt] = useState<any>(null);
 
   const [formData, setFormData] = useState({
     studentId: '',
@@ -104,7 +107,9 @@ export default function PaymentsPage() {
       });
 
       if (res.ok) {
+        const data = await res.json();
         setShowAddModal(false);
+        const currentStudent = students.find((s) => s._id === formData.studentId);
         setFormData({
           studentId: '',
           amount: '',
@@ -114,7 +119,15 @@ export default function PaymentsPage() {
           paymentMethod: 'CLICK',
           notes: '',
         });
-        fetchPayments();
+        await fetchPayments();
+
+        if (data.payment) {
+          const newPayment = {
+            ...data.payment,
+            studentId: currentStudent || data.payment.studentId,
+          };
+          setSelectedPaymentForReceipt(newPayment);
+        }
       } else {
         const err = await res.json();
         alert(err.error || "Xatolik");
@@ -152,13 +165,14 @@ export default function PaymentsPage() {
                 <th className="p-3.5">Davr (Period)</th>
                 <th className="p-3.5">Usul</th>
                 <th className="p-3.5">Izoh</th>
+                <th className="p-3.5 text-right">Amallar</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-slate-100 font-medium">
               {loading ? (
-                <tr><td colSpan={7} className="p-12 text-center text-slate-400">Yuklanmoqda...</td></tr>
+                <tr><td colSpan={8} className="p-12 text-center text-slate-400">Yuklanmoqda...</td></tr>
               ) : payments.length === 0 ? (
-                <tr><td colSpan={7} className="p-12 text-center text-slate-400">To'lovlar mavjud emas</td></tr>
+                <tr><td colSpan={8} className="p-12 text-center text-slate-400">To'lovlar mavjud emas</td></tr>
               ) : (
                 payments.map((p) => (
                   <tr key={p._id} className="hover:bg-slate-50">
@@ -179,6 +193,15 @@ export default function PaymentsPage() {
                       </span>
                     </td>
                     <td className="p-3.5 text-slate-500">{p.notes || '-'}</td>
+                    <td className="p-3.5 text-right">
+                      <button
+                        onClick={() => setSelectedPaymentForReceipt(p)}
+                        className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-lg border border-emerald-200 inline-flex items-center space-x-1 transition-colors"
+                      >
+                        <FileText className="w-3.5 h-3.5" />
+                        <span>Chek</span>
+                      </button>
+                    </td>
                   </tr>
                 ))
               )}
@@ -296,6 +319,14 @@ export default function PaymentsPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Modal: Receipt Preview & Print */}
+      {selectedPaymentForReceipt && (
+        <ReceiptModal
+          payment={selectedPaymentForReceipt}
+          onClose={() => setSelectedPaymentForReceipt(null)}
+        />
       )}
     </div>
   );
