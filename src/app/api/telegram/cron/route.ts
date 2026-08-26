@@ -1,7 +1,6 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
-import { Group } from '@/models/Group';
-import { Course } from '@/models/Course';
+import { Group, Course } from '@/models';
 import { isGroupScheduledOnDate, getUzbekDayNameForDate } from '@/lib/calculations';
 import { sendTelegramMessage } from '@/lib/telegram';
 
@@ -23,6 +22,10 @@ export async function POST(request: Request) {
 async function handleCronNotification(force = false) {
   try {
     await connectToDatabase();
+    // Guarantee Course model is registered in Mongoose schema registry
+    if (Course && Course.modelName) {
+      // Model touched
+    }
     const today = new Date();
     const uzbekDayName = getUzbekDayNameForDate(today);
 
