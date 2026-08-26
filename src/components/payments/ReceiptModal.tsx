@@ -125,7 +125,7 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
           <div className="text-center space-y-1 pb-3 border-b border-dashed border-slate-300">
             <h2 className="font-extrabold text-base tracking-tight font-sans text-slate-950">INFAST IT-ACADEMY</h2>
             <p className="text-[10px] text-slate-500 font-sans font-semibold">"INFAST26" Xususiy Korxonasi</p>
-            <p className="text-[10px] text-slate-500">STIR: 309 123 456 • Tel: +998 (90) 123-45-67</p>
+            <p className="text-[10px] text-slate-500">STIR: 312 956 346 • Tel: +998 (90) 271-00-27</p>
             <p className="text-[10px] text-slate-400">www.infast.uz</p>
           </div>
 
@@ -148,6 +148,12 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
               <span className="text-slate-500">Talaba F.I.SH.:</span>
               <span className="font-bold text-slate-900 text-right">{studentName}</span>
             </div>
+            {payment.studentId?.studentCode && (
+              <div className="flex justify-between">
+                <span className="text-slate-500">Talaba ID (Kod):</span>
+                <span className="font-bold text-slate-900 font-mono">{payment.studentId.studentCode}</span>
+              </div>
+            )}
             <div className="flex justify-between">
               <span className="text-slate-500">Guruh / Kurs:</span>
               <span className="font-bold text-slate-900 text-right">{groupName} ({courseName})</span>

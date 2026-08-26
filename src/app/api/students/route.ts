@@ -5,6 +5,7 @@ import { Course } from '@/models/Course';
 import { Group } from '@/models/Group';
 import { Payment } from '@/models/Payment';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
+import { generateNextStudentCode } from '@/lib/studentCode';
 
 export async function GET(request: Request) {
   try {
@@ -21,6 +22,7 @@ export async function GET(request: Request) {
 
     if (search) {
       query.$or = [
+        { studentCode: { $regex: search, $options: 'i' } },
         { firstName: { $regex: search, $options: 'i' } },
         { lastName: { $regex: search, $options: 'i' } },
         { phone: { $regex: search, $options: 'i' } },
@@ -120,7 +122,10 @@ export async function POST(request: Request) {
     const parsedBirthDate = parseDateSafely(birthDate);
     const parsedJoinedDate = parseDateSafely(joinedDate) || new Date();
 
+    const studentCode = body.studentCode || (await generateNextStudentCode());
+
     const newStudent = await Student.create({
+      studentCode,
       firstName,
       lastName,
       phone,

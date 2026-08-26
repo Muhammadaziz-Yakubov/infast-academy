@@ -1,6 +1,7 @@
 import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IStudent extends Document {
+  studentCode?: string;
   firstName: string;
   lastName: string;
   phone: string;
@@ -18,6 +19,7 @@ export interface IStudent extends Document {
 
 const StudentSchema: Schema<IStudent> = new Schema(
   {
+    studentCode: { type: String, unique: true, sparse: true, index: true },
     firstName: { type: String, required: true },
     lastName: { type: String, required: true, index: true },
     phone: { type: String, required: true, index: true },

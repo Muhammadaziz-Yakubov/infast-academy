@@ -142,7 +142,7 @@ export default function PublicExamResultPage() {
                 required
                 value={phone}
                 onChange={(e) => setPhone(e.target.value)}
-                placeholder="+998 90 123 45 67"
+                placeholder="+998 90 271 00 27"
                 className="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl font-mono text-sm text-white focus:outline-none focus:border-infast-500 transition-colors"
               />
             </div>

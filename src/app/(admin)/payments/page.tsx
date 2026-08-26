@@ -233,7 +233,7 @@ export default function PaymentsPage() {
                   <option value="">Talabani tanlang</option>
                   {students.map((s) => (
                     <option key={s._id} value={s._id}>
-                      {s.firstName} {s.lastName} ({s.groupId?.name || 'Guruh'})
+                      {s.studentCode ? `[${s.studentCode}] ` : ''}{s.firstName} {s.lastName} ({s.groupId?.name || 'Guruh'})
                     </option>
                   ))}
                 </select>

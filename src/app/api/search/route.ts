@@ -25,6 +25,7 @@ export async function GET(req: Request) {
     const [students, groups, courses] = await Promise.all([
       Student.find({
         $or: [
+          { studentCode: regex },
           { firstName: regex },
           { lastName: regex },
           { phone: regex },

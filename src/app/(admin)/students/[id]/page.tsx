@@ -94,9 +94,14 @@ export default function StudentDetailPage() {
               {student.firstName[0]}
             </div>
             <div>
-              <h2 className="text-xl font-bold text-slate-900">
-                {student.firstName} {student.lastName}
-              </h2>
+              <div className="flex items-center space-x-2">
+                <h1 className="text-xl font-bold text-slate-900">
+                  {student.firstName} {student.lastName}
+                </h1>
+                <span className="px-2.5 py-0.5 rounded-lg bg-slate-100 font-mono font-extrabold text-slate-800 text-xs border border-slate-200">
+                  ID: {student.studentCode || 'INF-1001'}
+                </span>
+              </div>
               <p className="text-xs font-medium text-slate-500 mt-0.5">
                 {student.courseId?.name || 'Kurs'} • {student.groupId?.name || 'Guruh'}
               </p>

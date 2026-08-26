@@ -524,6 +524,7 @@ export default function StudentsPage() {
                       className="w-4 h-4 rounded border-slate-300 text-infast-600 focus:ring-infast-500/20 cursor-pointer"
                     />
                   </th>
+                  <th className="py-3.5 px-4">ID</th>
                   <th className="py-3.5 px-4">Talaba</th>
                   <th className="py-3.5 px-4">Telefon</th>
                   <th className="py-3.5 px-4">Kurs</th>
@@ -537,13 +538,13 @@ export default function StudentsPage() {
               <tbody className="divide-y divide-slate-100 text-xs font-medium">
                 {loading ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
                       Yuklanmoqda...
                     </td>
                   </tr>
                 ) : students.length === 0 ? (
                   <tr>
-                    <td colSpan={9} className="py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
                       Hali talabalar mavjud emas. Birinchi talabangizni qo'shing.
                     </td>
                   </tr>
@@ -559,6 +560,11 @@ export default function StudentsPage() {
                             onChange={() => handleSelectStudent(s._id)}
                             className="w-4 h-4 rounded border-slate-300 text-infast-600 focus:ring-infast-500/20 cursor-pointer"
                           />
+                        </td>
+                        <td className="py-3.5 px-4">
+                          <span className="px-2 py-0.5 rounded bg-slate-100 font-mono font-bold text-slate-800 text-[11px]">
+                            {s.studentCode || 'INF-1001'}
+                          </span>
                         </td>
                         <td className="py-3.5 px-4">
                           <Link href={`/students/${s._id}`} className="flex items-center space-x-3 group">

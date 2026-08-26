@@ -71,6 +71,7 @@ model GroupSchedule {
 
 model Student {
   id            String       @id @default(uuid())
+  studentCode   String?      @unique
   firstName     String
   lastName      String
   phone         String
