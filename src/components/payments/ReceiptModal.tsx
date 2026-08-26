@@ -5,14 +5,10 @@ import { formatMoneyUz, formatDateUz } from '@/lib/utils';
 import {
   X,
   Printer,
-  Zap,
-  CheckCircle2,
   ShieldCheck,
   Send,
-  User,
-  BookOpen,
-  CreditCard,
-  Calendar,
+  CheckCircle2,
+  FileCheck,
 } from 'lucide-react';
 
 interface ReceiptModalProps {
@@ -39,6 +35,9 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
 
   const groupName = payment.studentId?.groupId?.name || '-';
   const courseName = payment.studentId?.courseId?.name || '-';
+  const formattedDate = formatDateUz(payment.paymentDate);
+  const periodStart = formatDateUz(payment.periodStartDate);
+  const periodEnd = formatDateUz(payment.periodEndDate);
 
   const handlePrint = () => {
     window.print();
@@ -53,7 +52,7 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
         `👤 <b>Talaba:</b> ${studentName}\n` +
         `📚 <b>Guruh/Kurs:</b> ${groupName} (${courseName})\n` +
         `💰 <b>Summa:</b> ${formatMoneyUz(payment.amount)}\n` +
-        `📅 <b>To'lov Davri:</b> ${formatDateUz(payment.periodStartDate)} — ${formatDateUz(payment.periodEndDate)}\n` +
+        `📅 <b>To'lov Davri:</b> ${periodStart} — ${periodEnd}\n` +
         `💳 <b>Usul:</b> ${payment.paymentMethod}\n` +
         `🔢 <b>Chek №:</b> ${receiptNo}\n\n` +
         `🔗 <b>Elektron kvitansiyani ko'rish:</b> ${receiptUrl}`;
@@ -77,7 +76,7 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white print:static">
       <style jsx global>{`
         @media print {
           body * {
@@ -102,151 +101,129 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
         }
       `}</style>
 
-      <div className="bg-white w-full max-w-lg rounded-3xl p-6 md:p-8 shadow-2xl border border-slate-100 space-y-6 relative print:max-w-none print:shadow-none print:border-none print:rounded-none" id="printable-receipt-modal">
+      <div
+        id="printable-receipt-modal"
+        className="bg-white w-full max-w-md rounded-2xl p-6 shadow-2xl border border-slate-200 text-slate-900 font-mono relative print:max-w-none print:shadow-none print:border-none print:rounded-none"
+      >
         {/* Header Actions (hidden in print) */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-100 no-print">
-          <div className="flex items-center space-x-2">
-            <ShieldCheck className="w-5 h-5 text-emerald-500" />
-            <h3 className="font-bold text-base text-slate-900">Elektron Kvitansiya (Chek)</h3>
+        <div className="flex items-center justify-between pb-3 border-b border-slate-200 no-print font-sans">
+          <div className="flex items-center space-x-2 text-slate-800">
+            <FileCheck className="w-5 h-5 text-emerald-600" />
+            <span className="font-bold text-sm">Rasmiy Elektron Chek</span>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition-colors"
+            className="p-1 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition-colors"
           >
             <X className="w-5 h-5" />
           </button>
         </div>
 
-        {/* Printable Receipt Body */}
-        <div className="space-y-5">
-          {/* Logo & Brand Header */}
-          <div className="flex items-center justify-between pb-4 border-b border-dashed border-slate-200">
-            <div className="flex items-center space-x-3">
-              <div className="w-10 h-10 bg-infast-500 rounded-xl flex items-center justify-center text-white font-black shadow-md shadow-infast-500/30 shrink-0">
-                <Zap className="w-5 h-5 fill-white" />
-              </div>
-              <div>
-                <h2 className="font-black text-lg text-slate-900 tracking-tight leading-none">INFAST</h2>
-                <p className="text-[10px] font-bold text-infast-600 uppercase tracking-widest mt-0.5">IT-ACADEMY</p>
-              </div>
+        {/* Authentic Fiscal Receipt Layout */}
+        <div className="pt-4 space-y-4 text-xs leading-relaxed">
+          {/* Header Organization Details */}
+          <div className="text-center space-y-1 pb-3 border-b border-dashed border-slate-300">
+            <h2 className="font-extrabold text-base tracking-tight font-sans text-slate-950">INFAST IT-ACADEMY</h2>
+            <p className="text-[10px] text-slate-500 font-sans font-semibold">"INFAST26" Xususiy Korxonasi</p>
+            <p className="text-[10px] text-slate-500">STIR: 309 123 456 • Tel: +998 (90) 123-45-67</p>
+            <p className="text-[10px] text-slate-400">www.infast.uz</p>
+          </div>
+
+          {/* Receipt Title */}
+          <div className="text-center font-bold tracking-wider py-1 border-b border-slate-200 uppercase bg-slate-50 text-[11px] text-slate-800">
+            TO'LOV KVITANSIYASI / FISCAL RECEIPT
+          </div>
+
+          {/* Data Table */}
+          <div className="space-y-1.5 pt-1">
+            <div className="flex justify-between">
+              <span className="text-slate-500">Chek №:</span>
+              <span className="font-bold text-slate-900">{receiptNo}</span>
             </div>
-            <div className="text-right">
-              <span className="inline-flex items-center space-x-1 px-2.5 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold border border-emerald-200">
-                <CheckCircle2 className="w-3 h-3" />
-                <span>TO'LANGAN</span>
-              </span>
-              <p className="text-[10px] font-mono text-slate-400 mt-1">{receiptNo}</p>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Sana va vaqt:</span>
+              <span className="font-bold text-slate-900">{formattedDate}</span>
             </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Talaba F.I.SH.:</span>
+              <span className="font-bold text-slate-900 text-right">{studentName}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">Guruh / Kurs:</span>
+              <span className="font-bold text-slate-900 text-right">{groupName} ({courseName})</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="text-slate-500">To'lov usuli:</span>
+              <span className="font-bold text-slate-900 uppercase">{payment.paymentMethod}</span>
+            </div>
+          </div>
+
+          {/* Payment Period Block */}
+          <div className="py-2.5 px-3 bg-slate-50 border border-slate-200 rounded-xl text-center space-y-0.5">
+            <p className="text-[10px] font-sans font-bold text-slate-500 uppercase tracking-wider">Qamrab olingan to'lov davri</p>
+            <p className="text-xs font-bold text-slate-950 font-mono">
+              {periodStart} — {periodEnd}
+            </p>
           </div>
 
           {/* Amount Box */}
-          <div className="bg-slate-50 border border-slate-200/80 rounded-2xl p-4 text-center space-y-1">
-            <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">Qabul qilingan to'lov summasi</p>
-            <p className="text-2xl font-extrabold text-emerald-600 tracking-tight">
+          <div className="py-3 px-4 border-2 border-slate-900 rounded-xl text-center space-y-0.5 bg-slate-950 text-white">
+            <p className="text-[10px] font-sans text-slate-400 uppercase tracking-widest font-medium">Jami to'langan summa</p>
+            <p className="text-xl font-black tracking-tight text-emerald-400">
               {formatMoneyUz(payment.amount)}
             </p>
-            <div className="pt-2 border-t border-slate-200/60 mt-2">
-              <p className="text-[11px] text-slate-600 font-medium">
-                <span className="font-bold text-slate-700">Qamrab olingan davr (Period):</span>
-              </p>
-              <p className="text-xs font-mono font-bold text-infast-700 mt-0.5">
-                {formatDateUz(payment.periodStartDate)} — {formatDateUz(payment.periodEndDate)}
-              </p>
+          </div>
+
+          {/* QR Code Verification Section */}
+          <div className="pt-3 border-t border-dashed border-slate-300 flex items-center justify-between gap-3">
+            <div className="space-y-1 text-[10px] text-slate-500 leading-tight">
+              <div className="flex items-center space-x-1 text-emerald-700 font-bold font-sans">
+                <CheckCircle2 className="w-3.5 h-3.5" />
+                <span>ONLINE CHEK VERIFIED</span>
+              </div>
+              <p className="font-sans">Haqiqiyligini tekshirish uchun ushbu QR-kodni telefoningiz kameralari orqali skaner qiling.</p>
+              <p className="text-[9px] text-slate-400 font-mono">ID: {paymentId}</p>
+            </div>
+
+            <div className="p-1 bg-white border border-slate-300 rounded-lg shrink-0">
+              <img src={qrCodeSrc} alt="Receipt QR Code" className="w-20 h-20 object-contain" />
             </div>
           </div>
 
-          {/* Metadata Table */}
-          <div className="space-y-2.5 text-xs">
-            <div className="flex justify-between py-1 border-b border-slate-100">
-              <span className="text-slate-500 font-medium flex items-center">
-                <User className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Talaba:
-              </span>
-              <span className="font-bold text-slate-900">{studentName}</span>
-            </div>
-
-            <div className="flex justify-between py-1 border-b border-slate-100">
-              <span className="text-slate-500 font-medium flex items-center">
-                <BookOpen className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> Guruh / Kurs:
-              </span>
-              <span className="font-semibold text-slate-800">
-                {groupName} ({courseName})
-              </span>
-            </div>
-
-            <div className="flex justify-between py-1 border-b border-slate-100">
-              <span className="text-slate-500 font-medium flex items-center">
-                <CreditCard className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> To'lov usuli:
-              </span>
-              <span className="px-2 py-0.5 rounded bg-slate-100 font-bold text-[10px] text-slate-800">
-                {payment.paymentMethod}
-              </span>
-            </div>
-
-            <div className="flex justify-between py-1 border-b border-slate-100">
-              <span className="text-slate-500 font-medium flex items-center">
-                <Calendar className="w-3.5 h-3.5 mr-1.5 text-slate-400" /> To'lov sanasi:
-              </span>
-              <span className="font-medium text-slate-700">{formatDateUz(payment.paymentDate)}</span>
-            </div>
-
-            {payment.notes && (
-              <div className="flex justify-between py-1 border-b border-slate-100">
-                <span className="text-slate-500 font-medium">Izoh:</span>
-                <span className="font-medium text-slate-700 text-right">{payment.notes}</span>
-              </div>
-            )}
-          </div>
-
-          {/* QR Code & Stamp */}
-          <div className="pt-4 border-t border-dashed border-slate-200 flex items-center justify-between">
-            <div className="space-y-1 max-w-[220px]">
-              <div className="flex items-center space-x-1 text-emerald-600 font-bold text-xs">
-                <ShieldCheck className="w-4 h-4 shrink-0" />
-                <span>Rasmiy Tasdiqlangan Chek</span>
-              </div>
-              <p className="text-[10px] text-slate-400 leading-tight">
-                Skaner qilish orqali to'lov haqiqiyligini onlayn tekshirishingiz mumkin.
-              </p>
-            </div>
-
-            <div className="p-1.5 bg-white border border-slate-200 rounded-xl shadow-sm">
-              <img src={qrCodeSrc} alt="QR Code" className="w-20 h-20 object-contain" />
-            </div>
+          {/* Footer Receipt Note */}
+          <div className="text-center text-[9px] text-slate-400 pt-2 border-t border-slate-200">
+            *** XIZMATINGIZ UCHUN TASHAKKUR! ***
           </div>
         </div>
 
         {/* Action Buttons (hidden in print) */}
-        <div className="pt-4 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-2 no-print">
-          <div className="flex items-center space-x-2 w-full sm:w-auto">
+        <div className="pt-4 mt-4 border-t border-slate-200 flex items-center justify-between gap-2 no-print font-sans">
+          <div className="flex items-center space-x-2">
             <button
               onClick={handleSendTelegram}
               disabled={sendingTelegram}
-              className="flex-1 sm:flex-initial px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center space-x-1.5 transition-colors disabled:opacity-50"
+              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center space-x-1.5 transition-colors disabled:opacity-50"
             >
-              <Send className="w-3.5 h-3.5 text-blue-500" />
-              <span>{sendingTelegram ? 'Yuborilmoqda...' : 'Telegram'}</span>
+              <Send className="w-3.5 h-3.5 text-blue-600" />
+              <span>{sendingTelegram ? '...' : 'Telegram'}</span>
             </button>
-            {telegramStatus === 'success' && (
-              <span className="text-[10px] text-emerald-600 font-bold">✓ Yuborildi</span>
-            )}
-            {telegramStatus === 'error' && (
-              <span className="text-[10px] text-rose-500 font-bold">❌ Xatolik</span>
-            )}
+            {telegramStatus === 'success' && <span className="text-[10px] text-emerald-600 font-bold">✓</span>}
+            {telegramStatus === 'error' && <span className="text-[10px] text-rose-500 font-bold">❌</span>}
           </div>
 
-          <div className="flex items-center space-x-2 w-full sm:w-auto justify-end">
+          <div className="flex items-center space-x-2">
             <button
               onClick={onClose}
-              className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
+              className="px-3 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl"
             >
               Yopish
             </button>
             <button
               onClick={handlePrint}
-              className="px-5 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center justify-center space-x-1.5 transition-colors"
+              className="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-colors"
             >
               <Printer className="w-4 h-4" />
-              <span>Chop etish (Print)</span>
+              <span>Chop etish</span>
             </button>
           </div>
         </div>

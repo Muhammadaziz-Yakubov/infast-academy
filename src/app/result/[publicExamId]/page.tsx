@@ -89,7 +89,7 @@ export default function PublicExamResultPage() {
 
     setGeneratingPdf(true);
     try {
-      const canvas = await html2canvas(certElement, { scale: 2 });
+      const canvas = await html2canvas(certElement, { scale: 2, useCORS: true, allowTaint: true });
       const imgData = canvas.toDataURL('image/png');
       const pdf = new jsPDF('landscape', 'pt', 'a4');
       const pdfWidth = pdf.internal.pageSize.getWidth();
@@ -283,20 +283,31 @@ export default function PublicExamResultPage() {
         </motion.div>
       )}
 
-      {/* Hidden Certificate Template for PDF Generation (BUSINESS RULE 27 & 28: No stamp/signature, Nigora Yakubova director, INFAST26 XK) */}
+      {/* Hidden Certificate Template for PDF Generation */}
       {examData?.studentResult?.status === 'PASSED' && (
         <div className="fixed left-[-9999px] top-[-9999px]">
           <div
             id="academic-certificate"
-            className="w-[1123px] h-[794px] bg-white text-slate-900 p-16 flex flex-col justify-between border-[16px] border-infast-500 relative font-sans"
+            className="w-[1123px] h-[794px] bg-white text-slate-900 p-12 flex flex-col justify-between border-[14px] border-slate-900 relative font-sans overflow-hidden"
           >
-            {/* Background Accent Graphics */}
-            <div className="absolute top-0 right-0 w-64 h-64 bg-infast-50 rounded-bl-full pointer-events-none opacity-50" />
+            {/* Inner Gold Frame */}
+            <div className="absolute inset-3 border-2 border-amber-400/80 pointer-events-none rounded-sm" />
+
+            {/* Corner Decorative Ornaments */}
+            <div className="absolute top-5 left-5 w-12 h-12 border-t-4 border-l-4 border-amber-500 pointer-events-none" />
+            <div className="absolute top-5 right-5 w-12 h-12 border-t-4 border-r-4 border-amber-500 pointer-events-none" />
+            <div className="absolute bottom-5 left-5 w-12 h-12 border-b-4 border-l-4 border-amber-500 pointer-events-none" />
+            <div className="absolute bottom-5 right-5 w-12 h-12 border-b-4 border-r-4 border-amber-500 pointer-events-none" />
+
+            {/* Background Watermark Accent */}
+            <div className="absolute inset-0 flex items-center justify-center pointer-events-none opacity-[0.03]">
+              <Zap className="w-[500px] h-[500px] text-slate-900" />
+            </div>
 
             {/* Header */}
-            <div className="flex items-center justify-between border-b-2 border-slate-200 pb-6 relative z-10">
+            <div className="flex items-center justify-between border-b-2 border-slate-200/80 pb-5 relative z-10 mx-4">
               <div className="flex items-center space-x-4">
-                <div className="w-14 h-14 rounded-2xl bg-infast-500 text-white flex items-center justify-center font-bold text-2xl">
+                <div className="w-14 h-14 rounded-2xl bg-infast-500 text-white flex items-center justify-center font-bold text-2xl shadow-lg shadow-infast-500/20">
                   <Zap className="w-8 h-8 fill-white" />
                 </div>
                 <div>
@@ -304,50 +315,74 @@ export default function PublicExamResultPage() {
                   <p className="text-xs font-bold text-infast-600 tracking-widest uppercase">Axborot Texnologiyalari Akademiyasi</p>
                 </div>
               </div>
+
               <div className="text-right">
-                <span className="text-xs font-bold text-slate-400 uppercase tracking-widest">SERTIFIKAT ID</span>
-                <p className="text-sm font-mono font-bold text-slate-800">INF-2026-CERT</p>
+                <span className="text-[10px] font-bold text-slate-400 uppercase tracking-widest block">SERTIFIKAT RAQAMI</span>
+                <p className="text-sm font-mono font-black text-slate-900">
+                  INF-2026-{(publicExamId || 'CERT').slice(0, 8).toUpperCase()}
+                </p>
               </div>
             </div>
 
-            {/* Body Title */}
-            <div className="text-center my-8 space-y-4 relative z-10">
-              <span className="text-xs font-extrabold text-infast-600 bg-infast-50 px-6 py-2 rounded-full uppercase tracking-widest">
-                RASMIY AKADEMIK SERTIFIKAT
-              </span>
+            {/* Body */}
+            <div className="text-center my-4 space-y-3 relative z-10 px-8">
+              <div className="inline-flex items-center space-x-2 px-6 py-1.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 text-xs font-black uppercase tracking-widest shadow-sm">
+                <span>🏆 RASMIY AKADEMIK SERTIFIKAT</span>
+              </div>
 
-              <h2 className="text-5xl font-black text-slate-900 tracking-tight mt-4">
+              <h2 className="text-5xl font-black text-slate-900 tracking-tight uppercase pt-2">
                 SERTIFIKAT
               </h2>
+              <p className="text-xs font-bold text-amber-600 tracking-[0.3em] uppercase">CERTIFICATE OF ACHIEVEMENT</p>
 
-              <p className="text-sm text-slate-500 font-medium max-w-lg mx-auto">
-                Ushbu sertifikat egasi INFAST IT-ACADEMY o'quv markazining imtihon sinovlaridan muvaffaqiyatli o'tganligini tasdiqlaydi.
+              <p className="text-xs text-slate-500 font-medium max-w-lg mx-auto pt-2">
+                Ushbu sertifikat egasi INFAST IT-ACADEMY o'quv markazida tashkil etilgan rasmiy imtihon sinovidan muvaffaqiyatli o'tganligini tasdiqlaydi.
               </p>
 
               {/* Student Name */}
-              <div className="py-4">
-                <h3 className="text-4xl font-black text-infast-600 border-b-2 border-infast-500 inline-block px-8 pb-2">
+              <div className="py-2">
+                <h3 className="text-4xl font-black text-infast-600 border-b-2 border-amber-400 inline-block px-10 pb-2 tracking-tight">
                   {examData.studentResult.studentName}
                 </h3>
               </div>
 
               {/* Course & Score Statement */}
-              <p className="text-base text-slate-700 font-semibold max-w-2xl mx-auto leading-relaxed">
-                <strong className="text-slate-900">{examData.examInfo.courseName}</strong> yo'nalishi bo'yicha imtihon sinovidan{" "}
-                <strong className="text-infast-600 font-bold">{examData.studentResult.score} / {examData.examInfo.maxScore}</strong> ball to'plab muvaffaqiyatli o'tdi.
+              <p className="text-sm text-slate-700 font-semibold max-w-2xl mx-auto leading-relaxed pt-1">
+                <strong className="text-slate-900 font-extrabold">{examData.examInfo.courseName}</strong> yo'nalishi bo'yicha akademik imtihondan{" "}
+                <strong className="text-emerald-600 font-extrabold">{examData.studentResult.score} / {examData.examInfo.maxScore}</strong> ball to'plab, yuqori ko'rsatkich bilan muvaffaqiyatli o'tdi.
               </p>
             </div>
 
-            {/* Footer Details (NO STAMP, NO SIGNATURE as per Business Rule 28) */}
-            <div className="flex items-end justify-between border-t-2 border-slate-200 pt-6 relative z-10 text-xs">
-              <div>
-                <p className="font-bold text-slate-900">INFAST26 XK</p>
-                <p className="text-slate-500">Berilgan sana: {new Date().toLocaleDateString('uz-UZ')}</p>
+            {/* Footer Details with QR Code & Director Signature */}
+            <div className="flex items-end justify-between border-t-2 border-slate-200/80 pt-4 relative z-10 text-xs mx-4">
+              {/* Left: Organization Info */}
+              <div className="space-y-1">
+                <p className="font-black text-slate-900 text-sm">INFAST26 XK</p>
+                <p className="text-slate-500 font-medium">Berilgan sana: {new Date().toLocaleDateString('uz-UZ')}</p>
+                <div className="flex items-center space-x-1.5 text-[11px] font-bold text-emerald-600 pt-1">
+                  <span>✅ RASMIY HAKIQIY SERTIFIKAT</span>
+                </div>
               </div>
 
-              <div className="text-right">
+              {/* Center: Dynamic QR Code Verification */}
+              <div className="flex items-center space-x-3 bg-slate-50 p-2 rounded-xl border border-slate-200 shadow-sm">
+                <img
+                  src={`https://api.qrserver.com/v1/create-qr-code/?size=120x120&data=${encodeURIComponent(
+                    typeof window !== 'undefined' ? `${window.location.origin}/result/${publicExamId}` : `https://infast.uz/result/${publicExamId}`
+                  )}`}
+                  alt="Certificate QR Code"
+                  className="w-16 h-16 object-contain"
+                />
+                <div className="text-left max-w-[140px]">
+                  <p className="text-[10px] font-bold text-slate-800 leading-tight">Tekshirish uchun QR-kodni skaner qiling</p>
+                  <p className="text-[9px] text-slate-400 font-mono mt-0.5">www.infast.uz</p>
+                </div>
+              </div>
+
+              {/* Right: Director Details */}
+              <div className="text-right space-y-1">
                 <p className="font-extrabold text-slate-900 text-sm">Director: Muhammadaziz Yakubov</p>
-                <p className="text-slate-500">INFAST IT-ACADEMY Bosh Direktori</p>
+                <p className="text-slate-500 font-medium">INFAST IT-ACADEMY Bosh Direktori</p>
               </div>
             </div>
           </div>
