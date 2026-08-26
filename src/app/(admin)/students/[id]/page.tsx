@@ -28,7 +28,29 @@ export default function StudentDetailPage() {
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
-  const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'attendance' | 'exams'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'attendance' | 'exams' | 'portfolio'>('overview');
+
+  // Portfolio tab state
+  const [portfolioForm, setPortfolioForm] = useState({
+    slug: '',
+    avatarUrl: '',
+    bio: '',
+    skillsStr: '',
+    githubUrl: '',
+    linkedinUrl: '',
+    telegramUsername: '',
+    isPublicPortfolio: true,
+  });
+  const [projects, setProjects] = useState<any[]>([]);
+  const [showProjectModal, setShowProjectModal] = useState(false);
+  const [projectForm, setProjectForm] = useState({
+    title: '',
+    description: '',
+    githubRepo: '',
+    liveDemo: '',
+    technologiesStr: '',
+  });
+  const [savingPortfolio, setSavingPortfolio] = useState(false);
 
   useEffect(() => {
     fetchStudentDetail();
@@ -46,6 +68,86 @@ export default function StudentDetailPage() {
     } finally {
       setLoading(false);
     }
+  };
+
+  useEffect(() => {
+    if (data?.student) {
+      const s = data.student;
+      const defaultSlug = s.slug || `${s.firstName}-${s.lastName}`.toLowerCase().replace(/[^a-z0-9-]/g, '-');
+      setPortfolioForm({
+        slug: defaultSlug,
+        avatarUrl: s.avatarUrl || '',
+        bio: s.bio || '',
+        skillsStr: (s.skills || []).join(', '),
+        githubUrl: s.githubUrl || '',
+        linkedinUrl: s.linkedinUrl || '',
+        telegramUsername: s.telegramUsername || '',
+        isPublicPortfolio: s.isPublicPortfolio !== false,
+      });
+      setProjects(s.projects || []);
+    }
+  }, [data]);
+
+  const handleSavePortfolio = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setSavingPortfolio(true);
+    try {
+      const skills = portfolioForm.skillsStr
+        .split(',')
+        .map((s) => s.trim())
+        .filter((s) => s.length > 0);
+
+      const res = await fetch(`/api/students/${studentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          ...portfolioForm,
+          skills,
+          projects,
+        }),
+      });
+
+      if (res.ok) {
+        alert("Portfolio va rezume ma'lumotlari muvaffaqiyatli saqlandi!");
+        fetchStudentDetail();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setSavingPortfolio(false);
+    }
+  };
+
+  const handleAddProject = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!projectForm.title || !projectForm.description) {
+      alert("Nomi va tavsifini kiriting");
+      return;
+    }
+
+    const techArray = projectForm.technologiesStr
+      .split(',')
+      .map((t) => t.trim())
+      .filter((t) => t.length > 0);
+
+    const newProject = {
+      title: projectForm.title,
+      description: projectForm.description,
+      githubRepo: projectForm.githubRepo,
+      liveDemo: projectForm.liveDemo,
+      technologies: techArray,
+    };
+
+    setProjects([...projects, newProject]);
+    setProjectForm({ title: '', description: '', githubRepo: '', liveDemo: '', technologiesStr: '' });
+    setShowProjectModal(false);
+  };
+
+  const handleDeleteProject = (index: number) => {
+    setProjects(projects.filter((_, idx) => idx !== index));
   };
 
   const student = data?.student;
@@ -129,6 +231,7 @@ export default function StudentDetailPage() {
             { id: 'payments', label: 'To\'lovlar Tarixi' },
             { id: 'attendance', label: 'Davomat Tarixi' },
             { id: 'exams', label: 'Imtihonlar' },
+            { id: 'portfolio', label: 'Portfolio & Rezume' },
           ].map((tab) => (
             <button
               key={tab.id}
@@ -366,6 +469,296 @@ export default function StudentDetailPage() {
                 </div>
               ))
             )}
+          </div>
+        )}
+
+        {/* Tab 5: Portfolio & Resume */}
+        {activeTab === 'portfolio' && (
+          <div className="space-y-6 animate-in fade-in duration-200">
+            {/* Public Portfolio Banner Link */}
+            <div className="bg-slate-900 text-white p-5 rounded-3xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 shadow-xl">
+              <div className="space-y-1">
+                <div className="flex items-center space-x-2">
+                  <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Rasmiy Ommaviy Portfolio</span>
+                </div>
+                <p className="text-sm font-bold text-white font-mono">
+                  infast.uz/portfolio/{portfolioForm.slug || student._id}
+                </p>
+              </div>
+              <a
+                href={`/portfolio/${portfolioForm.slug || student._id}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs rounded-xl transition-all shadow-md shrink-0 flex items-center space-x-1.5"
+              >
+                <span>Ommaviy Portfolioni Ko'rish</span>
+                <span>↗</span>
+              </a>
+            </div>
+
+            <form onSubmit={handleSavePortfolio} className="space-y-6">
+              {/* Profile Details & Socials */}
+              <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4 text-xs">
+                <h3 className="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Profil va Ijtimoiy Tarmoq Havolalari</h3>
+                
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Unikal URL Slug (Portfolio Linki uchun) *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="alimov-farrux"
+                      value={portfolioForm.slug}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, slug: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Rasm Havolasi (Avatar URL)</label>
+                    <input
+                      type="url"
+                      placeholder="https://images.unsplash.com/photo-..."
+                      value={portfolioForm.avatarUrl}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, avatarUrl: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">GitHub Profil Linki</label>
+                    <input
+                      type="url"
+                      placeholder="https://github.com/username"
+                      value={portfolioForm.githubUrl}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, githubUrl: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">LinkedIn Profil Linki</label>
+                    <input
+                      type="url"
+                      placeholder="https://linkedin.com/in/username"
+                      value={portfolioForm.linkedinUrl}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, linkedinUrl: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Telegram Usernamesi</label>
+                    <input
+                      type="text"
+                      placeholder="@username"
+                      value={portfolioForm.telegramUsername}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, telegramUsername: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <div className="flex items-center space-x-2 pt-6">
+                    <input
+                      type="checkbox"
+                      id="isPublicPortfolio"
+                      checked={portfolioForm.isPublicPortfolio}
+                      onChange={(e) => setPortfolioForm({ ...portfolioForm, isPublicPortfolio: e.target.checked })}
+                      className="w-4 h-4 text-emerald-600 rounded"
+                    />
+                    <label htmlFor="isPublicPortfolio" className="font-bold text-slate-800">
+                      Ommaviy Portfolioni Faol (Public) Qilish
+                    </label>
+                  </div>
+                </div>
+              </div>
+
+              {/* Bio Summary & Skill Tags */}
+              <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4 text-xs">
+                <h3 className="font-bold text-sm text-slate-900 border-b border-slate-100 pb-3">Tavsif va Texnik Ko'nikmalar</h3>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Qisqacha Rezume / Bio</label>
+                  <textarea
+                    rows={3}
+                    placeholder="Masalan: Frontend React va Next.js dasturchi. InFAST IT-Academiyada 6 oy tajriba oshirgan."
+                    value={portfolioForm.bio}
+                    onChange={(e) => setPortfolioForm({ ...portfolioForm, bio: e.target.value })}
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Texnik Ko'nikmalar (Vergul bilan ajratilgan)</label>
+                  <input
+                    type="text"
+                    placeholder="React, Next.js, TypeScript, Tailwind CSS, Node.js, MongoDB"
+                    value={portfolioForm.skillsStr}
+                    onChange={(e) => setPortfolioForm({ ...portfolioForm, skillsStr: e.target.value })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold text-emerald-700"
+                  />
+                </div>
+              </div>
+
+              {/* Projects List */}
+              <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4 text-xs">
+                <div className="flex items-center justify-between border-b border-slate-100 pb-3">
+                  <h3 className="font-bold text-sm text-slate-900">Portfolio Loyihalari ({projects.length})</h3>
+                  <button
+                    type="button"
+                    onClick={() => setShowProjectModal(true)}
+                    className="px-3 py-1.5 bg-infast-50 hover:bg-infast-100 text-infast-700 font-bold rounded-xl border border-infast-200"
+                  >
+                    + Yangi Loyiha Qo'shish
+                  </button>
+                </div>
+
+                {projects.length === 0 ? (
+                  <p className="text-center py-6 text-slate-400">Hali loyihalar qo'shilmagan</p>
+                ) : (
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {projects.map((proj: any, idx: number) => (
+                      <div key={idx} className="p-4 rounded-2xl bg-slate-50 border border-slate-200 space-y-2 relative">
+                        <div className="flex items-center justify-between">
+                          <h4 className="font-bold text-slate-900 text-sm">{proj.title}</h4>
+                          <button
+                            type="button"
+                            onClick={() => handleDeleteProject(idx)}
+                            className="text-rose-500 hover:text-rose-700 font-bold text-xs"
+                          >
+                            O'chirish
+                          </button>
+                        </div>
+                        <p className="text-slate-600 leading-relaxed text-xs">{proj.description}</p>
+
+                        <div className="flex flex-wrap gap-1 pt-1">
+                          {proj.technologies?.map((tech: string, tIdx: number) => (
+                            <span key={tIdx} className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 text-[10px] font-bold">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+
+                        <div className="flex items-center space-x-3 pt-2 text-[11px] font-bold font-mono">
+                          {proj.githubRepo && (
+                            <a href={proj.githubRepo} target="_blank" rel="noreferrer" className="text-sky-600 hover:underline">
+                              GitHub Repo ↗
+                            </a>
+                          )}
+                          {proj.liveDemo && (
+                            <a href={proj.liveDemo} target="_blank" rel="noreferrer" className="text-emerald-600 hover:underline">
+                              Live Demo ↗
+                            </a>
+                          )}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                )}
+              </div>
+
+              <div className="flex justify-end">
+                <button
+                  type="submit"
+                  disabled={savingPortfolio}
+                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all"
+                >
+                  {savingPortfolio ? "Saqlanmoqda..." : "Portfolio Va Rezumeni Saqlash"}
+                </button>
+              </div>
+            </form>
+          </div>
+        )}
+
+        {/* Modal: Add Project */}
+        {showProjectModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm">
+            <div className="bg-white w-full max-w-lg rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <h3 className="font-bold text-base text-slate-900">Yangi Loyiha Qo'shish</h3>
+                <button onClick={() => setShowProjectModal(false)} className="p-1 text-slate-400">
+                  ✕
+                </button>
+              </div>
+
+              <form onSubmit={handleAddProject} className="space-y-3 text-xs">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Loyiha Nomi *</label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Masalan: CRM Boshqaruv Tizimi"
+                    value={projectForm.title}
+                    onChange={(e) => setProjectForm({ ...projectForm, title: e.target.value })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                  />
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Loyiha Haqida Qisqacha Tavsif *</label>
+                  <textarea
+                    rows={3}
+                    required
+                    placeholder="Loyiha vazifasi va imkoniyatlari haqida..."
+                    value={projectForm.description}
+                    onChange={(e) => setProjectForm({ ...projectForm, description: e.target.value })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">GitHub Repo Havolasi</label>
+                    <input
+                      type="url"
+                      placeholder="https://github.com/user/repo"
+                      value={projectForm.githubRepo}
+                      onChange={(e) => setProjectForm({ ...projectForm, githubRepo: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block font-bold text-slate-700 mb-1">Live Demo Website Havolasi</label>
+                    <input
+                      type="url"
+                      placeholder="https://myproject.vercel.app"
+                      value={projectForm.liveDemo}
+                      onChange={(e) => setProjectForm({ ...projectForm, liveDemo: e.target.value })}
+                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                    />
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">Texnologiyalar (Vergul bilan ajratilgan)</label>
+                  <input
+                    type="text"
+                    placeholder="React, Next.js, Tailwind CSS, MongoDB"
+                    value={projectForm.technologiesStr}
+                    onChange={(e) => setProjectForm({ ...projectForm, technologiesStr: e.target.value })}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono font-bold"
+                  />
+                </div>
+
+                <div className="pt-3 flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowProjectModal(false)}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-infast-500 hover:bg-infast-600 text-white font-bold rounded-xl shadow-md"
+                  >
+                    Qo'shish
+                  </button>
+                </div>
+              </form>
+            </div>
           </div>
         )}
       </main>
