@@ -13,6 +13,7 @@ import {
   Clock,
   ExternalLink,
   Edit,
+  Trash2,
   X,
   Copy,
   BarChart,
@@ -23,6 +24,7 @@ export default function ExamsPage() {
   const [courses, setCourses] = useState<any[]>([]);
   const [groups, setGroups] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+
 
   // Modal state
   const [showAddModal, setShowAddModal] = useState(false);
@@ -215,6 +217,24 @@ export default function ExamsPage() {
     }
   };
 
+  const handleDeleteExam = async (examId: string) => {
+    if (!confirm("Rostdan ham ushbu imtihonni va uning barcha natijalarini o'chirmoqchimisiz?")) return;
+    try {
+      const res = await fetch(`/api/exams/${examId}`, {
+        method: 'DELETE',
+      });
+
+      if (res.ok) {
+        fetchExams();
+      } else {
+        const err = await res.json();
+        alert(err.error || "O'chirishda xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    }
+  };
+
   return (
     <div className="flex-1 pb-12">
       <Header title="Imtihonlar" />
@@ -298,7 +318,15 @@ export default function ExamsPage() {
                     >
                       <Edit className="w-4 h-4" />
                     </button>
+                    <button
+                      onClick={() => handleDeleteExam(exam._id)}
+                      className="p-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl transition-colors"
+                      title="Imtihonni o'chirish"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
                   </div>
+
 
                   {/* Publish Button (BUSINESS RULE 28) */}
                   {!exam.isPublished ? (
@@ -654,21 +682,35 @@ export default function ExamsPage() {
                 </div>
               </div>
 
-              <div className="pt-4 flex justify-end space-x-2">
+              <div className="pt-4 flex items-center justify-between">
                 <button
                   type="button"
-                  onClick={() => setShowEditExamModal(false)}
-                  className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl"
+                  onClick={() => {
+                    setShowEditExamModal(false);
+                    handleDeleteExam(editingExam._id);
+                  }}
+                  className="px-4 py-2 bg-rose-50 hover:bg-rose-100 text-rose-600 font-semibold rounded-xl flex items-center space-x-1.5"
                 >
-                  Bekor qilish
+                  <Trash2 className="w-4 h-4" />
+                  <span>O'chirish</span>
                 </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl shadow-md"
-                >
-                  O'zgarishlarni Saqlash
-                </button>
+                <div className="flex items-center space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowEditExamModal(false)}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold rounded-xl shadow-md"
+                  >
+                    O'zgarishlarni Saqlash
+                  </button>
+                </div>
               </div>
+
             </form>
           </div>
         </div>

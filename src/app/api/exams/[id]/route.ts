@@ -120,3 +120,21 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     return NextResponse.json({ error: error.message || "Saqlashda xatolik" }, { status: 500 });
   }
 }
+
+export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+  try {
+    await connectToDatabase();
+    const exam = await Exam.findById(params.id);
+    if (!exam) {
+      return NextResponse.json({ error: "Imtihon topilmadi" }, { status: 404 });
+    }
+
+    await ExamResult.deleteMany({ examId: params.id });
+    await Exam.findByIdAndDelete(params.id);
+
+    return NextResponse.json({ success: true, message: "Imtihon o'chirildi" });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "O'chirishda xatolik" }, { status: 500 });
+  }
+}
+
