@@ -35,6 +35,27 @@ export default function ExamsPage() {
   const [scoreList, setScoreList] = useState<any[]>([]);
   const [savingScores, setSavingScores] = useState(false);
 
+  const SAMPLE_QUESTIONS_JSON = JSON.stringify(
+    [
+      {
+        id: "q1",
+        questionText: "React-da holatni boshqarish uchun qaysi hook ishlatiladi?",
+        options: ["useEffect", "useState", "useRef", "useMemo"],
+        correctAnswerIndex: 1,
+        points: 10
+      },
+      {
+        id: "q2",
+        questionText: "HTML-da eng katta sarlavha tegi qaysi?",
+        options: ["<h6>", "<head>", "<h1>", "<header>"],
+        correctAnswerIndex: 2,
+        points: 10
+      }
+    ],
+    null,
+    2
+  );
+
   const [editFormData, setEditFormData] = useState({
     name: '',
     courseId: '',
@@ -45,7 +66,9 @@ export default function ExamsPage() {
     room: '',
     maxScore: '100',
     passingScore: '60',
+    durationMinutes: '30',
     description: '',
+    questionsJson: '',
   });
 
   const handleOpenEditExamModal = (exam: any) => {
@@ -60,7 +83,9 @@ export default function ExamsPage() {
       room: exam.room || 'Xona 101',
       maxScore: String(exam.maxScore || 100),
       passingScore: String(exam.passingScore || 60),
+      durationMinutes: String(exam.durationMinutes || 30),
       description: exam.description || '',
+      questionsJson: exam.questions && exam.questions.length > 0 ? JSON.stringify(exam.questions, null, 2) : '',
     });
     setShowEditExamModal(true);
   };
@@ -68,11 +93,27 @@ export default function ExamsPage() {
   const handleEditExamSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!editingExam) return;
+
+    let questions: any[] = [];
+    if (editFormData.questionsJson.trim()) {
+      try {
+        const parsed = JSON.parse(editFormData.questionsJson);
+        questions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+      } catch (err) {
+        alert("JSON formati noto'g'ri! Sintaksisni tekshiring.");
+        return;
+      }
+    }
+
     try {
       const res = await fetch(`/api/exams/${editingExam._id}`, {
         method: 'PUT',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(editFormData),
+        body: JSON.stringify({
+          ...editFormData,
+          durationMinutes: Number(editFormData.durationMinutes || 30),
+          questions,
+        }),
       });
 
       if (res.ok) {
@@ -98,7 +139,9 @@ export default function ExamsPage() {
     room: 'Xona 101',
     maxScore: '100',
     passingScore: '60',
+    durationMinutes: '30',
     description: '',
+    questionsJson: '',
   });
 
   useEffect(() => {
@@ -135,11 +178,27 @@ export default function ExamsPage() {
 
   const handleAddSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    let questions: any[] = [];
+    if (formData.questionsJson.trim()) {
+      try {
+        const parsed = JSON.parse(formData.questionsJson);
+        questions = Array.isArray(parsed) ? parsed : (parsed.questions || []);
+      } catch (err) {
+        alert("JSON formati noto'g'ri! Sintaksisni tekshiring.");
+        return;
+      }
+    }
+
     try {
       const res = await fetch('/api/exams', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(formData),
+        body: JSON.stringify({
+          ...formData,
+          durationMinutes: Number(formData.durationMinutes || 30),
+          questions,
+        }),
       });
 
       if (res.ok) {
@@ -153,6 +212,7 @@ export default function ExamsPage() {
       alert(e.message);
     }
   };
+
 
   const openScoresModal = async (exam: any) => {
     setSelectedExam(exam);
@@ -235,6 +295,8 @@ export default function ExamsPage() {
     }
   };
 
+  const appUrl = typeof window !== 'undefined' ? window.location.origin : '';
+
   return (
     <div className="flex-1 pb-12">
       <Header title="Imtihonlar" />
@@ -278,7 +340,7 @@ export default function ExamsPage() {
 
                   <h3 className="text-lg font-extrabold text-slate-900">{exam.name}</h3>
                   <p className="text-xs text-slate-500 font-medium">
-                    Sana: {formatDateUz(exam.examDate)} | Vaqt: {exam.startTime} - {exam.endTime} | Xona: {exam.room}
+                    Sana: {formatDateUz(exam.examDate)} | Vaqt: {exam.startTime} - {exam.endTime} | Davomiyligi: {exam.durationMinutes || 30} m. | Savollar: {exam.questions?.length || 0} ta
                   </p>
 
                   {/* Exam Statistics (BUSINESS RULE 27) */}
@@ -300,7 +362,67 @@ export default function ExamsPage() {
                       <p className="font-extrabold text-sky-700">{exam.stats?.avgScore || 0}</p>
                     </div>
                   </div>
+
+                  {/* Public Links Section */}
+                  <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 space-y-2 text-xs">
+                    {/* Link 1: Take Test Link */}
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center space-x-1.5 overflow-hidden">
+                        <span className="font-bold text-slate-700 shrink-0">📝 Test topshirish:</span>
+                        <span className="truncate font-mono text-[10px] text-slate-500">{`${appUrl}/take-exam/${exam.publicExamId}`}</span>
+                      </div>
+                      <div className="flex items-center space-x-1 shrink-0">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${appUrl}/take-exam/${exam.publicExamId}`);
+                            alert("Test Topshirish Havolasi nusxalandi!");
+                          }}
+                          className="p-1.5 text-slate-500 hover:text-infast-600 hover:bg-white rounded-lg transition-colors"
+                          title="Nusxalash"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                        <Link
+                          href={`/take-exam/${exam.publicExamId}`}
+                          target="_blank"
+                          className="p-1.5 text-slate-500 hover:text-infast-600 hover:bg-white rounded-lg transition-colors"
+                          title="Ochish"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+
+                    {/* Link 2: Result Link */}
+                    <div className="flex items-center justify-between gap-2 border-t border-slate-200/60 pt-1.5">
+                      <div className="flex items-center space-x-1.5 overflow-hidden">
+                        <span className="font-bold text-slate-700 shrink-0">📊 Natijalar:</span>
+                        <span className="truncate font-mono text-[10px] text-slate-500">{`${appUrl}/result/${exam.publicExamId}`}</span>
+                      </div>
+                      <div className="flex items-center space-x-1 shrink-0">
+                        <button
+                          onClick={() => {
+                            navigator.clipboard.writeText(`${appUrl}/result/${exam.publicExamId}`);
+                            alert("Natijalar Havolasi nusxalandi!");
+                          }}
+                          className="p-1.5 text-slate-500 hover:text-infast-600 hover:bg-white rounded-lg transition-colors"
+                          title="Nusxalash"
+                        >
+                          <Copy className="w-3.5 h-3.5" />
+                        </button>
+                        <Link
+                          href={`/result/${exam.publicExamId}`}
+                          target="_blank"
+                          className="p-1.5 text-slate-500 hover:text-infast-600 hover:bg-white rounded-lg transition-colors"
+                          title="Ochish"
+                        >
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
                 </div>
+
 
                 <div className="pt-4 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2">
                   <div className="flex items-center space-x-1.5">
@@ -474,6 +596,42 @@ export default function ExamsPage() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Imtihon Davomiyligi (daqiqalarda) *</label>
+                <input
+                  type="number"
+                  required
+                  placeholder="30"
+                  value={formData.durationMinutes}
+                  onChange={(e) => setFormData({ ...formData, durationMinutes: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-700">Online Test Savollari (JSON formatida)</label>
+                  <button
+                    type="button"
+                    onClick={() => setFormData({ ...formData, questionsJson: SAMPLE_QUESTIONS_JSON })}
+                    className="text-[11px] font-bold text-infast-600 hover:underline"
+                  >
+                    📋 Shablon JSON'dan Nusxa Olish
+                  </button>
+                </div>
+                <textarea
+                  rows={5}
+                  placeholder={`[\n  {\n    "id": "q1",\n    "questionText": "Savol matni",\n    "options": ["A", "B", "C", "D"],\n    "correctAnswerIndex": 1,\n    "points": 10\n  }\n]`}
+                  value={formData.questionsJson}
+                  onChange={(e) => setFormData({ ...formData, questionsJson: e.target.value })}
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:ring-1 focus:ring-infast-500"
+                />
+                <p className="text-[10px] text-slate-400">
+                  `correctAnswerIndex`: 0=A, 1=B, 2=C, 3=D variantni bildiradi.
+                </p>
+              </div>
+
 
               <div className="pt-4 flex justify-end space-x-2">
                 <button
@@ -681,6 +839,39 @@ export default function ExamsPage() {
                   />
                 </div>
               </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">Imtihon Davomiyligi (daqiqalarda) *</label>
+                <input
+                  type="number"
+                  required
+                  placeholder="30"
+                  value={editFormData.durationMinutes}
+                  onChange={(e) => setEditFormData({ ...editFormData, durationMinutes: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
+                />
+              </div>
+
+              <div className="space-y-1">
+                <div className="flex items-center justify-between">
+                  <label className="block font-bold text-slate-700">Online Test Savollari (JSON formatida)</label>
+                  <button
+                    type="button"
+                    onClick={() => setEditFormData({ ...editFormData, questionsJson: SAMPLE_QUESTIONS_JSON })}
+                    className="text-[11px] font-bold text-infast-600 hover:underline"
+                  >
+                    📋 Shablon JSON'dan Nusxa Olish
+                  </button>
+                </div>
+                <textarea
+                  rows={5}
+                  placeholder={`[\n  {\n    "id": "q1",\n    "questionText": "Savol matni",\n    "options": ["A", "B", "C", "D"],\n    "correctAnswerIndex": 1,\n    "points": 10\n  }\n]`}
+                  value={editFormData.questionsJson}
+                  onChange={(e) => setEditFormData({ ...editFormData, questionsJson: e.target.value })}
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl font-mono text-xs focus:ring-1 focus:ring-infast-500"
+                />
+              </div>
+
 
               <div className="pt-4 flex items-center justify-between">
                 <button

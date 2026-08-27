@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { useParams } from 'next/navigation';
-import { Zap, Phone, Award, Download, AlertCircle, ArrowRight, RefreshCw } from 'lucide-react';
+import { Zap, Phone, Award, Download, AlertCircle, ArrowRight, RefreshCw, Lock } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import confetti from 'canvas-confetti';
 import html2canvas from 'html2canvas';
@@ -15,12 +15,29 @@ export default function PublicExamResultPage() {
   const [phone, setPhone] = useState('+998');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState('');
+  const [isPublishedStatus, setIsPublishedStatus] = useState<boolean | null>(null);
+  const [examMeta, setExamMeta] = useState<any>(null);
   
   // States: 'input' -> 'countdown' -> 'result'
   const [step, setStep] = useState<'input' | 'countdown' | 'result'>('input');
   const [countdown, setCountdown] = useState(5);
   const [examData, setExamData] = useState<any>(null);
   const [generatingPdf, setGeneratingPdf] = useState(false);
+
+  useEffect(() => {
+    if (publicExamId) {
+      fetch(`/api/public/exam/${publicExamId}`)
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.examInfo) {
+            setIsPublishedStatus(data.examInfo.isPublished);
+            setExamMeta(data.examInfo);
+          }
+        })
+        .catch(console.error);
+    }
+  }, [publicExamId]);
+
 
   const COUNTDOWN_MESSAGES: Record<number, string> = {
     5: "Tayyormisiz? 👀",
@@ -115,55 +132,81 @@ export default function PublicExamResultPage() {
         <p className="text-xs font-semibold text-slate-400 mt-0.5 uppercase tracking-wider">Imtihon Natijasini Tekshirish</p>
       </div>
 
-      {/* Step 1: Phone Verification Input */}
+      {/* Step 1: Phone Verification Input or Unpublished Banner */}
       {step === 'input' && (
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-sm bg-slate-800/80 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/60 shadow-2xl space-y-4"
-        >
-          <div className="text-center">
-            <h2 className="text-base font-bold text-white">Telefon raqamingizni kiriting</h2>
-            <p className="text-xs text-slate-400 mt-1">Imtihondagi shaxsiy natijangizni ko'rish uchun</p>
-          </div>
-
-          {error && (
-            <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium flex items-center space-x-2">
-              <AlertCircle className="w-4 h-4 shrink-0" />
-              <span>{error}</span>
-            </div>
-          )}
-
-          <form onSubmit={handleVerifyPhone} className="space-y-4">
-            <div className="relative">
-              <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-              <input
-                type="text"
-                required
-                value={phone}
-                onChange={(e) => setPhone(e.target.value)}
-                placeholder="+998 90 271 00 27"
-                className="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl font-mono text-sm text-white focus:outline-none focus:border-infast-500 transition-colors"
-              />
+        isPublishedStatus === false ? (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-sm bg-slate-800/80 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/60 shadow-2xl text-center space-y-4"
+          >
+            <div className="w-16 h-16 rounded-full bg-amber-500/20 border-2 border-amber-500 text-amber-400 flex items-center justify-center mx-auto shadow-lg shadow-amber-500/20">
+              <Lock className="w-8 h-8" />
             </div>
 
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full py-3.5 bg-gradient-to-r from-infast-500 to-infast-600 hover:from-infast-600 hover:to-infast-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-infast-500/30 flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
-            >
-              {loading ? (
-                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-              ) : (
-                <>
-                  <span>Natijani Ko'rish</span>
-                  <ArrowRight className="w-4 h-4" />
-                </>
+            <div>
+              <h2 className="text-base font-bold text-white">Natijalar Hali E'lon Qilinmagan</h2>
+              {examMeta && (
+                <p className="text-xs font-semibold text-infast-400 mt-1">
+                  {examMeta.name} ({examMeta.courseName})
+                </p>
               )}
-            </button>
-          </form>
-        </motion.div>
+            </div>
+
+            <div className="p-3.5 rounded-2xl bg-slate-900/60 border border-slate-700/60 text-xs text-slate-300 leading-relaxed">
+              Ushbu imtihon natijalari hali o'qituvchi yoki administrator tomonidan rasman e'lon qilinmagan. Natijalar e'lon qilingandan so'ng qayta tekshirib ko'rishingiz mumkin.
+            </div>
+          </motion.div>
+        ) : (
+          <motion.div
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-sm bg-slate-800/80 backdrop-blur-xl p-6 rounded-3xl border border-slate-700/60 shadow-2xl space-y-4"
+          >
+            <div className="text-center">
+              <h2 className="text-base font-bold text-white">Telefon raqamingizni kiriting</h2>
+              <p className="text-xs text-slate-400 mt-1">Imtihondagi shaxsiy natijangizni ko'rish uchun</p>
+            </div>
+
+            {error && (
+              <div className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-xs font-medium flex items-center space-x-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{error}</span>
+              </div>
+            )}
+
+            <form onSubmit={handleVerifyPhone} className="space-y-4">
+              <div className="relative">
+                <Phone className="w-4 h-4 text-slate-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+                <input
+                  type="text"
+                  required
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  placeholder="+998 90 271 00 27"
+                  className="w-full pl-10 pr-4 py-3 bg-slate-900/60 border border-slate-700 rounded-xl font-mono text-sm text-white focus:outline-none focus:border-infast-500 transition-colors"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="w-full py-3.5 bg-gradient-to-r from-infast-500 to-infast-600 hover:from-infast-600 hover:to-infast-700 text-white font-bold text-sm rounded-xl shadow-lg shadow-infast-500/30 flex items-center justify-center space-x-2 transition-all disabled:opacity-50"
+              >
+                {loading ? (
+                  <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                ) : (
+                  <>
+                    <span>Natijani Ko'rish</span>
+                    <ArrowRight className="w-4 h-4" />
+                  </>
+                )}
+              </button>
+            </form>
+          </motion.div>
+        )
       )}
+
 
       {/* Step 2: 5-Second Countdown Animation (BUSINESS RULE 23 & SECTION 30) */}
       {step === 'countdown' && (

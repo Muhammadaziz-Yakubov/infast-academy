@@ -5,6 +5,31 @@ import { ExamResult } from '@/models/ExamResult';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
 
+export async function GET(request: Request, { params }: { params: { publicExamId: string } }) {
+  try {
+    await connectToDatabase();
+    const exam = await Exam.findOne({ publicExamId: params.publicExamId })
+      .populate('courseId', 'name')
+      .populate('groupId', 'name');
+
+    if (!exam) {
+      return NextResponse.json({ error: "Imtihon topilmadi" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      examInfo: {
+        name: exam.name,
+        courseName: (exam.courseId as any)?.name || "Kurs",
+        groupName: (exam.groupId as any)?.name || "Guruh",
+        isPublished: exam.isPublished,
+      },
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Xatolik" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request, { params }: { params: { publicExamId: string } }) {
   try {
     await connectToDatabase();
@@ -22,8 +47,9 @@ export async function POST(request: Request, { params }: { params: { publicExamI
     }
 
     if (!exam.isPublished) {
-      return NextResponse.json({ error: "Ushbu imtihon natijalari hali e'lon qilinmagan" }, { status: 403 });
+      return NextResponse.json({ error: "Ushbu imtihon natijalari hali o'qituvchi/administrator tomonidan e'lon qilinmagan.", isPublished: false }, { status: 403 });
     }
+
 
     // Clean phone number for matching
     const cleanInputPhone = phone.replace(/\D/g, '');

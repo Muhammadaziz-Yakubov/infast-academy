@@ -55,7 +55,7 @@ export async function POST(request: Request) {
     await connectToDatabase();
     const body = await request.json();
 
-    const { name, courseId, groupId, examDate, startTime, endTime, room, maxScore, passingScore, description } = body;
+    const { name, courseId, groupId, examDate, startTime, endTime, room, maxScore, passingScore, description, durationMinutes, questions } = body;
 
     if (!name || !courseId || !groupId || !examDate || !startTime || !endTime || !room) {
       return NextResponse.json({ error: "Barcha majburiy maydonlarni to'ldiring" }, { status: 400 });
@@ -74,9 +74,12 @@ export async function POST(request: Request) {
       maxScore: maxScore ? Number(maxScore) : 100,
       passingScore: passingScore ? Number(passingScore) : 60,
       description,
+      durationMinutes: durationMinutes ? Number(durationMinutes) : 30,
+      questions: Array.isArray(questions) ? questions : [],
       isPublished: false,
       publicExamId,
     });
+
 
     // Auto-create initial ExamResult entries for all students in group
     const groupStudents = await Student.find({ groupId, status: 'ACTIVE' });
