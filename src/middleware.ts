@@ -4,6 +4,7 @@ import { jwtVerify } from 'jose';
 
 const PROTECTED_PAGE_PREFIXES = [
   '/dashboard',
+  '/marketing',
   '/students',
   '/groups',
   '/attendance',
@@ -17,6 +18,7 @@ const PROTECTED_PAGE_PREFIXES = [
 ];
 
 const PROTECTED_API_PREFIXES = [
+  '/api/marketing',
   '/api/students',
   '/api/payments',
   '/api/groups',
@@ -96,6 +98,7 @@ export const config = {
     '/',
     '/login',
     '/dashboard/:path*',
+    '/marketing/:path*',
     '/students/:path*',
     '/groups/:path*',
     '/attendance/:path*',
@@ -106,6 +109,7 @@ export const config = {
     '/reports/:path*',
     '/notifications/:path*',
     '/settings/:path*',
+    '/api/marketing/:path*',
     '/api/students/:path*',
     '/api/payments/:path*',
     '/api/groups/:path*',

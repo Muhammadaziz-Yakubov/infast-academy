@@ -1,5 +1,6 @@
 import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
+import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
 
 function getAuthSecret(): string {
@@ -67,4 +68,18 @@ export function getSession(): AdminUserSession | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Helper to require authenticated session with ADMIN role for mutation endpoints
+ */
+export function requireAdminSession(): { session: AdminUserSession | null; errorResponse: NextResponse | null } {
+  const session = getSession();
+  if (!session) {
+    return { session: null, errorResponse: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
+  }
+  if (session.role !== 'ADMIN') {
+    return { session: null, errorResponse: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
+  }
+  return { session, errorResponse: null };
 }

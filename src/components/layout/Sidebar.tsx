@@ -5,24 +5,40 @@ import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
   LayoutDashboard,
+  Megaphone,
   Users,
   Folder,
   CalendarCheck,
   CreditCard,
   GraduationCap,
   BookOpen,
-  UserCheck,
   BarChart3,
   Bell,
   Settings,
   LogOut,
   ChevronLeft,
   ChevronRight,
+  ChevronDown,
   Menu,
   X,
   Zap,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
+
+const MARKETING_SUB_ITEMS = [
+  { name: '📊 Marketing boshqaruvi', href: '/marketing' },
+  { name: '📢 Kampaniyalar', href: '/marketing/kampaniyalar' },
+  { name: '💰 Reklama xarajatlari', href: '/marketing/xarajatlar' },
+  { name: '📱 Kanallar', href: '/marketing/kanallar' },
+  { name: '🎯 Lead manbalari', href: '/marketing/lead-manbalari' },
+  { name: '🎨 Kontent rejalashtiruvchi', href: '/marketing/kontent' },
+  { name: '📅 Kontent taqvimi', href: '/marketing/taqvim' },
+  { name: '📝 Kontent kutubxonasi', href: '/marketing/kutubxona' },
+  { name: '🎁 Aksiyalar', href: '/marketing/aksiyalar' },
+  { name: '🤝 Tavsiya dasturi', href: '/marketing/tavsiya' },
+  { name: '🧲 Landing sahifalar', href: '/marketing/landing-sahifalar' },
+  { name: '🔗 UTM yaratish', href: '/marketing/utm' },
+];
 
 const NAV_ITEMS = [
   { name: 'Bosh sahifa', href: '/dashboard', icon: LayoutDashboard },
@@ -42,6 +58,11 @@ export function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [marketingOpen, setMarketingOpen] = useState(
+    pathname.startsWith('/marketing')
+  );
+
+  const isMarketingActive = pathname.startsWith('/marketing');
 
   const handleLogout = async () => {
     try {
@@ -92,7 +113,86 @@ export function Sidebar() {
 
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
-        {NAV_ITEMS.map((item) => {
+        {/* Main Dashboard Link */}
+        <Link
+          href="/dashboard"
+          onClick={() => setMobileOpen(false)}
+          className={cn(
+            "flex items-center px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
+            pathname === '/dashboard'
+              ? "bg-infast-500 text-white shadow-md shadow-infast-500/20 font-bold"
+              : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+          )}
+        >
+          <LayoutDashboard
+            className={cn(
+              "w-4 h-4 shrink-0",
+              pathname === '/dashboard' ? "text-white" : "text-slate-400 group-hover:text-infast-500"
+            )}
+          />
+          {!collapsed && <span className="ml-3 truncate">Bosh sahifa</span>}
+        </Link>
+
+        {/* Marketing Menu Accordion */}
+        <div className="space-y-1 pt-1">
+          <button
+            onClick={() => {
+              if (collapsed) setCollapsed(false);
+              setMarketingOpen(!marketingOpen);
+            }}
+            className={cn(
+              "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
+              isMarketingActive
+                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold"
+                : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+            )}
+          >
+            <div className="flex items-center">
+              <Megaphone
+                className={cn(
+                  "w-4 h-4 shrink-0",
+                  isMarketingActive ? "text-amber-500" : "text-slate-400 group-hover:text-amber-500"
+                )}
+              />
+              {!collapsed && <span className="ml-3 truncate font-bold">📣 Marketing</span>}
+            </div>
+            {!collapsed && (
+              <ChevronDown
+                className={cn(
+                  "w-3.5 h-3.5 text-slate-400 transition-transform duration-200",
+                  marketingOpen && "transform rotate-180"
+                )}
+              />
+            )}
+          </button>
+
+          {/* Marketing Sub-items */}
+          {(!collapsed && marketingOpen) && (
+            <div className="ml-3 pl-3 border-l border-slate-200 dark:border-slate-800 space-y-1 pt-1">
+              {MARKETING_SUB_ITEMS.map((subItem) => {
+                const isSubActive = pathname === subItem.href;
+                return (
+                  <Link
+                    key={subItem.href}
+                    href={subItem.href}
+                    onClick={() => setMobileOpen(false)}
+                    className={cn(
+                      "flex items-center px-3 py-1.5 rounded-lg text-xs font-medium transition-colors truncate",
+                      isSubActive
+                        ? "bg-amber-500 text-white font-bold shadow-sm"
+                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                    )}
+                  >
+                    <span className="truncate">{subItem.name}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          )}
+        </div>
+
+        {/* Other Core Nav Items */}
+        {NAV_ITEMS.filter((item) => item.href !== '/dashboard').map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 

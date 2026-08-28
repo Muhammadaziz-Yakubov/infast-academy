@@ -33,6 +33,15 @@ export interface IStudent extends Document {
   projects?: IStudentProject[];
   isPublicPortfolio?: boolean;
 
+  // Marketing & Lead Attribution fields (Optional)
+  leadId?: mongoose.Types.ObjectId;
+  campaignId?: mongoose.Types.ObjectId;
+  utmSource?: string;
+  utmMedium?: string;
+  utmCampaign?: string;
+  utmContent?: string;
+  utmTerm?: string;
+
   createdAt: Date;
   updatedAt: Date;
 }
@@ -73,6 +82,15 @@ const StudentSchema: Schema<IStudent> = new Schema(
     telegramUsername: { type: String },
     projects: [StudentProjectSchema],
     isPublicPortfolio: { type: Boolean, default: true },
+
+    // Marketing Attribution
+    leadId: { type: Schema.Types.ObjectId, ref: "Lead", index: true },
+    campaignId: { type: Schema.Types.ObjectId, ref: "MarketingCampaign", index: true },
+    utmSource: { type: String, index: true },
+    utmMedium: { type: String },
+    utmCampaign: { type: String },
+    utmContent: { type: String },
+    utmTerm: { type: String },
   },
   { timestamps: true }
 );
