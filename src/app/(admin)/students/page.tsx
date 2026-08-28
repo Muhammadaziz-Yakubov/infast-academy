@@ -530,6 +530,7 @@ export default function StudentsPage() {
                   <th className="py-3.5 px-4">Kurs</th>
                   <th className="py-3.5 px-4">Guruh</th>
                   <th className="py-3.5 px-4">Oylik To'lov</th>
+                  <th className="py-3.5 px-4">To'lov Sanasi</th>
                   <th className="py-3.5 px-4">To'lov Holati</th>
                   <th className="py-3.5 px-4">Holati</th>
                   <th className="py-3.5 px-4 text-right">Amallar</th>
@@ -538,13 +539,13 @@ export default function StudentsPage() {
               <tbody className="divide-y divide-slate-100 text-xs font-medium">
                 {loading ? (
                   <tr>
-                    <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={11} className="py-12 text-center text-slate-400 font-medium">
                       Yuklanmoqda...
                     </td>
                   </tr>
                 ) : students.length === 0 ? (
                   <tr>
-                    <td colSpan={10} className="py-12 text-center text-slate-400 font-medium">
+                    <td colSpan={11} className="py-12 text-center text-slate-400 font-medium">
                       Hali talabalar mavjud emas. Birinchi talabangizni qo'shing.
                     </td>
                   </tr>
@@ -586,6 +587,16 @@ export default function StudentsPage() {
                           </span>
                         </td>
                         <td className="py-3.5 px-4 font-bold text-slate-900">{formatMoneyUz(s.effectiveFee)}</td>
+                        <td className="py-3.5 px-4">
+                          <div className="flex flex-col">
+                            <span className="font-mono text-slate-900 font-bold">
+                              {s.nextPaymentDueDate ? formatDateUz(s.nextPaymentDueDate) : '-'}
+                            </span>
+                            <span className="text-[10px] text-slate-400 font-medium">
+                              Har oyning {s.paymentDueDay || 5}-sana
+                            </span>
+                          </div>
+                        </td>
                         <td className="py-3.5 px-4">
                         {s.paymentStatus === 'PAID' && (
                           <span className="px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 font-bold text-[10px] flex items-center w-max">

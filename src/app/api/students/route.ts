@@ -83,6 +83,7 @@ export async function GET(request: Request) {
         paymentStatus: paymentInfo.paymentStatus,
         totalDebt: paymentInfo.totalDebt,
         totalPaid,
+        nextPaymentDueDate: paymentInfo.nextPaymentDueDate,
       };
     });
 

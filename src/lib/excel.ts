@@ -152,6 +152,8 @@ export function generateStudentsExportBuffer(students: any[]): Buffer {
       "Guruh": s.groupId?.name || "-",
       "Joriy Oy": monthInfo.label,
       "Oylik To'lov": fee,
+      "To'lov Kuni": `Har oyning ${s.paymentDueDay || 5}-kuni`,
+      "Keyingi To'lov Sanasi": paymentInfo.nextPaymentDueDate || "-",
       "To'lov Holati": paymentInfo.paymentStatus === 'PAID' ? "To'langan" : paymentInfo.paymentStatus === 'OVERDUE' ? "Qarzdor" : "Kutilmoqda",
       "Qarzdorlik Summasi": paymentInfo.totalDebt,
       "Holati": s.status === 'ACTIVE' ? "Faol" : s.status === 'PAUSED' ? "Muzlatilgan" : s.status === 'LEFT' ? "Tark etgan" : "Tugatgan",
