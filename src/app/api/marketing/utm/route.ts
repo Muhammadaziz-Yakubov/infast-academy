@@ -65,14 +65,22 @@ export async function POST(req: NextRequest) {
     await connectToDatabase();
     const body = await req.json();
 
-    const { name, utmSource, utmMedium, utmCampaignId, utmContent, utmTerm, landingUrl } = body;
+    const {
+      name,
+      pageTitle,
+      pageDescription,
+      utmSource,
+      utmMedium,
+      utmCampaignId,
+      utmContent,
+      utmTerm,
+      landingUrl,
+      customFields,
+      useInternalForm,
+    } = body;
 
-    if (!name || !utmSource || !utmMedium || !landingUrl) {
-      return NextResponse.json({ error: "Nomi, Manba (source), Kanal (medium) va Landing URL majburiy" }, { status: 400 });
-    }
-
-    if (!isValidUrl(landingUrl)) {
-      return NextResponse.json({ error: "Yaroqsiz Landing URL (http:// yoki https:// bilan boshlanishi kerak)" }, { status: 400 });
+    if (!name || !utmSource || !utmMedium) {
+      return NextResponse.json({ error: "Nomi, Manba (source) va Kanal (medium) majburiy" }, { status: 400 });
     }
 
     const safeSource = sanitizeParam(utmSource);
@@ -88,7 +96,33 @@ export async function POST(req: NextRequest) {
       }
     }
 
-    const urlObj = new URL(landingUrl);
+    // Create initial UTM Link record to get unique _id for internal public form URL
+    const newLink = new UTMLink({
+      name: name.trim(),
+      pageTitle: pageTitle ? pageTitle.trim() : name.trim(),
+      pageDescription: pageDescription ? pageDescription.trim() : undefined,
+      utmSource: safeSource,
+      utmMedium: safeMedium,
+      utmCampaignId: utmCampaignId || undefined,
+      utmContent: safeContent || undefined,
+      utmTerm: safeTerm || undefined,
+      landingUrl: landingUrl || 'https://infast.uz',
+      fullUrl: 'temp',
+      customFields: Array.isArray(customFields) ? customFields : [],
+    });
+
+    const host = req.headers.get('host') || 'localhost:3000';
+    const protocol = req.headers.get('x-forwarded-proto') || 'http';
+    const baseUrl = `${protocol}://${host}`;
+
+    let targetLandingUrl = landingUrl;
+    if (useInternalForm || !landingUrl) {
+      targetLandingUrl = `${baseUrl}/l/${newLink._id}`;
+    } else if (!isValidUrl(landingUrl)) {
+      return NextResponse.json({ error: "Yaroqsiz Landing URL (http:// yoki https:// bilan boshlanishi kerak)" }, { status: 400 });
+    }
+
+    const urlObj = new URL(targetLandingUrl);
     urlObj.searchParams.set('utm_source', safeSource);
     urlObj.searchParams.set('utm_medium', safeMedium);
     if (campaignName) urlObj.searchParams.set('utm_campaign', campaignName);
@@ -98,19 +132,13 @@ export async function POST(req: NextRequest) {
     const fullUrl = urlObj.toString();
     const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&data=${encodeURIComponent(fullUrl)}`;
 
-    const link = await UTMLink.create({
-      name: name.trim(),
-      utmSource: safeSource,
-      utmMedium: safeMedium,
-      utmCampaignId: utmCampaignId || undefined,
-      utmContent: safeContent || undefined,
-      utmTerm: safeTerm || undefined,
-      landingUrl,
-      fullUrl,
-      qrCodeUrl,
-    });
+    newLink.landingUrl = targetLandingUrl;
+    newLink.fullUrl = fullUrl;
+    newLink.qrCodeUrl = qrCodeUrl;
 
-    return NextResponse.json({ success: true, link }, { status: 201 });
+    await newLink.save();
+
+    return NextResponse.json({ success: true, link: newLink }, { status: 201 });
   } catch (error: any) {
     return NextResponse.json({ error: error.message || 'UTM havola yaratishda xatolik' }, { status: 500 });
   }
