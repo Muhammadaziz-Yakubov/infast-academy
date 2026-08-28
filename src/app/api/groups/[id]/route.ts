@@ -5,8 +5,15 @@ import { Student } from '@/models/Student';
 import { Attendance } from '@/models/Attendance';
 import { Payment } from '@/models/Payment';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const group = await Group.findById(params.id)
       .populate('courseId', 'name price durationMonths');
@@ -38,6 +45,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -54,6 +66,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     await Group.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Guruh o'chirildi" });

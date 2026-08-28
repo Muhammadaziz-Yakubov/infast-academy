@@ -37,3 +37,8 @@ export function formatMoneyUz(amount: number | undefined | null): string {
   return new Intl.NumberFormat("uz-UZ").format(amount) + " so'm";
 }
 
+export function escapeRegex(input: string): string {
+  return input.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+

@@ -2,8 +2,15 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Course } from '@/models/Course';
 
+import { getSession } from '@/lib/auth';
+
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -20,6 +27,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     await Course.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Kurs o'chirildi" });

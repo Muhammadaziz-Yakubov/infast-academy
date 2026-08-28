@@ -2,8 +2,15 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Notification } from '@/models/Notification';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const notifications = await Notification.find({}).sort({ createdAt: -1 }).limit(30);
     const unreadCount = await Notification.countDocuments({ isRead: false });
@@ -16,6 +23,11 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { id, markAllRead } = body;

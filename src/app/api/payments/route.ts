@@ -5,8 +5,15 @@ import { Student } from '@/models/Student';
 import { Notification } from '@/models/Notification';
 import { formatMoneyUz } from '@/lib/utils';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
     const studentId = searchParams.get('studentId');
@@ -33,6 +40,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

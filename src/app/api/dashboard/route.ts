@@ -9,10 +9,17 @@ import { Exam } from '@/models/Exam';
 import { calculateCourseMonth, calculatePaymentPeriods, isGroupScheduledOnDate } from '@/lib/calculations';
 import { format, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
 
+import { getSession } from '@/lib/auth';
+
 export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');

@@ -2,7 +2,14 @@ import jwt from 'jsonwebtoken';
 import { cookies } from 'next/headers';
 import bcrypt from 'bcryptjs';
 
-const AUTH_SECRET = process.env.AUTH_SECRET || 'infast-it-academy-super-secret-jwt-key-2026-secure';
+function getAuthSecret(): string {
+  const secret = process.env.AUTH_SECRET;
+  if (!secret) {
+    throw new Error('AUTH_SECRET environment variable is missing!');
+  }
+  return secret;
+}
+
 const COOKIE_NAME = 'infast_session';
 
 export interface AdminUserSession {
@@ -13,11 +20,15 @@ export interface AdminUserSession {
 }
 
 /**
- * Validates admin login credentials against .env process.env ADMIN_LOGIN & ADMIN_PASSWORD
+ * Validates admin login credentials against process.env ADMIN_LOGIN & ADMIN_PASSWORD
  */
 export function verifyAdminCredentials(loginInput: string, passwordInput: string): boolean {
-  const envAdminLogin = process.env.ADMIN_LOGIN || 'admin';
-  const envAdminPassword = process.env.ADMIN_PASSWORD || 'admin_password_2026';
+  const envAdminLogin = process.env.ADMIN_LOGIN;
+  const envAdminPassword = process.env.ADMIN_PASSWORD;
+
+  if (!envAdminLogin || !envAdminPassword) {
+    throw new Error('ADMIN_LOGIN or ADMIN_PASSWORD environment variable is missing!');
+  }
 
   if (!loginInput || !passwordInput) return false;
 
@@ -35,7 +46,8 @@ export function createAdminSession(login: string): string {
     role: 'ADMIN',
   };
 
-  const token = jwt.sign(payload, AUTH_SECRET, { expiresIn: '7d' });
+  const secret = getAuthSecret();
+  const token = jwt.sign(payload, secret, { expiresIn: '7d' });
   return token;
 }
 
@@ -49,9 +61,10 @@ export function getSession(): AdminUserSession | null {
 
     if (!token) return null;
 
-    const decoded = jwt.verify(token, AUTH_SECRET) as AdminUserSession;
+    const secret = getAuthSecret();
+    const decoded = jwt.verify(token, secret) as AdminUserSession;
     return decoded;
-  } catch (error) {
+  } catch {
     return null;
   }
 }

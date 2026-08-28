@@ -7,8 +7,15 @@ import { Group } from '@/models/Group';
 import { Notification } from '@/models/Notification';
 import { sendTelegramMessage } from '@/lib/telegram';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const exam = await Exam.findById(params.id)
       .populate('courseId', 'name')
@@ -49,6 +56,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { action, scores, isPublished } = body;
@@ -123,6 +135,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const exam = await Exam.findById(params.id);
     if (!exam) {

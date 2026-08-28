@@ -7,8 +7,15 @@ import { Course } from '@/models/Course';
 import { Group } from '@/models/Group';
 import { sendTelegramMessage } from '@/lib/telegram';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const exams = await Exam.find({})
       .populate('courseId', 'name')
@@ -52,6 +59,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

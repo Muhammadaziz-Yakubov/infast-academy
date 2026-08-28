@@ -4,8 +4,15 @@ import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
 import { generateStudentsExportBuffer } from '@/lib/excel';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
 

@@ -6,9 +6,16 @@ import { Group } from '@/models/Group';
 import { Payment } from '@/models/Payment';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 import { generateNextStudentCode } from '@/lib/studentCode';
+import { getSession } from '@/lib/auth';
+import { escapeRegex } from '@/lib/utils';
 
 export async function GET(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
 
@@ -21,11 +28,15 @@ export async function GET(request: Request) {
     let query: any = {};
 
     if (search) {
+      if (search.length > 100) {
+        return NextResponse.json({ error: "Qidiruv so'rovi juda uzun (max 100 belgi)" }, { status: 400 });
+      }
+      const safeSearch = escapeRegex(search);
       query.$or = [
-        { studentCode: { $regex: search, $options: 'i' } },
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { phone: { $regex: search, $options: 'i' } },
+        { studentCode: { $regex: safeSearch, $options: 'i' } },
+        { firstName: { $regex: safeSearch, $options: 'i' } },
+        { lastName: { $regex: safeSearch, $options: 'i' } },
+        { phone: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 
@@ -100,6 +111,11 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

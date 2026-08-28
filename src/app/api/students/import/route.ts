@@ -3,7 +3,14 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { validateExcelRows, ExcelRowData, generateSampleExcelBuffer } from '@/lib/excel';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
+  const session = getSession();
+  if (!session) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
   // Download sample excel template file
   const buffer = generateSampleExcelBuffer();
   return new NextResponse(new Uint8Array(buffer), {
@@ -16,6 +23,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { action, rows, validRowsToImport } = body;

@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
 import { Group } from '@/models/Group';
+import { escapeRegex } from '@/lib/utils';
 
 export async function GET(request: Request) {
   try {
@@ -24,11 +25,15 @@ export async function GET(request: Request) {
     }
 
     if (search) {
+      if (search.length > 100) {
+        return NextResponse.json({ error: "Qidiruv so'rovi juda uzun (max 100 belgi)" }, { status: 400 });
+      }
+      const safeSearch = escapeRegex(search);
       filter.$or = [
-        { firstName: { $regex: search, $options: 'i' } },
-        { lastName: { $regex: search, $options: 'i' } },
-        { skills: { $in: [new RegExp(search, 'i')] } },
-        { bio: { $regex: search, $options: 'i' } },
+        { firstName: { $regex: safeSearch, $options: 'i' } },
+        { lastName: { $regex: safeSearch, $options: 'i' } },
+        { skills: { $in: [new RegExp(safeSearch, 'i')] } },
+        { bio: { $regex: safeSearch, $options: 'i' } },
       ];
     }
 

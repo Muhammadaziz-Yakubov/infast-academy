@@ -1,11 +1,18 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
+import { rateLimit } from '@/lib/rateLimit';
+import { escapeRegex } from '@/lib/utils';
 
-export async function GET(request: Request) {
+export async function GET(request: NextRequest) {
   try {
+    const limiter = rateLimit(request, 10, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
     const { searchParams } = new URL(request.url);
 
@@ -15,7 +22,11 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Talaba kodi (ID) kiritilmadi" }, { status: 400 });
     }
 
-    const cleanCode = rawCode.trim().toUpperCase();
+    if (rawCode.length > 100) {
+      return NextResponse.json({ error: "Qidiruv so'rovi juda uzun (max 100 belgi)" }, { status: 400 });
+    }
+
+    const cleanCode = escapeRegex(rawCode.trim().toUpperCase());
     const numericPart = cleanCode.replace(/\D/g, ''); // e.g. "1001" from "INF-1001"
 
     // Search by exact code, or formatted INF-xxx, or regex

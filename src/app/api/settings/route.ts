@@ -2,8 +2,15 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { SystemSetting } from '@/models/SystemSetting';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const settings = await SystemSetting.find({});
     const settingsMap: Record<string, string> = {};
@@ -24,6 +31,11 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

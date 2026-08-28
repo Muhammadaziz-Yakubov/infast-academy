@@ -6,8 +6,15 @@ import { Notification } from '@/models/Notification';
 import { formatMoneyUz } from '@/lib/utils';
 import { format } from 'date-fns';
 
+import { getSession } from '@/lib/auth';
+
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

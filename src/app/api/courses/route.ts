@@ -4,8 +4,15 @@ import { Course } from '@/models/Course';
 import { Student } from '@/models/Student';
 import { Group } from '@/models/Group';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const courses = await Course.find({}).sort({ createdAt: -1 });
 
@@ -33,6 +40,11 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { name, price, durationMonths, description, status } = body;

@@ -7,8 +7,15 @@ import { ExamResult } from '@/models/ExamResult';
 import { Exam } from '@/models/Exam';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const student = await Student.findById(params.id)
       .populate('courseId', 'name price durationMonths')
@@ -67,6 +74,11 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
 export async function PUT(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -104,6 +116,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
 export async function DELETE(request: Request, { params }: { params: { id: string } }) {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
     await Student.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Talaba o'chirildi" });

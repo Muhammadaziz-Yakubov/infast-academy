@@ -7,8 +7,15 @@ import { Exam } from '@/models/Exam';
 import { ExamResult } from '@/models/ExamResult';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 
+import { getSession } from '@/lib/auth';
+
 export async function GET() {
   try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
     await connectToDatabase();
 
     // 1. Student Breakdown
