@@ -4,6 +4,7 @@ import { Navbar } from '@/components/landing/Navbar';
 import { Hero } from '@/components/landing/Hero';
 import { TrustStats } from '@/components/landing/TrustStats';
 import { WhyInFast } from '@/components/landing/WhyInFast';
+import { SalaryCalculator } from '@/components/landing/SalaryCalculator';
 import { Courses } from '@/components/landing/Courses';
 import { ZeroToProject } from '@/components/landing/ZeroToProject';
 import { ProjectShowcase } from '@/components/landing/ProjectShowcase';
@@ -29,11 +30,11 @@ export const metadata: Metadata = {
 
 export default function LandingHomePage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans selection:bg-infast-500 selection:text-white">
+    <div className="min-h-screen bg-[#050508] text-slate-100 font-sans selection:bg-infast-500 selection:text-white">
       {/* Sticky Header Navbar */}
       <Navbar />
 
-      {/* Hero Banner Section */}
+      {/* Main Content Flow */}
       <main>
         <Hero />
 
@@ -42,6 +43,9 @@ export default function LandingHomePage() {
 
         {/* Why InFast Advantages */}
         <WhyInFast />
+
+        {/* Interactive Salary & Career Calculator */}
+        <SalaryCalculator />
 
         {/* Featured Courses Showcase */}
         <Courses />

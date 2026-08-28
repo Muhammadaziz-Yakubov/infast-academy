@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight, Terminal, Layers, ShieldCheck, Cpu, Layout, Globe } from 'lucide-react';
+import { ArrowRight, Terminal, Layers, ShieldCheck, Cpu, Layout, Globe, Sparkles } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function ProjectShowcase() {
@@ -13,8 +13,9 @@ export function ProjectShowcase() {
       description: 'Talabalar, to‘lovlar, davomat va marketing tahlilini yurituvchi to‘liq CRM tizimi.',
       tags: ['Next.js 14', 'MongoDB', 'JWT Auth', 'Recharts'],
       grid: 'lg:col-span-8',
+      image: '/project-showcase.jpg',
       visual: (
-        <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-3 font-mono text-xs text-slate-300">
+        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-3 font-mono text-xs text-slate-300">
           <div className="flex items-center justify-between text-[11px] text-slate-500">
             <span>GET /api/marketing/dashboard</span>
             <span className="text-emerald-400 font-bold">200 OK</span>
@@ -43,7 +44,7 @@ export function ProjectShowcase() {
       tags: ['Node.js', 'Express', 'MongoDB', 'REST API'],
       grid: 'lg:col-span-4',
       visual: (
-        <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 font-mono text-xs">
+        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2 font-mono text-xs">
           <div className="text-blue-400">POST /api/v1/checkout</div>
           <div className="text-slate-400">&#123; status: "success", paymentId: "pay_9821" &#125;</div>
         </div>
@@ -56,7 +57,7 @@ export function ProjectShowcase() {
       tags: ['Linux', 'OWASP', 'Burp Suite', 'Web Security'],
       grid: 'lg:col-span-4',
       visual: (
-        <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 font-mono text-xs text-emerald-400">
+        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2 font-mono text-xs text-emerald-400">
           <div>$ nmap -sV -sC target.academy.uz</div>
           <div className="text-slate-400">PORT 443/TCP OPEN SSL/HTTPS</div>
         </div>
@@ -69,7 +70,7 @@ export function ProjectShowcase() {
       tags: ['Node.js', 'OpenAI', 'Telegraf', 'Redis'],
       grid: 'lg:col-span-8',
       visual: (
-        <div className="p-4 rounded-2xl bg-slate-950/80 border border-slate-800 space-y-2 text-xs">
+        <div className="p-4 rounded-2xl bg-slate-950/90 border border-slate-800 space-y-2 text-xs">
           <div className="font-bold text-white flex items-center gap-2">
             <Cpu className="w-4 h-4 text-infast-400" />
             AI Bot Process: Generated Response in 420ms
@@ -81,7 +82,7 @@ export function ProjectShowcase() {
   ];
 
   return (
-    <section className="py-24 bg-slate-950 text-white relative">
+    <section className="py-24 bg-[#050508] text-white relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
@@ -116,7 +117,7 @@ export function ProjectShowcase() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className={`${proj.grid} p-8 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-infast-500/40 transition-all space-y-6 flex flex-col justify-between group`}
+              className={`${proj.grid} p-8 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-infast-500/40 transition-all space-y-6 flex flex-col justify-between group overflow-hidden`}
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
@@ -126,7 +127,14 @@ export function ProjectShowcase() {
                 </div>
                 <h3 className="text-2xl font-bold text-white tracking-tight">{proj.title}</h3>
                 <p className="text-sm text-slate-400 leading-relaxed">{proj.description}</p>
-                {proj.visual}
+                
+                {proj.image ? (
+                  <div className="relative rounded-2xl overflow-hidden border border-slate-800">
+                    <img src={proj.image} alt={proj.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
+                  </div>
+                ) : (
+                  proj.visual
+                )}
               </div>
 
               <div className="pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">

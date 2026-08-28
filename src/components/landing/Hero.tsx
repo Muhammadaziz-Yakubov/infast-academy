@@ -1,47 +1,73 @@
 'use client';
 
-import React from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
-import { ArrowRight, Code2, Terminal, Shield, Sparkles, CheckCircle, Play, Cpu, Layers } from 'lucide-react';
+import { ArrowRight, Code2, Terminal, Shield, Sparkles, CheckCircle2, Play, Cpu, Layers, Flame, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export function Hero() {
-  return (
-    <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-slate-950 text-white">
-      {/* Background Lighting System */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-infast-500/15 rounded-full blur-[140px] pointer-events-none" />
-      <div className="absolute top-1/3 left-1/4 w-[350px] h-[350px] bg-amber-500/10 rounded-full blur-[120px] pointer-events-none" />
-      <div className="absolute top-10 right-10 w-96 h-96 bg-blue-500/10 rounded-full blur-[130px] pointer-events-none" />
+  const [activeTab, setActiveTab] = useState<'frontend' | 'backend' | 'cyber'>('frontend');
 
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#1e293b15_1px,transparent_1px),linear-gradient(to_bottom,#1e293b15_1px,transparent_1px)] bg-[size:4rem_4rem] [mask-image:radial-gradient(ellipse_60%_50%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
+  const codeSnippets = {
+    frontend: `import { NextAcademy, ReactState } from '@infast/core';
+
+export default function StudentApp() {
+  const [skills, setSkills] = ReactState(['React', 'Next.js 14']);
+  return <FullStackAcademy project="Production CRM" status="DEPLOYED" />;
+}`,
+    backend: `import { Express, MongoSchema } from 'express-next';
+
+const StudentBackend = new Express.Router();
+StudentBackend.post('/checkout', async (req, res) => {
+  const payment = await MongoSchema.createPayment(req.body);
+  return res.json({ status: 200, success: true, paymentId: payment._id });
+});`,
+    cyber: `$ nmap -sV -sC target.infast.uz
+[+] PORT 443/TCP OPEN SSL/HTTPS
+[+] OWASP Top 10 Security Audit: PASSED
+[+] Penetration Testing Status: SYSTEM HARDENED & PROTECTED`,
+  };
+
+  return (
+    <section className="relative pt-32 pb-24 md:pt-44 md:pb-36 overflow-hidden bg-[#050508] text-white">
+      {/* Laser Light Leaks & Radial Ambient Glowing Orbs */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[900px] h-[600px] bg-infast-500/20 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-10 left-10 w-[400px] h-[400px] bg-amber-500/15 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-10 right-10 w-[500px] h-[500px] bg-orange-600/15 rounded-full blur-[160px] pointer-events-none" />
+
+      {/* Cyber Grid Pattern Backdrop */}
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff05_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:3rem_3rem] [mask-image:radial-gradient(ellipse_70%_60%_at_50%_0%,#000_70%,transparent_100%)] pointer-events-none" />
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
-          {/* Left Column: Headline & Action */}
+          
+          {/* Left Hero Content */}
           <div className="lg:col-span-7 space-y-8 text-center lg:text-left">
-            {/* Top Badge */}
+            {/* Live Status Pill Badge */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center space-x-2 bg-slate-900/80 border border-infast-500/30 px-4 py-2 rounded-full backdrop-blur-md shadow-lg shadow-infast-500/10"
+              className="inline-flex items-center space-x-3 bg-slate-900/90 border border-infast-500/40 px-4 py-2 rounded-full backdrop-blur-2xl shadow-[0_0_25px_rgba(249,115,22,0.2)]"
             >
-              <Sparkles className="w-4 h-4 text-infast-500" />
-              <span className="text-xs font-bold text-slate-200">
-                2026-yilgi amaliy loyihaviy IT ta'lim standarti
+              <span className="flex h-2 w-2 relative">
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-infast-400 opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-infast-500"></span>
+              </span>
+              <span className="text-xs font-bold tracking-wide text-slate-200 uppercase">
+                INFAST ACADEMY 2026 — REAL PROYEKT TA'LIMI
               </span>
             </motion.div>
 
-            {/* Main Headline */}
+            {/* Giant Title */}
             <motion.h1
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.1]"
+              className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.05]"
             >
               IT kelajagingizni <br />
-              <span className="bg-gradient-to-r from-white via-slate-100 to-infast-400 bg-clip-text text-transparent">
+              <span className="bg-gradient-to-r from-white via-slate-100 via-amber-200 to-infast-400 bg-clip-text text-transparent drop-shadow-sm">
                 bugundan boshlang.
               </span>
             </motion.h1>
@@ -51,138 +77,121 @@ export function Hero() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.2 }}
-              className="text-base sm:text-lg text-slate-400 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
+              className="text-base sm:text-xl text-slate-300 max-w-2xl mx-auto lg:mx-0 font-normal leading-relaxed"
             >
-              Zamonaviy IT kasblarini amaliy loyihalar orqali o‘rganing va real loyihalar yaratish darajasiga chiqing. Nazariyadan ko'ra ko'proq amaliyot.
+              Zamonaviy IT kasblarini real loyihalar va amaliy kod yozish orqali o‘rganing. Quruq nazariyadan holi, 100% ishlab chiqarish darajasi.
             </motion.p>
 
-            {/* Action Buttons */}
+            {/* CTA Buttons */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.3 }}
-              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4"
+              className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 pt-2"
             >
               <Link
                 href="/ariza"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-2xl text-base font-bold text-white bg-gradient-to-r from-infast-600 via-infast-500 to-amber-500 shadow-xl shadow-infast-500/30 hover:shadow-infast-500/50 hover:scale-[1.02] active:scale-[0.98] transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-9 py-4.5 rounded-2xl text-base font-extrabold text-white bg-gradient-to-r from-infast-600 via-infast-500 to-amber-500 shadow-[0_0_35px_rgba(249,115,22,0.4)] hover:shadow-[0_0_50px_rgba(249,115,22,0.6)] hover:scale-[1.02] active:scale-[0.98] transition-all"
               >
-                <span>Bepul konsultatsiya</span>
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <span>Bepul konsultatsiya olish</span>
+                <ArrowRight className="w-5 h-5 ml-2.5" />
               </Link>
 
               <Link
                 href="/kurslar"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-2xl text-base font-bold text-slate-200 bg-slate-900/80 hover:bg-slate-800 border border-slate-800 hover:border-slate-700 transition-all"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4.5 rounded-2xl text-base font-bold text-slate-200 bg-slate-900/90 hover:bg-slate-800/90 border border-slate-700/80 hover:border-slate-600 transition-all backdrop-blur-xl"
               >
                 <span>Kurslarni ko‘rish</span>
               </Link>
             </motion.div>
 
-            {/* Trust Indicators */}
+            {/* Trust Points */}
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.4 }}
-              className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-semibold text-slate-400"
+              className="pt-4 flex flex-wrap items-center justify-center lg:justify-start gap-6 text-xs font-bold text-slate-300"
             >
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-infast-500" />
-                <span>Amaliy ta'lim</span>
+              <div className="flex items-center space-x-2 bg-slate-900/60 border border-slate-800 px-3.5 py-1.5 rounded-xl">
+                <CheckCircle2 className="w-4 h-4 text-infast-400" />
+                <span>95% Amaliy ta'lim</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-infast-500" />
-                <span>Real loyihalar</span>
+              <div className="flex items-center space-x-2 bg-slate-900/60 border border-slate-800 px-3.5 py-1.5 rounded-xl">
+                <CheckCircle2 className="w-4 h-4 text-infast-400" />
+                <span>Real CRM & Web Loyihalar</span>
               </div>
-              <div className="flex items-center space-x-2">
-                <CheckCircle className="w-4 h-4 text-infast-500" />
-                <span>Zamonaviy texnologiyalar</span>
+              <div className="flex items-center space-x-2 bg-slate-900/60 border border-slate-800 px-3.5 py-1.5 rounded-xl">
+                <CheckCircle2 className="w-4 h-4 text-infast-400" />
+                <span>Portfolio & Sertifikat</span>
               </div>
             </motion.div>
           </div>
 
-          {/* Right Column: Sophisticated Tech Interface Visual */}
+          {/* Right Column: Dynamic Interactive Code Sandbox IDE */}
           <motion.div
             initial={{ opacity: 0, scale: 0.95 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.6, delay: 0.2 }}
             className="lg:col-span-5 relative"
           >
-            {/* Terminal Mockup Window */}
-            <div className="relative rounded-3xl bg-slate-900/90 border border-slate-800 p-5 shadow-2xl shadow-infast-500/10 backdrop-blur-xl overflow-hidden space-y-4">
-              {/* Window Header Bar */}
+            <div className="relative rounded-3xl bg-slate-950/95 border border-slate-800/90 p-5 shadow-[0_0_50px_rgba(249,115,22,0.15)] backdrop-blur-2xl overflow-hidden space-y-4">
+              
+              {/* macOS Window Title Header */}
               <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
                 <div className="flex items-center space-x-2">
-                  <div className="w-3 h-3 rounded-full bg-rose-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-amber-500/80" />
-                  <div className="w-3 h-3 rounded-full bg-emerald-500/80" />
+                  <div className="w-3 h-3 rounded-full bg-rose-500" />
+                  <div className="w-3 h-3 rounded-full bg-amber-500" />
+                  <div className="w-3 h-3 rounded-full bg-emerald-500" />
                 </div>
-                <span className="text-[11px] font-mono text-slate-500">infast-academy-workspace.ts</span>
-                <Terminal className="w-4 h-4 text-slate-500" />
+                
+                {/* Interactive Language Tabs */}
+                <div className="flex items-center space-x-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
+                  {(['frontend', 'backend', 'cyber'] as const).map((tab) => (
+                    <button
+                      key={tab}
+                      onClick={() => setActiveTab(tab)}
+                      className={`px-3 py-1 rounded-lg text-[10px] font-bold uppercase transition-all ${
+                        activeTab === tab
+                          ? 'bg-infast-500 text-white shadow-md'
+                          : 'text-slate-400 hover:text-white'
+                      }`}
+                    >
+                      {tab}
+                    </button>
+                  ))}
+                </div>
+
+                <Terminal className="w-4 h-4 text-slate-400" />
               </div>
 
-              {/* Code Editor Body */}
-              <div className="font-mono text-xs space-y-2 text-slate-300">
-                <div className="text-slate-500">// Welcome to InFast Development Environment</div>
-                <div>
-                  <span className="text-infast-400 font-bold">import</span> &#123; DeveloperMindset, RealProject &#125; <span className="text-infast-400">from</span> <span className="text-emerald-400">'@infast/academy'</span>;
-                </div>
-                <div className="pt-2">
-                  <span className="text-purple-400 font-bold">const</span> <span className="text-blue-300">studentJourney</span> = <span className="text-infast-400 font-bold">async</span> () =&#gt; &#123;
-                </div>
-                <div className="pl-4">
-                  <span className="text-purple-400 font-bold">await</span> student.<span className="text-yellow-300">buildProject</span>(&#123;
-                </div>
-                <div className="pl-8 text-slate-400">
-                  stack: [<span className="text-emerald-400">'React'</span>, <span className="text-emerald-400">'Next.js'</span>, <span className="text-emerald-400">'Node.js'</span>, <span className="text-emerald-400">'CyberSecurity'</span>],
-                </div>
-                <div className="pl-8 text-slate-400">
-                  mode: <span className="text-emerald-400">'Practical_Coding_100%'</span>
-                </div>
-                <div className="pl-4">&#125;);</div>
-                <div>&#125;;</div>
+              {/* Live Code Box */}
+              <div className="font-mono text-xs text-slate-200 bg-slate-900/80 p-4 rounded-2xl border border-slate-800/80 space-y-2 overflow-x-auto min-h-[160px]">
+                <div className="text-slate-500">// InFast Live Code Sandbox</div>
+                <pre className="text-infast-300 font-semibold leading-relaxed whitespace-pre-wrap">
+                  {codeSnippets[activeTab]}
+                </pre>
               </div>
 
-              {/* Dynamic Status Card Badge */}
-              <div className="p-3.5 rounded-2xl bg-slate-950/80 border border-slate-800/80 flex items-center justify-between">
-                <div className="flex items-center space-x-3">
-                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse" />
-                  <span className="text-xs font-bold text-white">Live Project Deployment</span>
+              {/* Generated Real Dashboard Preview Image Integration */}
+              <div className="relative rounded-2xl overflow-hidden border border-slate-800/80 group">
+                <img
+                  src="/hero-dashboard.jpg"
+                  alt="InFast IDE Dashboard Workspace"
+                  className="w-full h-44 object-cover group-hover:scale-105 transition-transform duration-500"
+                />
+                <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent flex items-end p-3">
+                  <div className="flex items-center justify-between w-full text-xs font-bold text-white">
+                    <span className="flex items-center gap-1.5">
+                      <Zap className="w-3.5 h-3.5 text-infast-400" />
+                      Live Workspace Preview
+                    </span>
+                    <span className="text-[10px] bg-emerald-500/20 text-emerald-400 border border-emerald-500/30 px-2 py-0.5 rounded">
+                      Production Ready
+                    </span>
+                  </div>
                 </div>
-                <span className="text-[10px] font-mono text-infast-400 bg-infast-500/10 px-2 py-0.5 rounded border border-infast-500/20">
-                  Status: 200 OK
-                </span>
               </div>
             </div>
-
-            {/* Floating Glass Badges */}
-            <motion.div
-              animate={{ y: [0, -8, 0] }}
-              transition={{ repeat: Infinity, duration: 4, ease: "easeInOut" }}
-              className="absolute -top-6 -right-6 hidden sm:flex items-center space-x-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-2xl backdrop-blur-xl"
-            >
-              <div className="w-8 h-8 rounded-xl bg-infast-500/20 text-infast-400 flex items-center justify-center font-bold">
-                <Code2 className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-white">Full-Stack Development</p>
-                <p className="text-[10px] text-slate-400">React + Node + Mongo</p>
-              </div>
-            </motion.div>
-
-            <motion.div
-              animate={{ y: [0, 8, 0] }}
-              transition={{ repeat: Infinity, duration: 5, ease: "easeInOut" }}
-              className="absolute -bottom-6 -left-6 hidden sm:flex items-center space-x-3 p-3.5 rounded-2xl bg-slate-900/90 border border-slate-800/80 shadow-2xl backdrop-blur-xl"
-            >
-              <div className="w-8 h-8 rounded-xl bg-blue-500/20 text-blue-400 flex items-center justify-center font-bold">
-                <Shield className="w-4 h-4" />
-              </div>
-              <div>
-                <p className="text-xs font-bold text-white">Cyber Security</p>
-                <p className="text-[10px] text-slate-400">Pentest & Web Security</p>
-              </div>
-            </motion.div>
           </motion.div>
         </div>
       </div>
