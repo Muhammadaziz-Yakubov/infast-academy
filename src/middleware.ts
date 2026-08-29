@@ -15,6 +15,7 @@ const PROTECTED_PAGE_PREFIXES = [
   '/reports',
   '/notifications',
   '/settings',
+  '/employees',
 ];
 
 const PROTECTED_API_PREFIXES = [
@@ -30,6 +31,7 @@ const PROTECTED_API_PREFIXES = [
   '/api/dashboard',
   '/api/notifications',
   '/api/search',
+  '/api/employees',
 ];
 
 async function isValidToken(token: string | undefined): Promise<boolean> {
@@ -98,6 +100,7 @@ export const config = {
     '/reports/:path*',
     '/notifications/:path*',
     '/settings/:path*',
+    '/employees/:path*',
     '/api/marketing/:path*',
     '/api/students/:path*',
     '/api/payments/:path*',
@@ -110,5 +113,6 @@ export const config = {
     '/api/dashboard/:path*',
     '/api/notifications/:path*',
     '/api/search/:path*',
+    '/api/employees/:path*',
   ],
 };

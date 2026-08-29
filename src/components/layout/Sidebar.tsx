@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname, useRouter } from 'next/navigation';
 import {
@@ -22,6 +22,7 @@ import {
   Menu,
   X,
   Zap,
+  ShieldCheck,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -41,16 +42,17 @@ const MARKETING_SUB_ITEMS = [
 ];
 
 const NAV_ITEMS = [
-  { name: 'Bosh sahifa', href: '/dashboard', icon: LayoutDashboard },
-  { name: 'Talabalar', href: '/students', icon: Users },
-  { name: 'Guruhlar', href: '/groups', icon: Folder },
-  { name: 'Davomat', href: '/attendance', icon: CalendarCheck },
-  { name: "To'lovlar", href: '/payments', icon: CreditCard },
-  { name: 'Imtihonlar', href: '/exams', icon: GraduationCap },
-  { name: 'Kurslar', href: '/courses', icon: BookOpen },
-  { name: 'Hisobotlar', href: '/reports', icon: BarChart3 },
-  { name: 'Xabarnomalar', href: '/notifications', icon: Bell },
-  { name: 'Sozlamalar', href: '/settings', icon: Settings },
+  { name: 'Bosh sahifa', href: '/dashboard', icon: LayoutDashboard, key: 'dashboard' },
+  { name: 'Talabalar', href: '/students', icon: Users, key: 'students' },
+  { name: 'Guruhlar', href: '/groups', icon: Folder, key: 'groups' },
+  { name: 'Davomat', href: '/attendance', icon: CalendarCheck, key: 'attendance' },
+  { name: "To'lovlar", href: '/payments', icon: CreditCard, key: 'payments' },
+  { name: 'Imtihonlar', href: '/exams', icon: GraduationCap, key: 'exams' },
+  { name: 'Kurslar', href: '/courses', icon: BookOpen, key: 'courses' },
+  { name: 'Hisobotlar', href: '/reports', icon: BarChart3, key: 'reports' },
+  { name: 'Xabarnomalar', href: '/notifications', icon: Bell, key: 'notifications' },
+  { name: 'Sozlamalar', href: '/settings', icon: Settings, key: 'settings' },
+  { name: 'Xodimlar', href: '/employees', icon: ShieldCheck, key: 'employees' },
 ];
 
 export function Sidebar() {
@@ -58,9 +60,27 @@ export function Sidebar() {
   const router = useRouter();
   const [collapsed, setCollapsed] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [userSession, setUserSession] = useState<{ name?: string; role?: string; permissions?: string[] } | null>(null);
   const [marketingOpen, setMarketingOpen] = useState(
     pathname.startsWith('/marketing')
   );
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          setUserSession(data.user);
+        }
+      })
+      .catch((err) => console.error(err));
+  }, []);
+
+  const hasPermission = (key: string) => {
+    if (!userSession) return true;
+    if (userSession.role === 'ADMIN' || userSession.permissions?.includes('*')) return true;
+    return userSession.permissions?.includes(key);
+  };
 
   const isMarketingActive = pathname.startsWith('/marketing');
 
@@ -114,85 +134,89 @@ export function Sidebar() {
       {/* Navigation Links */}
       <div className="flex-1 overflow-y-auto px-3 py-4 space-y-1">
         {/* Main Dashboard Link */}
-        <Link
-          href="/dashboard"
-          onClick={() => setMobileOpen(false)}
-          className={cn(
-            "flex items-center px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
-            pathname === '/dashboard'
-              ? "bg-infast-500 text-white shadow-md shadow-infast-500/20 font-bold"
-              : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-          )}
-        >
-          <LayoutDashboard
+        {hasPermission('dashboard') && (
+          <Link
+            href="/dashboard"
+            onClick={() => setMobileOpen(false)}
             className={cn(
-              "w-4 h-4 shrink-0",
-              pathname === '/dashboard' ? "text-white" : "text-slate-400 group-hover:text-infast-500"
-            )}
-          />
-          {!collapsed && <span className="ml-3 truncate">Bosh sahifa</span>}
-        </Link>
-
-        {/* Marketing Menu Accordion */}
-        <div className="space-y-1 pt-1">
-          <button
-            onClick={() => {
-              if (collapsed) setCollapsed(false);
-              setMarketingOpen(!marketingOpen);
-            }}
-            className={cn(
-              "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
-              isMarketingActive
-                ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold"
+              "flex items-center px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
+              pathname === '/dashboard'
+                ? "bg-infast-500 text-white shadow-md shadow-infast-500/20 font-bold"
                 : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
             )}
           >
-            <div className="flex items-center">
-              <Megaphone
-                className={cn(
-                  "w-4 h-4 shrink-0",
-                  isMarketingActive ? "text-amber-500" : "text-slate-400 group-hover:text-amber-500"
-                )}
-              />
-              {!collapsed && <span className="ml-3 truncate font-bold">📣 Marketing</span>}
-            </div>
-            {!collapsed && (
-              <ChevronDown
-                className={cn(
-                  "w-3.5 h-3.5 text-slate-400 transition-transform duration-200",
-                  marketingOpen && "transform rotate-180"
-                )}
-              />
-            )}
-          </button>
+            <LayoutDashboard
+              className={cn(
+                "w-4 h-4 shrink-0",
+                pathname === '/dashboard' ? "text-white" : "text-slate-400 group-hover:text-infast-500"
+              )}
+            />
+            {!collapsed && <span className="ml-3 truncate">Bosh sahifa</span>}
+          </Link>
+        )}
 
-          {/* Marketing Sub-items */}
-          {(!collapsed && marketingOpen) && (
-            <div className="ml-3 pl-3 border-l border-slate-200 dark:border-slate-800 space-y-1 pt-1">
-              {MARKETING_SUB_ITEMS.map((subItem) => {
-                const isSubActive = pathname === subItem.href;
-                return (
-                  <Link
-                    key={subItem.href}
-                    href={subItem.href}
-                    onClick={() => setMobileOpen(false)}
-                    className={cn(
-                      "flex items-center px-3 py-1.5 rounded-lg text-xs font-medium transition-colors truncate",
-                      isSubActive
-                        ? "bg-amber-500 text-white font-bold shadow-sm"
-                        : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
-                    )}
-                  >
-                    <span className="truncate">{subItem.name}</span>
-                  </Link>
-                );
-              })}
-            </div>
-          )}
-        </div>
+        {/* Marketing Menu Accordion */}
+        {hasPermission('marketing') && (
+          <div className="space-y-1 pt-1">
+            <button
+              onClick={() => {
+                if (collapsed) setCollapsed(false);
+                setMarketingOpen(!marketingOpen);
+              }}
+              className={cn(
+                "w-full flex items-center justify-between px-3.5 py-2.5 rounded-xl font-semibold text-xs transition-colors group relative",
+                isMarketingActive
+                  ? "bg-amber-500/10 text-amber-600 dark:text-amber-400 font-bold"
+                  : "text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+              )}
+            >
+              <div className="flex items-center">
+                <Megaphone
+                  className={cn(
+                    "w-4 h-4 shrink-0",
+                    isMarketingActive ? "text-amber-500" : "text-slate-400 group-hover:text-amber-500"
+                  )}
+                />
+                {!collapsed && <span className="ml-3 truncate font-bold">📣 Marketing</span>}
+              </div>
+              {!collapsed && (
+                <ChevronDown
+                  className={cn(
+                    "w-3.5 h-3.5 text-slate-400 transition-transform duration-200",
+                    marketingOpen && "transform rotate-180"
+                  )}
+                />
+              )}
+            </button>
+
+            {/* Marketing Sub-items */}
+            {(!collapsed && marketingOpen) && (
+              <div className="ml-3 pl-3 border-l border-slate-200 dark:border-slate-800 space-y-1 pt-1">
+                {MARKETING_SUB_ITEMS.map((subItem) => {
+                  const isSubActive = pathname === subItem.href;
+                  return (
+                    <Link
+                      key={subItem.href}
+                      href={subItem.href}
+                      onClick={() => setMobileOpen(false)}
+                      className={cn(
+                        "flex items-center px-3 py-1.5 rounded-lg text-xs font-medium transition-colors truncate",
+                        isSubActive
+                          ? "bg-amber-500 text-white font-bold shadow-sm"
+                          : "text-slate-600 dark:text-slate-400 hover:bg-slate-100 dark:hover:bg-slate-800 hover:text-slate-900 dark:hover:text-white"
+                      )}
+                    >
+                      <span className="truncate">{subItem.name}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        )}
 
         {/* Other Core Nav Items */}
-        {NAV_ITEMS.filter((item) => item.href !== '/dashboard').map((item) => {
+        {NAV_ITEMS.filter((item) => item.href !== '/dashboard' && hasPermission(item.key)).map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(`${item.href}/`);
           const Icon = item.icon;
 
@@ -225,12 +249,16 @@ export function Sidebar() {
         <div className={cn("flex items-center p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-100 dark:border-slate-700/50", collapsed ? "justify-center" : "justify-between")}>
           <div className="flex items-center space-x-2.5 overflow-hidden">
             <div className="w-8 h-8 rounded-lg bg-infast-500 text-white flex items-center justify-center text-xs font-bold shrink-0">
-              M
+              {(userSession?.name || 'M')[0].toUpperCase()}
             </div>
             {!collapsed && (
               <div className="truncate">
-                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">Muhammadaziz Yakubov</p>
-                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">Bosh Administrator</p>
+                <p className="text-xs font-bold text-slate-900 dark:text-white truncate">
+                  {userSession?.name || 'Muhammadaziz Yakubov'}
+                </p>
+                <p className="text-[10px] text-slate-500 dark:text-slate-400 truncate">
+                  {userSession?.role === 'MANAGER' ? 'Manager' : 'Bosh Administrator'}
+                </p>
               </div>
             )}
           </div>

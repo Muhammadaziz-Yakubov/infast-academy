@@ -1,5 +1,8 @@
 import { NextResponse } from 'next/server';
-import { verifyAdminCredentials, createAdminSession } from '@/lib/auth';
+import { verifyAdminCredentials, createAdminSession, createUserSession } from '@/lib/auth';
+import { connectToDatabase } from '@/lib/db';
+import { User } from '@/models/User';
+import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
   try {
@@ -10,13 +13,33 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Login va parolni kiriting" }, { status: 400 });
     }
 
-    const isValid = verifyAdminCredentials(username, password);
+    let token: string | null = null;
 
-    if (!isValid) {
-      return NextResponse.json({ error: "Login yoki parol noto'g'ri." }, { status: 401 });
+    // Check env Admin credentials first
+    if (verifyAdminCredentials(username, password)) {
+      token = createAdminSession(username);
+    } else {
+      // Connect to DB and search for employee user
+      await connectToDatabase();
+      const user = await User.findOne({ username: username.trim(), active: { $ne: false } });
+      
+      if (!user) {
+        return NextResponse.json({ error: "Login yoki parol noto'g'ri." }, { status: 401 });
+      }
+
+      const isPasswordValid = await bcrypt.compare(password, user.passwordHash);
+      if (!isPasswordValid) {
+        return NextResponse.json({ error: "Login yoki parol noto'g'ri." }, { status: 401 });
+      }
+
+      token = createUserSession({
+        id: user._id.toString(),
+        username: user.username,
+        name: user.name,
+        role: user.role || 'MANAGER',
+        permissions: user.permissions || [],
+      });
     }
-
-    const token = createAdminSession(username);
 
     const response = NextResponse.json({ success: true, message: "Muvaffaqiyatli tizimga kirildi" });
     

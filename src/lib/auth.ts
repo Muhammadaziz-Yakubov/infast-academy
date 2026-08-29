@@ -17,7 +17,8 @@ export interface AdminUserSession {
   id: string;
   username: string;
   name: string;
-  role: 'ADMIN';
+  role: 'ADMIN' | 'MANAGER';
+  permissions: string[];
 }
 
 /**
@@ -37,19 +38,25 @@ export function verifyAdminCredentials(loginInput: string, passwordInput: string
 }
 
 /**
- * Creates JWT session token and sets HTTP-only secure cookie
+ * Creates JWT session token for Admin or Manager user
+ */
+export function createUserSession(user: AdminUserSession): string {
+  const secret = getAuthSecret();
+  const token = jwt.sign(user, secret, { expiresIn: '7d' });
+  return token;
+}
+
+/**
+ * Creates JWT session token for Super Admin
  */
 export function createAdminSession(login: string): string {
-  const payload: AdminUserSession = {
+  return createUserSession({
     id: 'admin-id-1',
     username: login,
     name: 'INFAST Admin',
     role: 'ADMIN',
-  };
-
-  const secret = getAuthSecret();
-  const token = jwt.sign(payload, secret, { expiresIn: '7d' });
-  return token;
+    permissions: ['*'],
+  });
 }
 
 /**
@@ -71,15 +78,19 @@ export function getSession(): AdminUserSession | null {
 }
 
 /**
- * Helper to require authenticated session with ADMIN role for mutation endpoints
+ * Helper to require authenticated session with optional permission check
  */
-export function requireAdminSession(): { session: AdminUserSession | null; errorResponse: NextResponse | null } {
+export function requireAdminSession(requiredPermission?: string): { session: AdminUserSession | null; errorResponse: NextResponse | null } {
   const session = getSession();
   if (!session) {
     return { session: null, errorResponse: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   }
+  
   if (session.role !== 'ADMIN') {
-    return { session: null, errorResponse: NextResponse.json({ error: 'Forbidden' }, { status: 403 }) };
+    if (requiredPermission && !session.permissions?.includes('*') && !session.permissions?.includes(requiredPermission)) {
+      return { session: null, errorResponse: NextResponse.json({ error: 'Ruxsat berilmagan' }, { status: 403 }) };
+    }
   }
+  
   return { session, errorResponse: null };
 }
