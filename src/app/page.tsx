@@ -19,12 +19,24 @@ import { FloatingContact } from '@/components/landing/FloatingContact';
 import { Footer } from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
-  title: 'InFast IT-Academy — Zamonaviy IT kurslari va Amaliy Ta’lim',
-  description: 'InFast IT-Academy — Frontend, Backend va Cyber Security yo‘nalishlarida real amaliy loyihalar orqali IT mutaxassisi bo‘ling.',
+  title: 'InFast IT-Academy — Toshkent va Urganchda Zamonaviy IT Kurslari',
+  description: 'InFast IT-Academy — Toshkent hamda Urganchda Frontend, Backend va Cyber Security yo‘nalishlarida real amaliy loyihalar orqali IT mutaxassisi tayyorlovchi zamonaviy akademiya.',
+  alternates: {
+    canonical: 'https://infast.uz',
+  },
   openGraph: {
-    title: 'InFast IT-Academy — Zamonaviy IT kurslari',
+    title: 'InFast IT-Academy — Zamonaviy IT Kurslari va Amaliy Ta’lim',
     description: 'Real loyihalar orqali dasturchi bo‘ling va kuchli portfolio yaratgan holda IT sohasiga kiring.',
+    url: 'https://infast.uz',
     type: 'website',
+    images: [
+      {
+        url: '/opengraph-image',
+        width: 1200,
+        height: 630,
+        alt: 'InFast IT-Academy Visual Banner',
+      },
+    ],
   },
 };
 
