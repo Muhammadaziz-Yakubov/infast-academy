@@ -30,7 +30,7 @@ export const metadata: Metadata = {
 
 export default function LandingHomePage() {
   return (
-    <div className="min-h-screen bg-[#050508] text-slate-100 font-sans selection:bg-infast-500 selection:text-white">
+    <div className="min-h-screen bg-black text-white font-sans selection:bg-white selection:text-black">
       {/* Sticky Header Navbar */}
       <Navbar />
 
@@ -50,27 +50,6 @@ export default function LandingHomePage() {
         {/* Featured Courses Showcase */}
         <Courses />
 
-        {/* Learning Roadmap: Zero to Real Project */}
-        <ZeroToProject />
-
-        {/* Student Real-world Project Bento Grid */}
-        <ProjectShowcase />
-
-        {/* Before vs After Mindset Transformation */}
-        <BeforeAfter />
-
-        {/* Academy Experience Environment */}
-        <LearningExperience />
-
-        {/* Mentors & Instructors */}
-        <Mentors />
-
-        {/* Cinematic Mindset Quote Section */}
-        <InfastExperience />
-
-        {/* Branches & Locations */}
-        <Branches />
-
         {/* FAQ Accordion */}
         <FAQ />
 
@@ -78,7 +57,7 @@ export default function LandingHomePage() {
         <LeadForm />
       </main>
 
-      {/* Floating Quick Action Contact Widget */}
+      {/* Quick Contact Widget */}
       <FloatingContact />
 
       {/* Footer */}

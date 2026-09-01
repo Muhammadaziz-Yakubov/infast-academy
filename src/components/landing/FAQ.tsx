@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { ChevronDown, HelpCircle } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function FAQ() {
@@ -39,37 +39,36 @@ export function FAQ() {
   ];
 
   return (
-    <section id="faq" className="py-24 bg-slate-950 text-white relative border-t border-slate-900">
-      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
+    <section id="faq" className="py-24 bg-black text-white relative">
+      <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8 space-y-12">
         {/* Header */}
         <div className="text-center space-y-4">
-          <div className="inline-flex items-center space-x-2 bg-infast-500/10 border border-infast-500/20 px-3.5 py-1.5 rounded-full text-xs font-bold text-infast-400">
-            <HelpCircle className="w-3.5 h-3.5" />
-            <span>KO‘P BERILADIGAN SAVOLLAR</span>
+          <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full text-xs font-medium text-neutral-300">
+            <span>Ko'p beriladigan savollar</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
-            Tez-tez beriladigan <span className="text-infast-500">savollar.</span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+            Savollaringizga <span className="text-neutral-400 font-normal">javoblar.</span>
           </h2>
         </div>
 
         {/* Accordions */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {faqs.map((faq, idx) => {
             const isOpen = openIndex === idx;
 
             return (
               <div
                 key={idx}
-                className="rounded-2xl bg-slate-900/50 border border-slate-800 backdrop-blur-xl overflow-hidden transition-colors"
+                className="rounded-3xl bg-neutral-900/40 border border-white/10 backdrop-blur-2xl overflow-hidden transition-all shadow-xl"
               >
                 <button
                   onClick={() => setOpenIndex(isOpen ? null : idx)}
-                  className="w-full p-6 text-left flex items-center justify-between font-bold text-base sm:text-lg text-slate-100 hover:text-infast-400 transition-colors"
+                  className="w-full p-6 text-left flex items-center justify-between font-semibold text-sm sm:text-base text-white hover:text-neutral-300 transition-colors"
                 >
                   <span>{faq.q}</span>
                   <ChevronDown
-                    className={`w-5 h-5 text-slate-400 shrink-0 transition-transform duration-300 ${
-                      isOpen ? 'transform rotate-180 text-infast-500' : ''
+                    className={`w-4 h-4 text-neutral-400 shrink-0 transition-transform duration-300 ${
+                      isOpen ? 'transform rotate-180 text-white' : ''
                     }`}
                   />
                 </button>
@@ -80,8 +79,8 @@ export function FAQ() {
                       initial={{ opacity: 0, height: 0 }}
                       animate={{ opacity: 1, height: 'auto' }}
                       exit={{ opacity: 0, height: 0 }}
-                      transition={{ duration: 0.3 }}
-                      className="px-6 pb-6 text-xs sm:text-sm text-slate-400 leading-relaxed border-t border-slate-800/50 pt-4"
+                      transition={{ duration: 0.25 }}
+                      className="px-6 pb-6 text-xs sm:text-sm text-neutral-400 leading-relaxed border-t border-white/10 pt-4"
                     >
                       {faq.a}
                     </motion.div>

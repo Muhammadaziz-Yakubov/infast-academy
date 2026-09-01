@@ -9,63 +9,48 @@ export function WhyInFast() {
     {
       icon: Layers,
       title: 'Real Projects',
-      description: 'Har bir bosqichda real amaliy loyihalar va CRM / E-commerce tizimlarini barpo etish.',
-      color: 'from-amber-500/20 to-infast-500/20',
-      iconColor: 'text-infast-500',
+      description: 'Har bir bosqichda real amaliy loyihalar va CRM / E-commerce platformalarini barpo etish.',
     },
     {
       icon: Cpu,
-      title: 'Modern Technologies',
+      title: 'Modern Stack',
       description: 'Bugungi IT bozorida eng talabgir texnologiyalar: React, Next.js 14, Node.js, MongoDB va Linux.',
-      color: 'from-blue-500/20 to-indigo-500/20',
-      iconColor: 'text-blue-400',
     },
     {
       icon: Bot,
-      title: 'AI-Powered Learning',
-      description: 'Zamonaviy AI vositalari (GitHub Copilot, LLM, prompt engineering) bilan ishlashni mukammal egallash.',
-      color: 'from-purple-500/20 to-pink-500/20',
-      iconColor: 'text-purple-400',
+      title: 'AI Integration',
+      description: 'Zamonaviy AI vositalari (GitHub Copilot, LLM, prompt engineering) bilan samarali ishlash.',
     },
     {
       icon: Rocket,
-      title: 'Practical Approach',
-      description: 'Quruq nazariyadan ko‘ra 95% amaliyot, har bir darsda jonli kod yozish va muammolarni hal qilish.',
-      color: 'from-emerald-500/20 to-teal-500/20',
-      iconColor: 'text-emerald-400',
+      title: '95% Amaliyot',
+      description: 'Quruq nazariyadan holi, har bir darsda jonli kod yozish va real muammolarni hal qilish.',
     },
     {
       icon: FolderGit2,
-      title: 'Portfolio Building',
-      description: 'Kurs davomida kamida 4-5 ta tayyor real loyihadan iborat kuchli GitHub portfolio yaratish.',
-      color: 'from-orange-500/20 to-amber-500/20',
-      iconColor: 'text-orange-400',
+      title: 'Kuchli Portfolio',
+      description: 'Kurs davomida kamida 4-5 ta tayyor real loyihadan iborat shaxsiy GitHub portfolio yaratish.',
     },
     {
       icon: Compass,
-      title: 'Career Mindset',
-      description: 'Faqat kod yozish emas, balki senior dasturchilar kabi fikrlash va jamoada ishlash madaniyati.',
-      color: 'from-cyan-500/20 to-blue-500/20',
-      iconColor: 'text-cyan-400',
+      title: 'Senior Mindset',
+      description: 'Faqat sintaksis emas, balki senior dasturchilar kabi tizim arxitekturasini loyihalash madaniyati.',
     },
   ];
 
   return (
-    <section id="nega-infast" className="py-24 bg-slate-950 text-white relative overflow-hidden">
-      {/* Subtle Glow */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-infast-500/10 blur-[160px] pointer-events-none" />
-
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
+    <section id="nega-infast" className="py-24 bg-black text-white relative overflow-hidden">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 space-y-16">
         {/* Header */}
-        <div className="text-center max-w-3xl mx-auto space-y-4">
-          <div className="inline-flex items-center space-x-2 bg-infast-500/10 border border-infast-500/20 px-3.5 py-1.5 rounded-full text-xs font-bold text-infast-400">
-            <span>AFZALLIKLARIMIZ</span>
+        <div className="text-center max-w-2xl mx-auto space-y-4">
+          <div className="inline-flex items-center space-x-2 bg-white/5 border border-white/10 px-3.5 py-1.5 rounded-full text-xs font-medium text-neutral-300">
+            <span>Afzalliklarimiz</span>
           </div>
-          <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
-            Nega aynan <span className="text-infast-500">InFast?</span>
+          <h2 className="text-3xl sm:text-5xl font-extrabold tracking-tight">
+            Nega aynan <span className="text-neutral-400 font-normal">InFast?</span>
           </h2>
-          <p className="text-base sm:text-lg text-slate-400">
-            Biz faqat kod yozishni emas, real IT muhitida senior darajada ishlash va muammolarni hal qilishni o‘rgatamiz.
+          <p className="text-sm sm:text-base text-neutral-400 font-normal">
+            Biz faqat sintaksisni emas, real ishlab chiqarish va senior darajada ishlashni o‘rgatamiz.
           </p>
         </div>
 
@@ -76,18 +61,18 @@ export function WhyInFast() {
             return (
               <motion.div
                 key={idx}
-                initial={{ opacity: 0, y: 20 }}
+                initial={{ opacity: 0, y: 15 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, delay: idx * 0.1 }}
-                className="group p-8 rounded-3xl bg-slate-900/50 border border-slate-800 backdrop-blur-xl hover:border-infast-500/40 hover:bg-slate-900/80 transition-all duration-300 space-y-4 flex flex-col justify-between"
+                className="group p-8 rounded-3xl bg-neutral-900/40 border border-white/10 backdrop-blur-2xl hover:border-white/20 transition-all duration-300 space-y-4 shadow-2xl"
               >
-                <div className="space-y-4">
-                  <div className={`w-12 h-12 rounded-2xl bg-gradient-to-br ${item.color} border border-slate-700/50 flex items-center justify-center group-hover:scale-110 transition-transform`}>
-                    <Icon className={`w-6 h-6 ${item.iconColor}`} />
+                <div className="space-y-3">
+                  <div className="w-10 h-10 rounded-2xl bg-white/10 border border-white/10 flex items-center justify-center text-white">
+                    <Icon className="w-5 h-5 text-white" />
                   </div>
-                  <h3 className="text-xl font-bold text-white tracking-tight">{item.title}</h3>
-                  <p className="text-sm text-slate-400 leading-relaxed">{item.description}</p>
+                  <h3 className="text-lg font-bold text-white tracking-tight">{item.title}</h3>
+                  <p className="text-xs text-neutral-400 leading-relaxed">{item.description}</p>
                 </div>
               </motion.div>
             );

@@ -3,7 +3,7 @@
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { Zap, Menu, X, ArrowRight, ShieldCheck, ChevronRight } from 'lucide-react';
+import { Menu, X, ArrowRight, ChevronRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export function Navbar() {
@@ -20,44 +20,42 @@ export function Navbar() {
   }, []);
 
   const navLinks = [
-    { name: 'Kurslar', href: '/kurslar' },
-    { name: 'Natijalar', href: '/natijalar' },
+    { name: 'Kurslar', href: '/#kurslar' },
+    { name: 'Kalkulyator', href: '/#kalkulyator' },
     { name: 'Nega InFast?', href: '/#nega-infast' },
-    { name: 'Biz haqimizda', href: '/#biz-haqimizda' },
+    { name: 'Loyiha Portfolio', href: '/#portfolio' },
     { name: 'FAQ', href: '/#faq' },
   ];
 
   return (
-    <header
-      className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
-        scrolled
-          ? 'bg-slate-950/85 backdrop-blur-xl border-b border-slate-800/80 py-3 shadow-2xl shadow-black/50'
-          : 'bg-slate-950/40 backdrop-blur-md border-b border-slate-800/40 py-5'
-      }`}
-    >
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between">
+    <header className="fixed top-0 left-0 right-0 z-50 pt-4 px-4 sm:px-6 lg:px-8 transition-all duration-300">
+      <div
+        className={`max-w-6xl mx-auto flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 ${
+          scrolled
+            ? 'bg-black/80 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-black/90'
+            : 'bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/50'
+        }`}
+      >
         {/* Brand Logo */}
-        <Link href="/" className="flex items-center space-x-3 group">
-          <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-infast-600 to-amber-500 flex items-center justify-center text-white shadow-lg shadow-infast-500/30 group-hover:scale-105 transition-transform">
-            <Zap className="w-5 h-5 fill-white" />
+        <Link href="/" className="flex items-center space-x-2.5 group">
+          <div className="w-8 h-8 rounded-full bg-white text-black font-extrabold text-sm flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
+            ⚡
           </div>
-          <div className="flex flex-col">
-            <span className="font-black text-xl tracking-tight text-white flex items-center">
-              INFAST <span className="text-infast-500 ml-1.5 font-bold text-xs uppercase tracking-widest px-2 py-0.5 rounded-full bg-infast-500/10 border border-infast-500/20">IT-ACADEMY</span>
-            </span>
-          </div>
+          <span className="font-semibold text-sm tracking-tight text-white flex items-center">
+            InFast <span className="text-neutral-400 font-normal text-xs ml-1.5">IT Academy</span>
+          </span>
         </Link>
 
         {/* Desktop Nav Links */}
-        <nav className="hidden md:flex items-center space-x-8 bg-slate-900/60 border border-slate-800/80 px-6 py-2 rounded-full backdrop-blur-md">
+        <nav className="hidden md:flex items-center space-x-7">
           {navLinks.map((link) => (
             <Link
               key={link.href}
               href={link.href}
-              className={`text-xs font-bold transition-colors ${
+              className={`text-xs font-medium transition-colors ${
                 pathname === link.href
-                  ? 'text-infast-500'
-                  : 'text-slate-300 hover:text-white'
+                  ? 'text-white font-semibold'
+                  : 'text-neutral-400 hover:text-white'
               }`}
             >
               {link.name}
@@ -66,31 +64,28 @@ export function Navbar() {
         </nav>
 
         {/* Right Action CTAs */}
-        <div className="hidden md:flex items-center space-x-4">
+        <div className="hidden md:flex items-center space-x-3">
           <Link
             href="/login"
-            className="text-xs font-semibold text-slate-400 hover:text-slate-200 transition-colors px-3 py-1.5 rounded-lg border border-transparent hover:border-slate-800"
+            className="text-xs font-medium text-neutral-400 hover:text-white transition-colors px-3 py-1.5"
           >
-            Admin
+            Admin CRM
           </Link>
           <Link
-            href="/ariza"
-            className="group relative inline-flex items-center justify-center px-5 py-2.5 rounded-xl text-xs font-bold text-white bg-gradient-to-r from-infast-600 to-amber-500 shadow-lg shadow-infast-500/25 hover:shadow-infast-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all overflow-hidden"
+            href="/#ariza"
+            className="inline-flex items-center justify-center px-4 py-2 rounded-full text-xs font-semibold text-black bg-white hover:bg-neutral-200 active:scale-95 transition-all shadow-sm"
           >
-            <span className="relative z-10 flex items-center">
-              Kurslarni ko'rish
-              <ArrowRight className="w-3.5 h-3.5 ml-1.5 group-hover:translate-x-1 transition-transform" />
-            </span>
+            <span>Ariza topshirish</span>
           </Link>
         </div>
 
         {/* Mobile Menu Trigger */}
         <button
           onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          className="md:hidden p-2 rounded-xl bg-slate-900 border border-slate-800 text-slate-300 hover:text-white"
+          className="md:hidden p-2 rounded-full bg-white/10 text-neutral-300 hover:text-white transition-colors"
           aria-label="Toggle Menu"
         >
-          {mobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+          {mobileMenuOpen ? <X className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
         </button>
       </div>
 
@@ -98,40 +93,40 @@ export function Navbar() {
       <AnimatePresence>
         {mobileMenuOpen && (
           <motion.div
-            initial={{ opacity: 0, y: -20 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -20 }}
+            initial={{ opacity: 0, y: -15, scale: 0.98 }}
+            animate={{ opacity: 1, y: 0, scale: 1 }}
+            exit={{ opacity: 0, y: -15, scale: 0.98 }}
             transition={{ duration: 0.2 }}
-            className="md:hidden fixed inset-x-0 top-[73px] bg-slate-950/95 backdrop-blur-2xl border-b border-slate-800 p-6 space-y-6 shadow-2xl"
+            className="md:hidden max-w-6xl mx-auto mt-3 bg-neutral-950/95 backdrop-blur-2xl border border-white/10 rounded-3xl p-6 space-y-5 shadow-2xl"
           >
-            <div className="flex flex-col space-y-4">
+            <div className="flex flex-col space-y-3">
               {navLinks.map((link) => (
                 <Link
                   key={link.href}
                   href={link.href}
                   onClick={() => setMobileMenuOpen(false)}
-                  className="text-base font-bold text-slate-200 hover:text-infast-500 py-2 border-b border-slate-900 flex items-center justify-between"
+                  className="text-sm font-medium text-neutral-300 hover:text-white py-2 border-b border-neutral-900 flex items-center justify-between"
                 >
                   <span>{link.name}</span>
-                  <ChevronRight className="w-4 h-4 text-slate-600" />
+                  <ChevronRight className="w-4 h-4 text-neutral-600" />
                 </Link>
               ))}
             </div>
 
-            <div className="pt-4 space-y-3">
+            <div className="pt-2 space-y-2.5">
               <Link
-                href="/ariza"
+                href="/#ariza"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center py-3.5 rounded-xl text-sm font-bold text-white bg-gradient-to-r from-infast-600 to-amber-500 shadow-lg shadow-infast-500/30"
+                className="w-full flex items-center justify-center py-3 rounded-full text-xs font-semibold text-black bg-white hover:bg-neutral-200 transition-all"
               >
-                Kurslarni ko'rish
-                <ArrowRight className="w-4 h-4 ml-2" />
+                Ariza topshirish
+                <ArrowRight className="w-4 h-4 ml-1.5" />
               </Link>
 
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center py-3 rounded-xl text-xs font-semibold text-slate-400 bg-slate-900 border border-slate-800"
+                className="w-full flex items-center justify-center py-2.5 rounded-full text-xs font-medium text-neutral-400 bg-neutral-900 border border-neutral-800"
               >
                 Admin CRM Login
               </Link>
