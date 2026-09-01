@@ -74,9 +74,9 @@ export function Footer() {
           <div className="space-y-2.5">
             <h4 className="font-semibold text-xs text-white">Bog'lanish</h4>
             <div className="space-y-1.5 text-xs text-neutral-400 font-normal">
-              <p>Telefon: +998 90 123 45 67</p>
+              <p>Telefon: +998 90 271 00 27</p>
               <p>Telegram: @infast_academy</p>
-              <p>Manzil: Toshkent sh., Chilonzor tumani</p>
+              <p>Manzil: Andijon v., Buloqboshi t., yangi Hokimiyat binosi</p>
             </div>
           </div>
         </div>

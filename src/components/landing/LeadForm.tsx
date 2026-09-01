@@ -133,7 +133,7 @@ export function LeadForm() {
                   <input
                     type="tel"
                     required
-                    placeholder="+998 90 123 45 67"
+                    placeholder="+998 90 271 00 27"
                     value={phone}
                     onChange={(e) => setPhone(e.target.value)}
                     className="w-full px-4 py-3 rounded-full bg-black/60 border border-white/10 text-xs font-medium text-white placeholder-neutral-500 focus:outline-none focus:border-white/30"

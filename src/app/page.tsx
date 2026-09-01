@@ -50,6 +50,9 @@ export default function LandingHomePage() {
         {/* Featured Courses Showcase */}
         <Courses />
 
+        {/* Academy Branch Location */}
+        <Branches />
+
         {/* FAQ Accordion */}
         <FAQ />
 

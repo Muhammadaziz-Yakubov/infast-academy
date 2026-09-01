@@ -19,11 +19,11 @@ export function FloatingContact() {
 
       {/* Phone Call Widget */}
       <a
-        href="tel:+998901234567"
-        className="w-12 h-12 rounded-full bg-gradient-to-r from-infast-600 to-amber-500 text-white shadow-xl shadow-infast-500/30 flex items-center justify-center transition-all hover:scale-110"
+        href="tel:+998902710027"
+        className="w-12 h-12 rounded-full bg-white text-black shadow-xl flex items-center justify-center transition-all hover:scale-110"
         title="Qo'ng'iroq qilish"
       >
-        <Phone className="w-5 h-5" />
+        <Phone className="w-5 h-5 fill-black" />
       </a>
     </div>
   );
