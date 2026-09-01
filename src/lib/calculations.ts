@@ -89,16 +89,40 @@ export function calculatePaymentPeriods(
   }
 
   const currentMonthInfo = calculateCourseMonth(joinedDate);
-  const currentMonthCount = currentMonthInfo.monthNumber;
+  const baseMonthCount = currentMonthInfo.monthNumber;
+
+  const todayStr = format(new Date(), 'yyyy-MM-dd');
+
+  // Determine how many periods need to be calculated.
+  // We must include at least baseMonthCount, plus any period whose payment due date has arrived (dueDate <= today).
+  let targetPeriodCount = Math.max(baseMonthCount, 1);
+
+  let checkIndex = targetPeriodCount + 1;
+  while (checkIndex <= 360) {
+    const pStart = new Date(joinedDate);
+    pStart.setMonth(pStart.getMonth() + (checkIndex - 1));
+
+    const dueYear = pStart.getFullYear();
+    const dueMonth = pStart.getMonth();
+    const maxDaysInMonth = new Date(dueYear, dueMonth + 1, 0).getDate();
+    const actualDueDay = Math.min(Math.max(1, paymentDueDay || 5), maxDaysInMonth);
+    const dueDateObj = new Date(dueYear, dueMonth, actualDueDay);
+    const dueDateStr = format(dueDateObj, 'yyyy-MM-dd');
+
+    if (dueDateStr <= todayStr) {
+      targetPeriodCount = checkIndex;
+      checkIndex++;
+    } else {
+      break;
+    }
+  }
 
   const periods: PaymentPeriodStatus[] = [];
   let remainingPaidAmount = totalAmountPaid || 0;
   let totalDebt = 0;
   let hasOverdue = false;
 
-  const todayStr = format(new Date(), 'yyyy-MM-dd');
-
-  for (let i = 1; i <= Math.max(currentMonthCount, 1); i++) {
+  for (let i = 1; i <= targetPeriodCount; i++) {
     const periodStart = new Date(joinedDate);
     periodStart.setMonth(periodStart.getMonth() + (i - 1));
 
@@ -112,12 +136,12 @@ export function calculatePaymentPeriods(
     let status: "PAID" | "OVERDUE" | "PENDING";
     let statusText: string;
 
-    if (remainingPaidAmount >= monthlyFee) {
+    if (remainingPaidAmount >= monthlyFee && monthlyFee > 0) {
       status = "PAID";
       statusText = "To'langan";
       remainingPaidAmount -= monthlyFee;
     } else {
-      if (todayStr >= dueDateStr || i === 1) {
+      if (todayStr >= dueDateStr) {
         status = "OVERDUE";
         statusText = "Qarzdor";
         totalDebt += (monthlyFee - remainingPaidAmount);
