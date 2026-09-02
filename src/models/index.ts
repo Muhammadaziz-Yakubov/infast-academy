@@ -18,6 +18,7 @@ import './MarketingAsset';
 import './MarketingPromotion';
 import './Referral';
 import './LandingPage';
+import './SmsLog';
 
 export { Course } from './Course';
 export { Group } from './Group';
@@ -39,3 +40,5 @@ export { MarketingAsset } from './MarketingAsset';
 export { MarketingPromotion } from './MarketingPromotion';
 export { Referral } from './Referral';
 export { LandingPage } from './LandingPage';
+export { SmsLog } from './SmsLog';
+

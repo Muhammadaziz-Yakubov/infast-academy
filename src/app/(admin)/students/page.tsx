@@ -22,6 +22,11 @@ import {
   CreditCard,
   CheckSquare,
   RefreshCw,
+  Send,
+  MessageSquare,
+  Wallet,
+  SendHorizontal,
+  Loader2,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -55,6 +60,67 @@ export default function StudentsPage() {
   });
   const [submittingBulk, setSubmittingBulk] = useState(false);
   const [checkingPayments, setCheckingPayments] = useState(false);
+
+  // Bulk SMS State
+  const [showBulkSmsModal, setShowBulkSmsModal] = useState(false);
+  const [smsTemplate, setSmsTemplate] = useState("Hurmatli {familiya} {ism}! Sizning qarzingiz {summa} so'm. To'lov qiling bo'lmasa darsga kiritilmaysiz. InFast IT-Academy");
+  const [sendingSms, setSendingSms] = useState(false);
+  const [devSmsBalance, setDevSmsBalance] = useState<any>(null);
+  const [loadingBalance, setLoadingBalance] = useState(false);
+  const [smsReport, setSmsReport] = useState<any>(null);
+
+  const fetchDevSmsBalance = async () => {
+    setLoadingBalance(true);
+    try {
+      const res = await fetch('/api/sms/balance');
+      if (res.ok) {
+        const data = await res.json();
+        if (data.success) {
+          setDevSmsBalance(data.data);
+        }
+      }
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingBalance(false);
+    }
+  };
+
+  const handleOpenBulkSmsModal = () => {
+    setSmsReport(null);
+    setShowBulkSmsModal(true);
+    fetchDevSmsBalance();
+  };
+
+  const handleBulkSmsSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedStudentIds.length === 0) return;
+
+    setSendingSms(true);
+    setSmsReport(null);
+    try {
+      const res = await fetch('/api/sms/send-bulk', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentIds: selectedStudentIds,
+          customTemplate: smsTemplate,
+        }),
+      });
+
+      const data = await res.json();
+      if (res.ok && data.success) {
+        setSmsReport(data);
+        fetchDevSmsBalance();
+      } else {
+        alert(data.error || "SMS yuborishda xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert("Xatolik: " + e.message);
+    } finally {
+      setSendingSms(false);
+    }
+  };
 
   const handleCheckPayments = async () => {
     setCheckingPayments(true);
@@ -489,10 +555,17 @@ export default function StudentsPage() {
                 {selectedStudentIds.length} ta tanlandi
               </span>
               <p className="text-xs font-semibold text-slate-300 hidden sm:block">
-                Tanlangan talabalar uchun ommaviy to'lov qabul qilish
+                Tanlangan talabalarga ommaviy to'lov qabul qilish yoki SMS yuborish
               </p>
             </div>
             <div className="flex items-center space-x-2">
+              <button
+                onClick={handleOpenBulkSmsModal}
+                className="px-4 py-2 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+              >
+                <Send className="w-4 h-4" />
+                <span>SMS Yuborish ({selectedStudentIds.length})</span>
+              </button>
               <button
                 onClick={() => setShowBulkPaymentModal(true)}
                 className="px-4 py-2 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
@@ -1149,6 +1222,244 @@ export default function StudentsPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Bulk SMS via DevSMS */}
+      {showBulkSmsModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm overflow-y-auto">
+          <div className="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4 my-8 animate-in fade-in zoom-in-95">
+            {/* Modal Header */}
+            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+              <div className="flex items-center space-x-2">
+                <div className="p-2 rounded-xl bg-sky-50 text-sky-600">
+                  <MessageSquare className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-bold text-lg text-slate-900">Ommaviy SMS Yuborish (DevSMS)</h3>
+                  <p className="text-[11px] text-slate-500 font-medium">Qarzdor talabalarga rasmiy SMS bildirishnoma jo'natish</p>
+                </div>
+              </div>
+              <button
+                onClick={() => {
+                  setShowBulkSmsModal(false);
+                  setSmsReport(null);
+                }}
+                className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg transition-colors"
+              >
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            {/* DevSMS Balance Info */}
+            <div className="bg-slate-900 text-white rounded-2xl p-4 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-2 shadow-inner">
+              <div className="flex items-center space-x-3">
+                <div className="p-2 rounded-xl bg-sky-500/20 text-sky-400">
+                  <Wallet className="w-5 h-5" />
+                </div>
+                <div>
+                  <p className="text-[11px] text-slate-400 font-semibold">DevSMS Balans va Tarif</p>
+                  {loadingBalance ? (
+                    <div className="flex items-center space-x-2 text-xs text-slate-300">
+                      <Loader2 className="w-3.5 h-3.5 animate-spin" />
+                      <span>Balans yuklanmoqda...</span>
+                    </div>
+                  ) : devSmsBalance ? (
+                    <p className="text-sm font-bold text-white">
+                      Balans: <span className="text-emerald-400 font-mono font-extrabold">{formatMoneyUz(devSmsBalance.balance)}</span>
+                      {devSmsBalance.sms_price ? (
+                        <span className="text-slate-400 text-xs font-normal ml-2">
+                          (SMS narxi: {devSmsBalance.sms_price} so'm)
+                        </span>
+                      ) : null}
+                    </p>
+                  ) : (
+                    <p className="text-xs text-amber-400 font-semibold">DevSMS API ga ulandi (Token faol)</p>
+                  )}
+                </div>
+              </div>
+
+              <span className="bg-sky-500/20 text-sky-300 text-xs font-extrabold px-3 py-1.5 rounded-xl border border-sky-500/30">
+                {selectedStudentIds.length} ta talaba tanlandi
+              </span>
+            </div>
+
+            {/* If SMS Report exists after sending */}
+            {smsReport ? (
+              <div className="space-y-4">
+                <div className={`p-4 rounded-2xl border ${smsReport.totalFailed === 0 ? 'bg-emerald-50 border-emerald-200 text-emerald-900' : 'bg-amber-50 border-amber-200 text-amber-900'}`}>
+                  <div className="flex items-center space-x-2 font-bold text-sm">
+                    <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0" />
+                    <span>{smsReport.message}</span>
+                  </div>
+                  <div className="mt-2 text-xs font-medium space-x-3 flex items-center">
+                    <span className="bg-emerald-100 text-emerald-800 px-2.5 py-0.5 rounded-lg font-bold">
+                      ✅ {smsReport.totalSent} ta muvaffaqiyatli
+                    </span>
+                    {smsReport.totalFailed > 0 && (
+                      <span className="bg-rose-100 text-rose-800 px-2.5 py-0.5 rounded-lg font-bold">
+                        ❌ {smsReport.totalFailed} ta xatolik
+                      </span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Details list */}
+                <div className="max-h-60 overflow-y-auto space-y-2 pr-1 border border-slate-100 rounded-2xl p-3 bg-slate-50">
+                  <p className="text-xs font-bold text-slate-700 mb-2">SMS Natijalari Tafsiloti:</p>
+                  {smsReport.details?.map((item: any, idx: number) => (
+                    <div key={idx} className="bg-white p-3 rounded-xl border border-slate-200 flex items-center justify-between text-xs">
+                      <div>
+                        <p className="font-bold text-slate-900">{item.studentName}</p>
+                        <p className="text-[11px] font-mono text-slate-500">{item.phone} • Qarz: {item.formattedDebt} so'm</p>
+                      </div>
+                      <div>
+                        {item.success ? (
+                          <span className="px-2.5 py-1 rounded-lg bg-emerald-100 text-emerald-800 font-bold text-[10px]">
+                            Yuborildi
+                          </span>
+                        ) : (
+                          <span className="px-2.5 py-1 rounded-lg bg-rose-100 text-rose-800 font-bold text-[10px]" title={item.error}>
+                            Xatolik: {item.error || 'Yuborilmadi'}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                <div className="pt-3 flex justify-end">
+                  <button
+                    onClick={() => {
+                      setShowBulkSmsModal(false);
+                      setSmsReport(null);
+                      setSelectedStudentIds([]);
+                    }}
+                    className="px-5 py-2.5 bg-slate-900 hover:bg-slate-800 text-white font-bold text-xs rounded-xl shadow-md"
+                  >
+                    Yopish va Tozalash
+                  </button>
+                </div>
+              </div>
+            ) : (
+              /* SMS Sending Form */
+              <form onSubmit={handleBulkSmsSubmit} className="space-y-4 text-xs">
+                {/* Selected Students Chips */}
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1.5">Qarzdor Talabalar Ro'yxati ({selectedStudentIds.length}):</label>
+                  <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-2xl">
+                    {students
+                      .filter((s) => selectedStudentIds.includes(s._id))
+                      .map((s) => (
+                        <div key={s._id} className="px-2.5 py-1 bg-white border border-slate-200 rounded-xl flex items-center space-x-1.5 shadow-sm">
+                          <span className="font-bold text-slate-800">{s.lastName} {s.firstName}</span>
+                          <span className="text-[10px] text-rose-600 font-mono font-bold">({formatMoneyUz(s.totalDebt)})</span>
+                        </div>
+                      ))}
+                  </div>
+                </div>
+
+                {/* Template Textarea */}
+                <div>
+                  <div className="flex items-center justify-between mb-1.5">
+                    <label className="block font-bold text-slate-700">SMS Xabarnoma Shabloni *</label>
+                    <div className="flex items-center space-x-1">
+                      <span className="text-[10px] text-slate-400 font-medium mr-1">O'zgaruvchi qo'shish:</span>
+                      {['{familiya}', '{ism}', '{summa}'].map((tag) => (
+                        <button
+                          key={tag}
+                          type="button"
+                          onClick={() => setSmsTemplate((prev) => prev + ' ' + tag)}
+                          className="px-2 py-0.5 bg-sky-50 hover:bg-sky-100 text-sky-700 font-mono font-bold text-[10px] rounded-lg border border-sky-200 transition-colors"
+                        >
+                          + {tag}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+
+                  <textarea
+                    rows={3}
+                    required
+                    value={smsTemplate}
+                    onChange={(e) => setSmsTemplate(e.target.value)}
+                    className="w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl font-sans text-xs font-semibold text-slate-900 focus:ring-2 focus:ring-sky-500/20 focus:border-sky-500 leading-relaxed"
+                  />
+                </div>
+
+                {/* Real-time SMS Preview Box */}
+                {selectedStudentIds.length > 0 && (
+                  <div className="bg-sky-50/60 border border-sky-200/80 rounded-2xl p-3.5 space-y-1.5">
+                    <div className="flex items-center justify-between">
+                      <p className="text-[10px] uppercase tracking-wider font-extrabold text-sky-700 flex items-center">
+                        <Eye className="w-3.5 h-3.5 mr-1 text-sky-600" />
+                        SMS Xabar Namunasi (Preview)
+                      </p>
+                      <span className="text-[10px] font-bold text-slate-500">
+                        {(() => {
+                          const s = students.find((st) => selectedStudentIds.includes(st._id));
+                          if (!s) return '';
+                          const formattedDebt = new Intl.NumberFormat('fr-FR').format(s.totalDebt || 0).replace(/\s/g, '.');
+                          const text = smsTemplate
+                            .replace(/{familiya}/gi, s.lastName || '')
+                            .replace(/{ism}/gi, s.firstName || '')
+                            .replace(/{lastName}/g, s.lastName || '')
+                            .replace(/{firstName}/g, s.firstName || '')
+                            .replace(/{summa}/gi, formattedDebt)
+                            .replace(/{qarz}/gi, formattedDebt)
+                            .replace(/{debt}/gi, formattedDebt);
+                          return `${text.length} belgi (${Math.ceil(text.length / 160)} qism)`;
+                        })()}
+                      </span>
+                    </div>
+                    <div className="bg-white p-3 rounded-xl border border-sky-100 shadow-sm text-xs font-semibold text-slate-800 leading-relaxed font-mono">
+                      {(() => {
+                        const s = students.find((st) => selectedStudentIds.includes(st._id));
+                        if (!s) return 'Talaba tanlanmagan';
+                        const formattedDebt = new Intl.NumberFormat('fr-FR').format(s.totalDebt || 0).replace(/\s/g, '.');
+                        return smsTemplate
+                          .replace(/{familiya}/gi, s.lastName || '')
+                          .replace(/{ism}/gi, s.firstName || '')
+                          .replace(/{lastName}/g, s.lastName || '')
+                          .replace(/{firstName}/g, s.firstName || '')
+                          .replace(/{summa}/gi, formattedDebt)
+                          .replace(/{qarz}/gi, formattedDebt)
+                          .replace(/{debt}/gi, formattedDebt);
+                      })()}
+                    </div>
+                  </div>
+                )}
+
+                {/* Buttons */}
+                <div className="pt-3 flex items-center justify-end space-x-2 border-t border-slate-100">
+                  <button
+                    type="button"
+                    onClick={() => setShowBulkSmsModal(false)}
+                    className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={sendingSms || selectedStudentIds.length === 0}
+                    className="px-5 py-2.5 bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs rounded-xl shadow-md disabled:opacity-50 flex items-center space-x-2 transition-all"
+                  >
+                    {sendingSms ? (
+                      <>
+                        <Loader2 className="w-4 h-4 animate-spin" />
+                        <span>SMS yuborilmoqda...</span>
+                      </>
+                    ) : (
+                      <>
+                        <SendHorizontal className="w-4 h-4" />
+                        <span>SMS Yuborish ({selectedStudentIds.length} ta talaba)</span>
+                      </>
+                    )}
+                  </button>
+                </div>
+              </form>
+            )}
           </div>
         </div>
       )}
