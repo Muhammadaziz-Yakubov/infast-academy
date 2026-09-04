@@ -59,6 +59,8 @@ export default function StudentsPage() {
     notes: '',
   });
   const [submittingBulk, setSubmittingBulk] = useState(false);
+  const [checkingPayments, setCheckingPayments] = useState(false);
+
   // Bulk Group State
   const [showBulkGroupModal, setShowBulkGroupModal] = useState(false);
   const [bulkTargetGroupId, setBulkTargetGroupId] = useState('');
