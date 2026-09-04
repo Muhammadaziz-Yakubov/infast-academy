@@ -59,7 +59,10 @@ export default function StudentsPage() {
     notes: '',
   });
   const [submittingBulk, setSubmittingBulk] = useState(false);
-  const [checkingPayments, setCheckingPayments] = useState(false);
+  // Bulk Group State
+  const [showBulkGroupModal, setShowBulkGroupModal] = useState(false);
+  const [bulkTargetGroupId, setBulkTargetGroupId] = useState('');
+  const [submittingBulkGroup, setSubmittingBulkGroup] = useState(false);
 
   // Bulk SMS State
   const [showBulkSmsModal, setShowBulkSmsModal] = useState(false);
@@ -189,6 +192,39 @@ export default function StudentsPage() {
       alert("Xatolik: " + e.message);
     } finally {
       setSubmittingBulk(false);
+    }
+  };
+
+  const handleBulkGroupSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (selectedStudentIds.length === 0 || !bulkTargetGroupId) return;
+
+    setSubmittingBulkGroup(true);
+    try {
+      const res = await fetch('/api/students/bulk-group', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentIds: selectedStudentIds,
+          groupId: bulkTargetGroupId,
+        }),
+      });
+
+      if (res.ok) {
+        const data = await res.json();
+        alert(data.message || `${selectedStudentIds.length} ta talabaning guruhi o'zgartirildi`);
+        setShowBulkGroupModal(false);
+        setSelectedStudentIds([]);
+        setBulkTargetGroupId('');
+        fetchStudents();
+      } else {
+        const err = await res.json();
+        alert(err.error || "Guruhni o'zgartirishda xatolik");
+      }
+    } catch (e: any) {
+      alert("Xatolik: " + e.message);
+    } finally {
+      setSubmittingBulkGroup(false);
     }
   };
 
@@ -555,7 +591,7 @@ export default function StudentsPage() {
                 {selectedStudentIds.length} ta tanlandi
               </span>
               <p className="text-xs font-semibold text-slate-300 hidden sm:block">
-                Tanlangan talabalarga ommaviy to'lov qabul qilish yoki SMS yuborish
+                Tanlangan talabalarga ommaviy to'lov qabul qilish, guruhini o'zgartirish yoki SMS yuborish
               </p>
             </div>
             <div className="flex items-center space-x-2">
@@ -565,6 +601,13 @@ export default function StudentsPage() {
               >
                 <Send className="w-4 h-4" />
                 <span>SMS Yuborish ({selectedStudentIds.length})</span>
+              </button>
+              <button
+                onClick={() => setShowBulkGroupModal(true)}
+                className="px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+              >
+                <Users className="w-4 h-4" />
+                <span>Guruhni O'zgartirish ({selectedStudentIds.length})</span>
               </button>
               <button
                 onClick={() => setShowBulkPaymentModal(true)}
@@ -1460,6 +1503,110 @@ export default function StudentsPage() {
                 </div>
               </form>
             )}
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Change Group Modal */}
+      {showBulkGroupModal && (
+        <div className="fixed inset-0 bg-slate-900/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl max-w-lg w-full p-6 shadow-2xl space-y-5 border border-slate-100 animate-in fade-in zoom-in-95 duration-200">
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600">
+                  <Users className="w-5 h-5" />
+                </div>
+                <div>
+                  <h3 className="font-extrabold text-slate-900 text-base">Guruhni O'zgartirish</h3>
+                  <p className="text-xs text-slate-500 font-medium">
+                    {selectedStudentIds.length} ta talabaning guruhini yangilash
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setShowBulkGroupModal(false)}
+                className="w-8 h-8 rounded-xl bg-slate-100 text-slate-500 hover:text-slate-800 flex items-center justify-center transition-colors"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <form onSubmit={handleBulkGroupSubmit} className="space-y-4 text-xs">
+              {/* Selected Students List Chips */}
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">
+                  Tanlangan Talabalar ({selectedStudentIds.length}):
+                </label>
+                <div className="flex flex-wrap gap-1.5 max-h-28 overflow-y-auto p-2 bg-slate-50 border border-slate-200 rounded-2xl">
+                  {students
+                    .filter((s) => selectedStudentIds.includes(s._id))
+                    .map((s) => (
+                      <div
+                        key={s._id}
+                        className="px-2.5 py-1 bg-white border border-slate-200 rounded-xl flex items-center space-x-1.5 shadow-sm"
+                      >
+                        <span className="font-bold text-slate-800">
+                          {s.lastName} {s.firstName}
+                        </span>
+                        <span className="text-[10px] text-slate-500">
+                          ({s.groupId?.name || 'Guruhsiz'})
+                        </span>
+                      </div>
+                    ))}
+                </div>
+              </div>
+
+              {/* Target Group Selector */}
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">
+                  Yangi Guruhni Tanlang *
+                </label>
+                <select
+                  required
+                  value={bulkTargetGroupId}
+                  onChange={(e) => setBulkTargetGroupId(e.target.value)}
+                  className="w-full p-3 bg-slate-50 border border-slate-200 rounded-2xl font-semibold text-xs text-slate-900 focus:ring-2 focus:ring-indigo-500/20 focus:border-indigo-500"
+                >
+                  <option value="">Guruhni tanlang...</option>
+                  {groups.map((g) => (
+                    <option key={g._id} value={g._id}>
+                      {g.name} ({g.room ? `Xona: ${g.room}` : 'Xonasiz'})
+                    </option>
+                  ))}
+                </select>
+                <p className="text-[11px] text-slate-400 mt-1.5">
+                  * Eslatma: Talabalarning to'lovlari, to'lov muddatlari va kurs ma'lumotlari o'zgarishsiz qoladi. Faqat ularning biriktirilgan guruhi yangilanadi.
+                </p>
+              </div>
+
+              {/* Action Buttons */}
+              <div className="pt-3 flex items-center justify-end space-x-2 border-t border-slate-100">
+                <button
+                  type="button"
+                  onClick={() => setShowBulkGroupModal(false)}
+                  className="px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold rounded-xl text-xs"
+                >
+                  Bekor qilish
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingBulkGroup || !bulkTargetGroupId || selectedStudentIds.length === 0}
+                  className="px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md disabled:opacity-50 flex items-center space-x-2 transition-all"
+                >
+                  {submittingBulkGroup ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Saqlanmoqda...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4" />
+                      <span>Guruhni Yangilash ({selectedStudentIds.length} ta talaba)</span>
+                    </>
+                  )}
+                </button>
+              </div>
+            </form>
           </div>
         </div>
       )}
