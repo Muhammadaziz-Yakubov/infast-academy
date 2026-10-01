@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
+import { Header } from '@/components/layout/Header';
 import {
   Award,
   Users,
@@ -24,6 +25,7 @@ import {
   ChevronRight,
   ShieldAlert,
   Loader2,
+  ShieldCheck,
 } from 'lucide-react';
 import { STANDARD_NOMINATIONS, formatUzbekDateDisplay } from '@/lib/certificateUtils';
 import { MainCertificate } from '@/components/graduates/MainCertificate';
@@ -287,290 +289,285 @@ export default function GraduatesPage() {
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Header Title & Actions */}
-      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-        <div>
-          <div className="flex items-center space-x-2">
-            <div className="w-9 h-9 rounded-xl bg-infast-500/10 text-infast-600 flex items-center justify-center">
-              <Award className="w-5 h-5" />
+    <div className="min-h-screen bg-[#F8F9FA] dark:bg-slate-950 flex flex-col font-sans">
+      {/* Top Standard Navbar Header */}
+      <Header title="Bitiruvchilar" />
+
+      {/* Main Container */}
+      <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto w-full">
+        {/* Page Hero Header */}
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-6 rounded-[24px] shadow-sm">
+          <div>
+            <div className="flex items-center space-x-2.5">
+              <span className="px-3 py-1 rounded-full bg-infast-50 dark:bg-infast-950/40 text-infast-600 dark:text-infast-400 font-bold text-xs tracking-wider uppercase border border-infast-200/60 dark:border-infast-800/60">
+                Bitiruv marosimi — 02.10.2026
+              </span>
             </div>
-            <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
-              Bitiruvchilar va Sertifikatlar
-            </h1>
+            <h2 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white mt-2">
+              Bitiruvchilar va Sertifikatlar Tizimi
+            </h2>
+            <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
+              Bitiruvchilar ma’lumotlari, avtomatlashtirilgan sertifikatlar va QR verifikatsiyani boshqarish
+            </p>
           </div>
-          <p className="text-xs text-slate-500 dark:text-slate-400 mt-1">
-            2026-yil 2-oktabr bitiruv marosimi va avtomatlashtirilgan sertifikatlar tizimi
-          </p>
-        </div>
 
-        <button
-          onClick={handleOpenAdd}
-          className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-infast-500 hover:bg-infast-600 active:scale-95 text-white font-bold text-xs uppercase tracking-wider rounded-xl shadow-md shadow-infast-500/25 transition-all"
-        >
-          <Plus className="w-4 h-4" />
-          <span>+ Bitiruvchi qo‘shish</span>
-        </button>
-      </div>
-
-      {/* 4 Key Stat Cards */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4">
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold mb-1">
-            <span>BITIRUVCHILAR</span>
-            <Users className="w-4 h-4 text-infast-500" />
-          </div>
-          <div className="text-2xl font-black text-slate-900 dark:text-white">
-            {stats.totalGraduates}
-          </div>
-          <span className="text-[10px] text-slate-400 font-medium">Jami ro'yxatdagilar</span>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold mb-1">
-            <span>SERTIFIKATLAR</span>
-            <FileCheck className="w-4 h-4 text-emerald-500" />
-          </div>
-          <div className="text-2xl font-black text-emerald-600 dark:text-emerald-400">
-            {stats.activeCertificates}
-          </div>
-          <span className="text-[10px] text-slate-400 font-medium">Faol asosiy sertifikatlar</span>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold mb-1">
-            <span>NOMINATSIYALAR</span>
-            <Sparkles className="w-4 h-4 text-amber-500" />
-          </div>
-          <div className="text-2xl font-black text-amber-500">
-            {stats.totalNominations}
-          </div>
-          <span className="text-[10px] text-slate-400 font-medium">Maxsus taqdirlashlar</span>
-        </div>
-
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm">
-          <div className="flex items-center justify-between text-slate-500 text-xs font-semibold mb-1">
-            <span>BEKOR QILINGAN</span>
-            <Ban className="w-4 h-4 text-rose-500" />
-          </div>
-          <div className="text-2xl font-black text-rose-600 dark:text-rose-400">
-            {stats.revokedCount}
-          </div>
-          <span className="text-[10px] text-slate-400 font-medium">Revoked holatda</span>
-        </div>
-
-        <div className="bg-gradient-to-br from-infast-500 to-amber-600 text-white p-4 rounded-2xl shadow-md shadow-infast-500/20 flex flex-col justify-between">
-          <div className="flex items-center justify-between text-white/80 text-xs font-bold uppercase tracking-wider mb-1">
-            <span>BITIRUV SANASI</span>
-            <Calendar className="w-4 h-4 text-white" />
-          </div>
-          <div className="text-xl font-black tracking-tight">
-            02.10.2026
-          </div>
-          <span className="text-[10px] text-white/80 font-medium">Tantanali topshirish kuni</span>
-        </div>
-      </div>
-
-      {/* Filter and Search Bar */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 p-4 rounded-2xl shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
-        <div className="relative w-full sm:w-80">
-          <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
-          <input
-            type="text"
-            placeholder="F.I.O. yoki Sertifikat ID orqali qidiruv..."
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="w-full pl-9 pr-4 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-medium"
-          />
-        </div>
-
-        <div className="flex items-center space-x-2 w-full sm:w-auto">
-          <SlidersHorizontal className="w-4 h-4 text-slate-400 shrink-0" />
-          <select
-            value={statusFilter}
-            onChange={(e) => setStatusFilter(e.target.value)}
-            className="px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-infast-500"
+          <button
+            onClick={handleOpenAdd}
+            className="inline-flex items-center justify-center space-x-2 px-5 py-3 bg-infast-500 hover:bg-infast-600 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-2xl shadow-md shadow-infast-500/20 transition-all shrink-0"
           >
-            <option value="all">Barcha statuslar</option>
-            <option value="active">✓ Faol sertifikatlar</option>
-            <option value="revoked">✕ Bekor qilinganlar</option>
-          </select>
+            <Plus className="w-4 h-4" />
+            <span>+ Bitiruvchi qo‘shish</span>
+          </button>
         </div>
-      </div>
 
-      {/* Graduates Table */}
-      <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm overflow-hidden">
-        <div className="overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 dark:bg-slate-800/60 border-b border-slate-200 dark:border-slate-800 text-slate-500 dark:text-slate-400 font-bold uppercase tracking-wider">
-              <tr>
-                <th className="py-3.5 px-4 w-12 text-center">№</th>
-                <th className="py-3.5 px-4">F.I.O.</th>
-                <th className="py-3.5 px-4">Yo‘nalish</th>
-                <th className="py-3.5 px-4">Nominatsiya</th>
-                <th className="py-3.5 px-4">Sertifikat №</th>
-                <th className="py-3.5 px-4">Sana</th>
-                <th className="py-3.5 px-4">Status</th>
-                <th className="py-3.5 px-4 text-right">Amallar</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
-              {loading ? (
+        {/* 4 Sleek Stat Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
+            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <span>Bitiruvchilar</span>
+              <Users className="w-4 h-4 text-infast-500" />
+            </div>
+            <div className="text-3xl font-black text-slate-900 dark:text-white">
+              {stats.totalGraduates}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium">Jami ro‘yxatdagilar</span>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
+            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <span>Sertifikatlar</span>
+              <FileCheck className="w-4 h-4 text-emerald-500" />
+            </div>
+            <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+              {stats.activeCertificates}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium">Faol asosiy sertifikatlar</span>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
+            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <span>Nominatsiyalar</span>
+              <Sparkles className="w-4 h-4 text-amber-500" />
+            </div>
+            <div className="text-3xl font-black text-amber-500">
+              {stats.totalNominations}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium">Maxsus mukofotlar</span>
+          </div>
+
+          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
+            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+              <span>Bekor qilingan</span>
+              <Ban className="w-4 h-4 text-rose-500" />
+            </div>
+            <div className="text-3xl font-black text-rose-600 dark:text-rose-400">
+              {stats.revokedCount}
+            </div>
+            <span className="text-[11px] text-slate-400 font-medium">Nofaol holatdagi sertifikatlar</span>
+          </div>
+        </div>
+
+        {/* Filter and Search Bar */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-4 rounded-[22px] shadow-sm flex flex-col sm:flex-row items-center justify-between gap-3">
+          <div className="relative w-full sm:w-80">
+            <Search className="w-4 h-4 absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400" />
+            <input
+              type="text"
+              placeholder="F.I.O. yoki Sertifikat ID..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
+              className="w-full pl-9 pr-4 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-medium"
+            />
+          </div>
+
+          <div className="flex items-center space-x-2 w-full sm:w-auto">
+            <SlidersHorizontal className="w-4 h-4 text-slate-400 shrink-0" />
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="px-3 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200/80 dark:border-slate-700 rounded-xl text-xs font-semibold text-slate-700 dark:text-slate-300 focus:outline-none focus:ring-2 focus:ring-infast-500"
+            >
+              <option value="all">Barcha statuslar</option>
+              <option value="active">✓ Faol sertifikatlar</option>
+              <option value="revoked">✕ Bekor qilinganlar</option>
+            </select>
+          </div>
+        </div>
+
+        {/* Graduates Minimalist Table */}
+        <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 rounded-[24px] shadow-sm overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50/70 dark:bg-slate-800/50 border-b border-slate-100 dark:border-slate-800 text-slate-400 dark:text-slate-400 font-bold uppercase tracking-wider">
                 <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-infast-500" />
-                    Bitiruvchilar ro‘yxati yuklanmoqda...
-                  </td>
+                  <th className="py-4 px-5 w-12 text-center">№</th>
+                  <th className="py-4 px-5">Bitiruvchi F.I.O.</th>
+                  <th className="py-4 px-5">Yo‘nalish</th>
+                  <th className="py-4 px-5">Nominatsiya</th>
+                  <th className="py-4 px-5">Sertifikat №</th>
+                  <th className="py-4 px-5">Berilgan Sana</th>
+                  <th className="py-4 px-5">Status</th>
+                  <th className="py-4 px-5 text-right">Amallar</th>
                 </tr>
-              ) : graduates.length === 0 ? (
-                <tr>
-                  <td colSpan={8} className="py-12 text-center text-slate-400">
-                    <Award className="w-8 h-8 mx-auto mb-2 opacity-30" />
-                    Bitiruvchilar topilmadi. "+ Bitiruvchi qo‘shish" tugmasi orqali yangi bitiruvchi qo‘shing.
-                  </td>
-                </tr>
-              ) : (
-                graduates.map((grad, idx) => {
-                  const isRevoked = grad.status === 'revoked';
-                  return (
-                    <tr
-                      key={grad._id}
-                      className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors"
-                    >
-                      <td className="py-3.5 px-4 text-center font-bold text-slate-400">
-                        {idx + 1}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <Link
-                          href={`/graduates/${grad._id}`}
-                          className="font-bold text-slate-900 dark:text-white hover:text-infast-600 transition-colors flex items-center space-x-2"
-                        >
-                          <span>{grad.fullName}</span>
-                          <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
-                        </Link>
-                        {grad.phone && (
-                          <span className="text-[11px] text-slate-400 block font-mono">
-                            {grad.phone}
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-semibold text-slate-800 dark:text-slate-200">
-                          {grad.track}
-                        </span>
-                        <span className="text-[10px] text-slate-400 block">
-                          {grad.duration} • Mentor: {grad.mentor}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-lg bg-amber-50 dark:bg-amber-950/40 text-amber-700 dark:text-amber-300 border border-amber-200/80 dark:border-amber-800/60 font-semibold text-[11px]">
-                          ⭐ {grad.nomination}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4">
-                        <span className="font-mono font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
-                          {grad.certificateId}
-                        </span>
-                        <span className="font-mono text-[10px] text-slate-400 block">
-                          {grad.awardId}
-                        </span>
-                      </td>
-                      <td className="py-3.5 px-4 text-slate-500 font-mono text-[11px]">
-                        {grad.issuedDate || '02.10.2026'}
-                      </td>
-                      <td className="py-3.5 px-4">
-                        {isRevoked ? (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 font-bold text-[10px]">
-                            Bekor qilingan
-                          </span>
-                        ) : (
-                          <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 font-bold text-[10px]">
-                            ✓ Faol
-                          </span>
-                        )}
-                      </td>
-                      <td className="py-3.5 px-4 text-right">
-                        <div className="flex items-center justify-end space-x-1">
-                          {/* Main Cert Preview */}
-                          <button
-                            onClick={() => handleOpenPreview(grad, 'main')}
-                            title="Asosiy Sertifikatni ko‘rish"
-                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-infast-600"
-                          >
-                            <FileCheck className="w-4 h-4" />
-                          </button>
-
-                          {/* Award Cert Preview */}
-                          <button
-                            onClick={() => handleOpenPreview(grad, 'award')}
-                            title="Nominatsiya Sertifikatini ko‘rish"
-                            className="p-1.5 rounded-lg hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-600"
-                          >
-                            <Sparkles className="w-4 h-4" />
-                          </button>
-
-                          {/* QR Code */}
-                          <button
-                            onClick={() => handleOpenQr(grad, false)}
-                            title="QR Kodni ko‘rish"
-                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300"
-                          >
-                            <QrCode className="w-4 h-4" />
-                          </button>
-
-                          {/* Public Verification Link */}
+              </thead>
+              <tbody className="divide-y divide-slate-100 dark:divide-slate-800/60 font-medium">
+                {loading ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                      <Loader2 className="w-6 h-6 animate-spin mx-auto mb-2 text-infast-500" />
+                      Yuklanmoqda...
+                    </td>
+                  </tr>
+                ) : graduates.length === 0 ? (
+                  <tr>
+                    <td colSpan={8} className="py-12 text-center text-slate-400">
+                      <Award className="w-8 h-8 mx-auto mb-2 opacity-30" />
+                      Bitiruvchilar topilmadi. "+ Bitiruvchi qo‘shish" tugmasini bosing.
+                    </td>
+                  </tr>
+                ) : (
+                  graduates.map((grad, idx) => {
+                    const isRevoked = grad.status === 'revoked';
+                    return (
+                      <tr
+                        key={grad._id}
+                        className="hover:bg-slate-50/70 dark:hover:bg-slate-800/30 transition-colors"
+                      >
+                        <td className="py-4 px-5 text-center font-bold text-slate-400">
+                          {idx + 1}
+                        </td>
+                        <td className="py-4 px-5">
                           <Link
-                            href={`/verify/${grad.certificateId}`}
-                            target="_blank"
-                            title="Verification sahifasini ochish"
-                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-infast-600"
+                            href={`/graduates/${grad._id}`}
+                            className="font-bold text-slate-900 dark:text-white hover:text-infast-600 transition-colors flex items-center space-x-1.5"
                           >
-                            <ExternalLink className="w-4 h-4" />
+                            <span>{grad.fullName}</span>
+                            <ChevronRight className="w-3.5 h-3.5 text-slate-400" />
                           </Link>
+                          {grad.phone && (
+                            <span className="text-[11px] text-slate-400 block font-mono mt-0.5">
+                              {grad.phone}
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-5">
+                          <span className="font-semibold text-slate-800 dark:text-slate-200">
+                            {grad.track}
+                          </span>
+                          <span className="text-[10px] text-slate-400 block mt-0.5">
+                            {grad.duration} • Mentor: {grad.mentor}
+                          </span>
+                        </td>
+                        <td className="py-4 px-5">
+                          <span className="inline-flex items-center px-2.5 py-1 rounded-full bg-amber-50 dark:bg-amber-950/30 text-amber-700 dark:text-amber-300 border border-amber-200/60 dark:border-amber-800/50 font-bold text-[11px]">
+                            ⭐ {grad.nomination}
+                          </span>
+                        </td>
+                        <td className="py-4 px-5">
+                          <span className="font-mono font-bold text-slate-800 dark:text-slate-200 block text-[11px]">
+                            {grad.certificateId}
+                          </span>
+                          <span className="font-mono text-[10px] text-slate-400 block">
+                            {grad.awardId}
+                          </span>
+                        </td>
+                        <td className="py-4 px-5 text-slate-500 font-mono text-[11px]">
+                          {grad.issuedDate || '02.10.2026'}
+                        </td>
+                        <td className="py-4 px-5">
+                          {isRevoked ? (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-rose-50 dark:bg-rose-950/40 text-rose-600 dark:text-rose-400 border border-rose-200 dark:border-rose-900 font-bold text-[10px]">
+                              Bekor qilingan
+                            </span>
+                          ) : (
+                            <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 text-emerald-600 dark:text-emerald-400 border border-emerald-200 dark:border-emerald-900 font-bold text-[10px]">
+                              ✓ Faol
+                            </span>
+                          )}
+                        </td>
+                        <td className="py-4 px-5 text-right">
+                          <div className="flex items-center justify-end space-x-1">
+                            {/* Main Cert Preview */}
+                            <button
+                              onClick={() => handleOpenPreview(grad, 'main')}
+                              title="Asosiy Sertifikatni ko‘rish"
+                              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-infast-600 transition-colors"
+                            >
+                              <FileCheck className="w-4 h-4" />
+                            </button>
 
-                          {/* Edit button */}
-                          <button
-                            onClick={() => handleOpenEdit(grad)}
-                            title="Tahrirlash"
-                            className="p-1.5 rounded-lg hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600"
-                          >
-                            <Edit2 className="w-4 h-4" />
-                          </button>
+                            {/* Award Cert Preview */}
+                            <button
+                              onClick={() => handleOpenPreview(grad, 'award')}
+                              title="Nominatsiya Sertifikatini ko‘rish"
+                              className="p-2 rounded-xl hover:bg-amber-50 dark:hover:bg-amber-950/40 text-amber-600 transition-colors"
+                            >
+                              <Sparkles className="w-4 h-4" />
+                            </button>
 
-                          {/* Revoke / Restore toggle */}
-                          <button
-                            onClick={() => handleToggleStatus(grad)}
-                            title={isRevoked ? 'Qayta tiklash' : 'Sertifikatni bekor qilish'}
-                            className={`p-1.5 rounded-lg transition-colors ${
-                              isRevoked
-                                ? 'hover:bg-emerald-50 text-emerald-600'
-                                : 'hover:bg-rose-50 text-rose-600'
-                            }`}
-                          >
-                            {isRevoked ? (
-                              <RotateCcw className="w-4 h-4" />
-                            ) : (
-                              <Ban className="w-4 h-4" />
-                            )}
-                          </button>
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                            {/* QR Code */}
+                            <button
+                              onClick={() => handleOpenQr(grad, false)}
+                              title="QR Kodni ko‘rish"
+                              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 transition-colors"
+                            >
+                              <QrCode className="w-4 h-4" />
+                            </button>
+
+                            {/* Public Verification Link */}
+                            <Link
+                              href={`/verify/${grad.certificateId}`}
+                              target="_blank"
+                              title="Verification sahifasini ochish"
+                              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-400 hover:text-infast-600 transition-colors"
+                            >
+                              <ExternalLink className="w-4 h-4" />
+                            </Link>
+
+                            {/* Edit button */}
+                            <button
+                              onClick={() => handleOpenEdit(grad)}
+                              title="Tahrirlash"
+                              className="p-2 rounded-xl hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300 hover:text-blue-600 transition-colors"
+                            >
+                              <Edit2 className="w-4 h-4" />
+                            </button>
+
+                            {/* Revoke / Restore toggle */}
+                            <button
+                              onClick={() => handleToggleStatus(grad)}
+                              title={isRevoked ? 'Qayta tiklash' : 'Sertifikatni bekor qilish'}
+                              className={`p-2 rounded-xl transition-colors ${
+                                isRevoked
+                                  ? 'hover:bg-emerald-50 text-emerald-600'
+                                  : 'hover:bg-rose-50 text-rose-600'
+                              }`}
+                            >
+                              {isRevoked ? (
+                                <RotateCcw className="w-4 h-4" />
+                              ) : (
+                                <Ban className="w-4 h-4" />
+                              )}
+                            </button>
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
         </div>
       </div>
 
       {/* ADD / EDIT MODAL */}
       {(addModalOpen || editModalOpen) && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl w-full max-w-2xl shadow-2xl overflow-hidden my-8">
-            <div className="flex items-center justify-between p-5 border-b border-slate-100 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/50">
-              <div className="flex items-center space-x-2">
-                <div className="w-8 h-8 rounded-lg bg-infast-500 text-white flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md overflow-y-auto">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[28px] w-full max-w-2xl shadow-2xl overflow-hidden my-8">
+            <div className="flex items-center justify-between p-6 border-b border-slate-100 dark:border-slate-800">
+              <div className="flex items-center space-x-3">
+                <div className="w-9 h-9 rounded-2xl bg-infast-500 text-white flex items-center justify-center font-bold">
                   <Award className="w-4 h-4" />
                 </div>
                 <h3 className="font-bold text-base text-slate-900 dark:text-white">
@@ -582,7 +579,7 @@ export default function GraduatesPage() {
                   setAddModalOpen(false);
                   setEditModalOpen(false);
                 }}
-                className="p-1.5 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-200/50"
+                className="p-2 rounded-xl text-slate-400 hover:text-slate-600 hover:bg-slate-100"
               >
                 <X className="w-5 h-5" />
               </button>
@@ -605,7 +602,7 @@ export default function GraduatesPage() {
                       placeholder="Aliyev"
                       value={formData.lastName}
                       onChange={(e) => setFormData({ ...formData, lastName: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -619,7 +616,7 @@ export default function GraduatesPage() {
                       placeholder="Muhammad"
                       value={formData.firstName}
                       onChange={(e) => setFormData({ ...formData, firstName: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -632,7 +629,7 @@ export default function GraduatesPage() {
                       placeholder="Aliyevich"
                       value={formData.middleName}
                       onChange={(e) => setFormData({ ...formData, middleName: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
                 </div>
@@ -647,7 +644,7 @@ export default function GraduatesPage() {
                       placeholder="15.08.2002"
                       value={formData.birthDate}
                       onChange={(e) => setFormData({ ...formData, birthDate: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -660,14 +657,14 @@ export default function GraduatesPage() {
                       placeholder="+998 90 123 45 67"
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Education Information Group */}
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
                 <h4 className="text-xs font-bold uppercase tracking-wider text-infast-600 mb-3">
                   2. Ta’lim va Sertifikat Ma’lumotlari
                 </h4>
@@ -680,7 +677,7 @@ export default function GraduatesPage() {
                       type="text"
                       value={formData.track}
                       onChange={(e) => setFormData({ ...formData, track: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-semibold"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -692,7 +689,7 @@ export default function GraduatesPage() {
                       type="text"
                       value={formData.duration}
                       onChange={(e) => setFormData({ ...formData, duration: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-semibold"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -704,7 +701,7 @@ export default function GraduatesPage() {
                       type="text"
                       value={formData.mentor}
                       onChange={(e) => setFormData({ ...formData, mentor: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-semibold"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
                 </div>
@@ -718,19 +715,19 @@ export default function GraduatesPage() {
                       type="text"
                       value={formData.startDate}
                       onChange={(e) => setFormData({ ...formData, startDate: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
                   <div>
                     <label className="block text-[11px] font-bold text-slate-600 dark:text-slate-300 mb-1">
-                      Tugash / Bitiruv sanasi
+                      Bitiruv sanasi
                     </label>
                     <input
                       type="text"
                       value={formData.endDate}
                       onChange={(e) => setFormData({ ...formData, endDate: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-bold text-infast-600"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-bold text-infast-600 focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
 
@@ -742,14 +739,14 @@ export default function GraduatesPage() {
                       type="text"
                       value={formData.director}
                       onChange={(e) => setFormData({ ...formData, director: e.target.value })}
-                      className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-semibold"
+                      className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-infast-500"
                     />
                   </div>
                 </div>
               </div>
 
               {/* Nomination Group */}
-              <div className="pt-2 border-t border-slate-100 dark:border-slate-800">
+              <div className="pt-3 border-t border-slate-100 dark:border-slate-800">
                 <div className="flex items-center justify-between mb-2">
                   <h4 className="text-xs font-bold uppercase tracking-wider text-amber-600">
                     3. Nominatsiya (Taqdirlash)
@@ -769,13 +766,13 @@ export default function GraduatesPage() {
                     placeholder="Masalan: Exceptional Architecture, Best Team Player..."
                     value={formData.nomination}
                     onChange={(e) => setFormData({ ...formData, nomination: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-amber-500 font-bold"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-amber-300 dark:border-amber-700 rounded-xl text-xs font-bold focus:outline-none focus:ring-2 focus:ring-amber-500"
                   />
                 ) : (
                   <select
                     value={formData.nomination}
                     onChange={(e) => setFormData({ ...formData, nomination: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-infast-500 font-semibold"
+                    className="w-full px-3.5 py-2.5 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-infast-500"
                   >
                     {STANDARD_NOMINATIONS.map((nom) => (
                       <option key={nom} value={nom}>
@@ -794,14 +791,14 @@ export default function GraduatesPage() {
                     setAddModalOpen(false);
                     setEditModalOpen(false);
                   }}
-                  className="px-4 py-2 text-xs font-bold text-slate-500 hover:bg-slate-100 dark:hover:bg-slate-800 rounded-xl transition-colors"
+                  className="px-4 py-2.5 text-xs font-bold text-slate-500 hover:bg-slate-100 rounded-xl transition-colors"
                 >
                   Bekor qilish
                 </button>
                 <button
                   type="submit"
                   disabled={saving}
-                  className="px-6 py-2 bg-infast-500 hover:bg-infast-600 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md shadow-infast-500/20 transition-all flex items-center space-x-2"
+                  className="px-6 py-2.5 bg-infast-500 hover:bg-infast-600 disabled:opacity-50 text-white text-xs font-bold uppercase tracking-wider rounded-xl shadow-md shadow-infast-500/20 transition-all flex items-center space-x-2"
                 >
                   {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
                   <span>{addModalOpen ? 'Saqlash va Sertifikat Yaratish' : 'O‘zgarishlarni Saqlash'}</span>
@@ -815,13 +812,13 @@ export default function GraduatesPage() {
       {/* FULL CERTIFICATE PREVIEW MODAL */}
       {previewModalOpen && selectedGraduate && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-2 sm:p-4 bg-slate-950/80 backdrop-blur-md overflow-y-auto">
-          <div className="bg-slate-900 border border-slate-800 rounded-3xl w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden">
+          <div className="bg-slate-900 border border-slate-800 rounded-[28px] w-full max-w-6xl max-h-[96vh] flex flex-col shadow-2xl overflow-hidden">
             {/* Modal Top Bar */}
             <div className="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 shrink-0">
               <div className="flex items-center space-x-3">
                 <button
                   onClick={() => setPreviewModalOpen(false)}
-                  className="px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors"
+                  className="px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors"
                 >
                   ← Orqaga
                 </button>
@@ -856,7 +853,7 @@ export default function GraduatesPage() {
                     setPreviewModalOpen(false);
                     handleOpenEdit(selectedGraduate);
                   }}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-colors"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-colors"
                 >
                   <Edit2 className="w-3.5 h-3.5" />
                   <span>Tahrirlash</span>
@@ -865,7 +862,7 @@ export default function GraduatesPage() {
                 <button
                   onClick={handleDownloadModalPdf}
                   disabled={downloading}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-infast-500 hover:bg-infast-600 text-white text-xs font-bold rounded-xl shadow transition-colors disabled:opacity-50"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-infast-500 hover:bg-infast-600 text-white text-xs font-bold rounded-xl shadow transition-colors disabled:opacity-50"
                 >
                   {downloading ? (
                     <Loader2 className="w-3.5 h-3.5 animate-spin" />
@@ -877,7 +874,7 @@ export default function GraduatesPage() {
 
                 <button
                   onClick={() => window.print()}
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-white text-xs font-bold rounded-xl transition-colors"
                 >
                   <Printer className="w-3.5 h-3.5" />
                   <span>Print</span>
@@ -890,7 +887,7 @@ export default function GraduatesPage() {
                       : selectedGraduate.awardId
                   }`}
                   target="_blank"
-                  className="inline-flex items-center space-x-1.5 px-3 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-colors"
+                  className="inline-flex items-center space-x-1.5 px-3.5 py-1.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl transition-colors"
                 >
                   <ExternalLink className="w-3.5 h-3.5" />
                   <span>Verification</span>
@@ -919,8 +916,8 @@ export default function GraduatesPage() {
 
       {/* QR CODE MODAL */}
       {qrModalOpen && selectedGraduate && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-6 max-w-sm w-full shadow-2xl text-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-md">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-[28px] p-6 max-w-sm w-full shadow-2xl text-center">
             <div className="flex items-center justify-between mb-4">
               <h3 className="font-bold text-sm text-slate-900 dark:text-white">
                 Unique Verification QR
@@ -954,7 +951,7 @@ export default function GraduatesPage() {
               <a
                 href={qrCodeImg}
                 download={`${selectedGraduate.certificateId}_QR.png`}
-                className="flex-1 py-2 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1"
+                className="flex-1 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-md transition-colors flex items-center justify-center space-x-1"
               >
                 <Download className="w-3.5 h-3.5" />
                 <span>QR Yuklab olish</span>
@@ -962,7 +959,7 @@ export default function GraduatesPage() {
               <Link
                 href={`/verify/${selectedGraduate.certificateId}`}
                 target="_blank"
-                className="px-3 py-2 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center"
+                className="px-3.5 py-2.5 bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs rounded-xl hover:bg-slate-200 transition-colors flex items-center justify-center"
               >
                 <ExternalLink className="w-4 h-4" />
               </Link>
