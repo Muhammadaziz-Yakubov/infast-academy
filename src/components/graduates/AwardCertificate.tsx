@@ -91,7 +91,7 @@ export function AwardCertificate({
                   NOMINATSIYA SERTIFIKATI
                 </h1>
                 <p className="text-[11px] font-bold tracking-[0.22em] text-amber-600 uppercase mt-2">
-                  INFAST IT-ACADEMY • HONOR & EXCELLENCE AWARD
+                  INFAST IT-ACADEMY
                 </p>
               </div>
             </div>
