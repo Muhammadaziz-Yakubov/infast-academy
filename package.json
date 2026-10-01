@@ -8,9 +8,11 @@
     "start": "next start",
     "lint": "next lint",
     "seed": "npx tsx scripts/seed.ts",
+    "seed:graduates": "npx tsx scripts/seed-graduates.ts",
     "bot": "npx tsx scripts/bot.ts"
   },
   "dependencies": {
+    "@types/qrcode": "^1.5.6",
     "bcryptjs": "^2.4.3",
     "canvas-confetti": "^1.9.3",
     "clsx": "^2.1.1",
@@ -25,6 +27,7 @@
     "lucide-react": "^0.453.0",
     "mongoose": "^8.7.2",
     "next": "^14.2.15",
+    "qrcode": "^1.5.4",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "recharts": "^2.13.0",

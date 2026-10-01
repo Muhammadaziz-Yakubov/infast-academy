@@ -23,6 +23,7 @@ import {
   X,
   Zap,
   ShieldCheck,
+  Award,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -44,6 +45,7 @@ const MARKETING_SUB_ITEMS = [
 const NAV_ITEMS = [
   { name: 'Bosh sahifa', href: '/dashboard', icon: LayoutDashboard, key: 'dashboard' },
   { name: 'Talabalar', href: '/students', icon: Users, key: 'students' },
+  { name: 'Bitiruvchilar', href: '/graduates', icon: Award, key: 'graduates' },
   { name: 'Guruhlar', href: '/groups', icon: Folder, key: 'groups' },
   { name: 'Davomat', href: '/attendance', icon: CalendarCheck, key: 'attendance' },
   { name: "To'lovlar", href: '/payments', icon: CreditCard, key: 'payments' },

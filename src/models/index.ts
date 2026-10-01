@@ -19,6 +19,7 @@ import './MarketingPromotion';
 import './Referral';
 import './LandingPage';
 import './SmsLog';
+import './Graduate';
 
 export { Course } from './Course';
 export { Group } from './Group';
@@ -41,4 +42,5 @@ export { MarketingPromotion } from './MarketingPromotion';
 export { Referral } from './Referral';
 export { LandingPage } from './LandingPage';
 export { SmsLog } from './SmsLog';
+export { Graduate } from './Graduate';
 
