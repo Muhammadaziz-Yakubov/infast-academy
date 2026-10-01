@@ -20,15 +20,15 @@ export async function downloadCertificatePdf(
 
   const imgData = canvas.toDataURL('image/png', 1.0);
 
-  // A4 Landscape dimensions in mm: 297mm x 210mm
+  // 16:9 Landscape dimensions in mm (297mm width x 167.06mm height)
+  const pdfWidth = 297;
+  const pdfHeight = (297 * 9) / 16; // ~167.06 mm
+
   const pdf = new jsPDF({
     orientation: 'landscape',
     unit: 'mm',
-    format: 'a4',
+    format: [pdfWidth, pdfHeight],
   });
-
-  const pdfWidth = 297;
-  const pdfHeight = 210;
 
   pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight, undefined, 'FAST');
   pdf.save(fileName);

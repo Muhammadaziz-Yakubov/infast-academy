@@ -54,12 +54,13 @@ export function AwardCertificate({
         id={id}
         className="relative bg-[#FCFCFD] text-slate-900 select-none shadow-2xl print:shadow-none mx-auto overflow-hidden print:m-0"
         style={{
-          width: '1123px',
-          height: '794px',
-          minWidth: '1123px',
-          minHeight: '794px',
-          maxWidth: '1123px',
-          maxHeight: '794px',
+          width: '1280px',
+          height: '720px',
+          minWidth: '1280px',
+          minHeight: '720px',
+          maxWidth: '1280px',
+          maxHeight: '720px',
+          aspectRatio: '16/9',
           boxSizing: 'border-box',
           fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Inter', 'Segoe UI', Roboto, sans-serif",
         }}
