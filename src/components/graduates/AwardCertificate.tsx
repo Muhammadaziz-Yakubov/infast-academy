@@ -95,17 +95,9 @@ export function AwardCertificate({
               </div>
             </div>
 
-            {/* Right: InFast Monogram & Award ID */}
-            <div className="text-right flex flex-col items-end">
-              <div className="flex items-center space-x-2 mb-1.5">
-                <div className="w-7 h-7 rounded-lg bg-slate-950 flex items-center justify-center text-amber-400 font-black text-xs">
-                  IF
-                </div>
-                <span className="font-extrabold text-xs tracking-wider text-slate-950 uppercase">
-                  INFAST
-                </span>
-              </div>
-              <span className="font-mono text-[11px] font-bold text-slate-400 tracking-wider">
+            {/* Right: Award ID */}
+            <div className="text-right">
+              <span className="font-mono text-xs font-bold text-slate-400 tracking-wider">
                 № {awardNumber}
               </span>
             </div>
