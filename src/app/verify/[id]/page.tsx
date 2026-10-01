@@ -8,13 +8,10 @@ import {
   XCircle,
   ShieldCheck,
   Award,
-  Calendar,
-  Clock,
-  User,
-  BookOpen,
-  ArrowRight,
   Sparkles,
   ExternalLink,
+  ArrowRight,
+  GraduationCap,
 } from 'lucide-react';
 import Link from 'next/link';
 
@@ -47,20 +44,20 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
 
   if (!graduate) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900 flex flex-col items-center justify-center p-4">
-        <div className="w-full max-w-md bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl p-8 text-center shadow-xl">
-          <div className="w-16 h-16 bg-rose-50 dark:bg-rose-950/40 text-rose-600 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-100 dark:border-rose-900">
-            <XCircle className="w-8 h-8" />
+      <div className="min-h-screen bg-[#F5F5F7] dark:bg-[#000000] text-slate-900 dark:text-slate-100 flex flex-col items-center justify-center p-4 font-sans">
+        <div className="w-full max-w-[420px] bg-white/80 dark:bg-zinc-900/80 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] p-8 text-center shadow-2xl shadow-black/5">
+          <div className="w-14 h-14 bg-rose-50 dark:bg-rose-950/40 text-rose-500 rounded-2xl flex items-center justify-center mx-auto mb-4 border border-rose-100 dark:border-rose-900/50">
+            <XCircle className="w-7 h-7" />
           </div>
-          <h1 className="text-xl font-black text-slate-900 dark:text-white uppercase tracking-tight">
+          <h1 className="text-xl font-bold tracking-tight text-slate-950 dark:text-white">
             Sertifikat Topilmadi
           </h1>
-          <p className="text-sm text-slate-600 dark:text-slate-400 mt-2 mb-6">
-            "<span className="font-mono font-bold text-slate-800 dark:text-slate-200">{certificateId}</span>" raqamli sertifikat InFast IT-Academy ma’lumotlar bazasida mavjud emas.
+          <p className="text-xs text-slate-500 dark:text-zinc-400 mt-2 mb-6 leading-relaxed">
+            «<span className="font-mono font-semibold text-slate-900 dark:text-zinc-200">{certificateId}</span>» raqamli sertifikat InFast IT-Academy ma’lumotlar bazasida mavjud emas.
           </p>
           <Link
             href="/"
-            className="inline-flex items-center justify-center px-6 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-md shadow-infast-500/20 transition-colors"
+            className="inline-flex items-center justify-center w-full py-3 bg-slate-950 hover:bg-slate-800 dark:bg-white dark:hover:bg-zinc-200 text-white dark:text-black font-semibold text-xs rounded-full transition-all active:scale-[0.98]"
           >
             Bosh sahifaga qaytish
           </Link>
@@ -73,176 +70,132 @@ export default async function VerifyPage({ params }: VerifyPageProps) {
   const isRevoked = graduate.status === 'revoked';
 
   return (
-    <div className="min-h-screen bg-slate-50 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col justify-between py-8 px-4 sm:px-6">
-      <div className="max-w-xl mx-auto w-full">
-        {/* Academy Header */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center space-x-2.5 px-4 py-1.5 rounded-full bg-orange-50 dark:bg-orange-950/40 border border-orange-200 dark:border-orange-800/60 mb-3">
-            <div className="w-4 h-4 rounded-full bg-infast-500 flex items-center justify-center text-white text-[10px] font-black">
-              ✓
-            </div>
-            <span className="text-[11px] font-bold text-infast-700 dark:text-infast-300 uppercase tracking-wider">
-              Rasmiy Verifikatsiya Tizimi
-            </span>
+    <div className="min-h-screen bg-[#F5F5F7] dark:bg-[#000000] text-slate-900 dark:text-zinc-100 flex flex-col justify-between py-12 px-4 sm:px-6 font-sans antialiased">
+      <div className="max-w-[480px] mx-auto w-full">
+        {/* Apple-style Brand Header */}
+        <div className="text-center mb-6">
+          <div className="inline-flex items-center justify-center w-10 h-10 rounded-2xl bg-black dark:bg-white text-white dark:text-black font-black text-xs shadow-md mb-3">
+            IF
           </div>
-          <h1 className="text-2xl font-black text-slate-950 dark:text-white tracking-tight uppercase">
+          <h1 className="text-xs font-semibold tracking-[0.2em] text-slate-500 dark:text-zinc-400 uppercase">
             INFAST IT-ACADEMY
           </h1>
-          <p className="text-xs text-slate-500 dark:text-slate-400 font-medium">
-            SERTIFIKATNI TEKSHIRISH VA TASDIQLASH
+          <p className="text-lg font-bold text-slate-950 dark:text-white tracking-tight mt-0.5">
+            Sertifikat Tekshiruvi
           </p>
         </div>
 
-        {/* Status Verification Card */}
-        <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl shadow-xl overflow-hidden mb-6">
-          {/* Status Header Banner */}
-          <div
-            className={`p-6 text-center ${
-              isRevoked
-                ? 'bg-rose-500 text-white'
-                : 'bg-gradient-to-r from-emerald-600 via-teal-600 to-emerald-700 text-white'
-            }`}
-          >
-            <div className="w-12 h-12 bg-white/20 backdrop-blur-md rounded-2xl flex items-center justify-center mx-auto mb-2.5 shadow-inner">
-              {isRevoked ? (
-                <XCircle className="w-7 h-7 text-white" />
-              ) : (
-                <CheckCircle2 className="w-7 h-7 text-white" />
-              )}
-            </div>
-            <h2 className="text-lg font-black tracking-wide uppercase">
-              {isRevoked ? '✕ SERTIFIKAT BEKOR QILINGAN' : '✓ HAQIQIY SERTIFIKAT'}
-            </h2>
-            <p className="text-xs text-white/90 font-medium mt-0.5">
-              {isRevoked
-                ? 'Ushbu sertifikat administrator tomonidan bekor qilingan va haqiqiy emas.'
-                : 'Ushbu sertifikat InFast IT-Academy tomonidan rasman tasdiqlangan.'}
-            </p>
-          </div>
+        {/* Apple-style Main Card */}
+        <div className="bg-white/90 dark:bg-zinc-900/90 backdrop-blur-2xl border border-black/[0.06] dark:border-white/[0.08] rounded-[32px] shadow-2xl shadow-black/5 overflow-hidden">
+          {/* Status Capsule Indicator */}
+          <div className="p-6 text-center border-b border-black/[0.04] dark:border-white/[0.06]">
+            {isRevoked ? (
+              <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-rose-50 dark:bg-rose-950/40 border border-rose-200/60 dark:border-rose-900/60 text-rose-600 dark:text-rose-400 text-xs font-bold">
+                <XCircle className="w-4 h-4 shrink-0" />
+                <span>SERTIFIKAT BEKOR QILINGAN</span>
+              </div>
+            ) : (
+              <div className="inline-flex items-center space-x-2 px-4 py-1.5 rounded-full bg-emerald-50 dark:bg-emerald-950/40 border border-emerald-200/60 dark:border-emerald-900/60 text-emerald-600 dark:text-emerald-400 text-xs font-bold">
+                <CheckCircle2 className="w-4 h-4 shrink-0" />
+                <span>HAQIQIY VA TASDIQLANGAN</span>
+              </div>
+            )}
 
-          {/* Certificate Type Banner */}
-          <div className="px-6 py-3 bg-slate-50 dark:bg-slate-800/60 border-b border-slate-100 dark:border-slate-800 flex items-center justify-between">
-            <div className="flex items-center space-x-2">
-              <Award className="w-4 h-4 text-infast-500" />
-              <span className="text-xs font-bold text-slate-700 dark:text-slate-300">
-                {isAward ? 'Nominatsiya Sertifikati' : 'Asosiy Bitiruv Sertifikati'}
+            {/* Certificate ID Pill */}
+            <div className="mt-3">
+              <span className="font-mono text-[11px] font-semibold tracking-wider text-slate-400 dark:text-zinc-500 bg-slate-100 dark:bg-zinc-800/80 px-3 py-1 rounded-full">
+                {certificateId}
               </span>
             </div>
-            <span className="font-mono text-xs font-black text-slate-900 dark:text-white bg-slate-200 dark:bg-slate-700 px-2.5 py-0.5 rounded-lg">
-              {certificateId}
-            </span>
           </div>
 
-          {/* Detailed Information Grid */}
-          <div className="p-6 space-y-4">
-            {/* Student Full Name */}
-            <div className="pb-4 border-b border-slate-100 dark:border-slate-800">
-              <span className="text-[11px] font-bold text-slate-400 dark:text-slate-500 uppercase tracking-wider block mb-1">
-                Bitiruvchi F.I.O.
+          {/* Student & Course Details */}
+          <div className="p-6 space-y-5">
+            {/* Student Name */}
+            <div className="text-center pb-2 border-b border-black/[0.04] dark:border-white/[0.06]">
+              <span className="text-[10px] font-semibold text-slate-400 dark:text-zinc-500 uppercase tracking-widest block mb-1">
+                Bitiruvchi
               </span>
-              <h3 className="text-xl font-black text-slate-950 dark:text-white uppercase tracking-tight">
+              <h2 className="text-2xl font-bold tracking-tight text-slate-950 dark:text-white">
                 {graduate.fullName}
-              </h3>
+              </h2>
+              <p className="text-xs font-medium text-infast-600 mt-1">
+                {graduate.track || 'Full-Stack Development'}
+              </p>
             </div>
 
-            {/* If Nomination, display it prominently */}
+            {/* Nomination Badge if exists */}
             {graduate.nomination && (
-              <div className="p-3.5 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800/50 rounded-2xl">
-                <div className="flex items-center space-x-2 mb-1">
-                  <Sparkles className="w-4 h-4 text-amber-600 dark:text-amber-400" />
-                  <span className="text-[10px] font-bold text-amber-700 dark:text-amber-300 uppercase tracking-wider">
-                    Nominatsiya
-                  </span>
+              <div className="p-4 bg-amber-50/70 dark:bg-amber-950/20 border border-amber-200/60 dark:border-amber-900/40 rounded-2xl text-center">
+                <div className="flex items-center justify-center space-x-1 text-amber-600 dark:text-amber-400 text-[10px] font-bold uppercase tracking-widest mb-1">
+                  <Sparkles className="w-3 h-3" />
+                  <span>Nominatsiya</span>
                 </div>
-                <p className="text-base font-black text-slate-900 dark:text-white uppercase">
+                <p className="text-sm font-bold text-slate-950 dark:text-white">
                   “{graduate.nomination}”
                 </p>
               </div>
             )}
 
-            {/* Key Data List */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-xs">
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  Yo‘nalish
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {graduate.track || 'Full-Stack Development'}
+            {/* Key Metadata Rows (Apple Settings style) */}
+            <div className="bg-[#F5F5F7] dark:bg-zinc-800/50 rounded-2xl divide-y divide-black/[0.04] dark:divide-white/[0.06] text-xs">
+              <div className="flex items-center justify-between p-3.5">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Yo‘nalish</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right">
+                  {graduate.track}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  Davomiyligi
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {graduate.duration || '15 oy'}
+              <div className="flex items-center justify-between p-3.5">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Davomiyligi</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right">
+                  {graduate.duration}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  Kurs Boshlanishi
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {formatUzbekDateDisplay(graduate.startDate)}
+              <div className="flex items-center justify-between p-3.5">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">O‘quv davri</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right">
+                  {formatUzbekDateDisplay(graduate.startDate)} — {formatUzbekDateDisplay(graduate.endDate)}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  Tugash / Bitiruv Sanasi
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {formatUzbekDateDisplay(graduate.endDate)}
+              <div className="flex items-center justify-between p-3.5">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Mentor</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right">
+                  {graduate.mentor}
                 </span>
               </div>
 
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  O‘quv Markaz Mentori
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
-                  {graduate.mentor || 'M. Yakubov'}
-                </span>
-              </div>
-
-              <div className="p-3 bg-slate-50 dark:bg-slate-800/40 rounded-xl border border-slate-100 dark:border-slate-800">
-                <span className="text-slate-400 block font-semibold text-[10px] uppercase">
-                  Berilgan Sana
-                </span>
-                <span className="font-bold text-slate-900 dark:text-slate-100">
+              <div className="flex items-center justify-between p-3.5">
+                <span className="text-slate-500 dark:text-zinc-400 font-medium">Berilgan sana</span>
+                <span className="font-semibold text-slate-900 dark:text-white text-right">
                   {formatUzbekDateDisplay(graduate.issuedDate || '02.10.2026')}
                 </span>
               </div>
             </div>
 
-            {/* Revocation notice if applicable */}
+            {/* Revocation explanation if applicable */}
             {isRevoked && graduate.revokedReason && (
-              <div className="p-3 bg-rose-50 dark:bg-rose-950/40 border border-rose-200 dark:border-rose-900 text-xs rounded-xl text-rose-800 dark:text-rose-200">
+              <div className="p-3.5 bg-rose-50 dark:bg-rose-950/40 border border-rose-200/80 dark:border-rose-900/80 rounded-2xl text-xs text-rose-800 dark:text-rose-300">
                 <span className="font-bold block mb-0.5">Bekor qilinish sababi:</span>
                 {graduate.revokedReason}
               </div>
             )}
           </div>
 
-          {/* Footer Security Note */}
-          <div className="p-4 bg-slate-50 dark:bg-slate-800/60 border-t border-slate-100 dark:border-slate-800 text-center">
-            <div className="flex items-center justify-center space-x-1 text-[11px] font-semibold text-slate-500 dark:text-slate-400">
-              <ShieldCheck className="w-3.5 h-3.5 text-emerald-600" />
-              <span>Elektron muhr bilan himoyalangan va tasdiqlangan</span>
+          {/* Footer Security Badge */}
+          <div className="px-6 py-4 bg-[#FAFAFA] dark:bg-zinc-950/40 border-t border-black/[0.04] dark:border-white/[0.06] text-center">
+            <div className="flex items-center justify-center space-x-1.5 text-[11px] font-medium text-slate-400 dark:text-zinc-500">
+              <ShieldCheck className="w-3.5 h-3.5 text-emerald-500" />
+              <span>InFast IT-Academy rasmiy tizimi orqali tekshirildi</span>
             </div>
           </div>
         </div>
 
-        {/* Bottom Academy Info */}
-        <div className="text-center text-xs text-slate-400 space-y-1">
-          <p className="font-medium text-slate-500">
-            InFast IT-Academy — Zamonaviy IT ta'lim maskani
-          </p>
-          <p className="text-[11px]">
-            Sayt: <a href="https://infastacademy.uz" className="text-infast-600 hover:underline">infastacademy.uz</a> • Tel: +998 (90) 271-00-27
-          </p>
+        {/* Bottom Footer Link */}
+        <div className="text-center mt-6 text-xs text-slate-400 dark:text-zinc-600">
+          <p>© 2026 InFast IT-Academy. Barcha huquqlar himoyalangan.</p>
         </div>
       </div>
     </div>

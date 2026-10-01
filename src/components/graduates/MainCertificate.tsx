@@ -2,7 +2,6 @@
 
 import React, { useEffect, useState } from 'react';
 import QRCode from 'qrcode';
-import { InfastSeal } from './InfastSeal';
 import { formatUzbekDateDisplay } from '@/lib/certificateUtils';
 
 export interface CertificateData {
@@ -50,7 +49,6 @@ export function MainCertificate({ data, id = 'main-certificate-print', origin }:
         if (!err && url) {
           setQrCodeDataUrl(url);
         } else {
-          // Fallback to online QR service
           setQrCodeDataUrl(
             `https://api.qrserver.com/v1/create-qr-code/?size=240x240&data=${encodeURIComponent(
               verifyUrl
@@ -77,220 +75,184 @@ export function MainCertificate({ data, id = 'main-certificate-print', origin }:
           maxWidth: '1123px',
           maxHeight: '794px',
           boxSizing: 'border-box',
-          fontFamily: "'Inter', system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif",
+          fontFamily: "-apple-system, BlinkMacSystemFont, 'SF Pro Display', 'SF Pro Text', 'Helvetica Neue', Inter, sans-serif",
         }}
       >
         {/* Status watermark if revoked */}
         {data.status === 'revoked' && (
-          <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none bg-white/40 backdrop-blur-[1px]">
-            <div className="transform -rotate-12 border-8 border-rose-600/80 text-rose-600/90 text-6xl font-black uppercase px-16 py-6 tracking-widest rounded-2xl bg-white/95 shadow-2xl">
+          <div className="absolute inset-0 z-50 flex items-center justify-center pointer-events-none bg-white/60 backdrop-blur-[2px]">
+            <div className="transform -rotate-12 border-4 border-rose-500 text-rose-500 text-5xl font-black uppercase px-14 py-4 tracking-widest rounded-2xl bg-white/95 shadow-2xl">
               BEKOR QILINGAN
             </div>
           </div>
         )}
 
-        {/* Outer Premium Minimalist Double Border */}
-        <div className="absolute inset-[16px] border border-slate-200 pointer-events-none" />
-        <div className="absolute inset-[20px] border-2 border-slate-900 pointer-events-none" />
-        <div className="absolute inset-[24px] border border-infast-500/40 pointer-events-none" />
+        {/* Ultra-Clean Apple Minimalist Border */}
+        <div className="absolute inset-[18px] border border-slate-200/80 pointer-events-none rounded-[4px]" />
+        <div className="absolute inset-[24px] border border-slate-900/10 pointer-events-none" />
 
-        {/* Corner Geometric Accents */}
-        <div className="absolute top-[20px] left-[20px] w-12 h-12 border-t-4 border-l-4 border-infast-500 pointer-events-none" />
-        <div className="absolute top-[20px] right-[20px] w-12 h-12 border-t-4 border-r-4 border-infast-500 pointer-events-none" />
-        <div className="absolute bottom-[20px] left-[20px] w-12 h-12 border-b-4 border-l-4 border-infast-500 pointer-events-none" />
-        <div className="absolute bottom-[20px] right-[20px] w-12 h-12 border-b-4 border-r-4 border-infast-500 pointer-events-none" />
+        {/* Minimal Corner Accents */}
+        <div className="absolute top-[24px] left-[24px] w-6 h-6 border-t-2 border-l-2 border-infast-500 pointer-events-none" />
+        <div className="absolute top-[24px] right-[24px] w-6 h-6 border-t-2 border-r-2 border-infast-500 pointer-events-none" />
+        <div className="absolute bottom-[24px] left-[24px] w-6 h-6 border-b-2 border-l-2 border-infast-500 pointer-events-none" />
+        <div className="absolute bottom-[24px] right-[24px] w-6 h-6 border-b-2 border-r-2 border-infast-500 pointer-events-none" />
 
-        {/* Subtle Background Watermark Logo */}
-        <div className="absolute inset-0 flex items-center justify-center opacity-[0.025] pointer-events-none">
-          <span className="text-[260px] font-black tracking-tighter text-slate-900 select-none">
-            INFAST
-          </span>
-        </div>
-
-        {/* Main Content Layout */}
-        <div className="relative h-full flex flex-col justify-between px-16 py-11 text-center">
-          {/* 1. Header Section */}
+        {/* Main Certificate Content */}
+        <div className="relative h-full flex flex-col justify-between px-20 py-12 text-center">
+          {/* Header */}
           <div>
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div className="flex items-center space-x-2.5 text-left">
-                <div className="w-8 h-8 rounded-lg bg-infast-500 flex items-center justify-center text-white font-black shadow-md shadow-infast-500/20">
-                  <svg className="w-4 h-4 fill-white" viewBox="0 0 24 24">
-                    <path d="M13 2L3 14h9l-1 8 10-12h-9l1-8z" />
-                  </svg>
+            <div className="flex items-center justify-between border-b border-slate-100 pb-4">
+              <div className="flex items-center space-x-3 text-left">
+                <div className="w-8 h-8 rounded-xl bg-slate-950 flex items-center justify-center text-white font-black shadow-sm">
+                  <span className="text-infast-500 text-xs font-black">IF</span>
                 </div>
                 <div>
-                  <h2 className="text-sm font-black tracking-wider text-slate-900 uppercase">
+                  <h2 className="text-xs font-black tracking-[0.25em] text-slate-950 uppercase">
                     INFAST IT-ACADEMY
                   </h2>
-                  <p className="text-[9px] tracking-widest text-infast-600 font-bold uppercase">
+                  <p className="text-[9px] tracking-[0.2em] text-slate-400 font-semibold uppercase mt-0.5">
                     ACADEMY OF MODERN TECHNOLOGIES
                   </p>
                 </div>
               </div>
 
               <div className="text-right">
-                <span className="text-[10px] font-mono font-bold text-slate-400 uppercase tracking-widest">
-                  ID: <span className="text-slate-900 font-extrabold">{data.certificateId}</span>
+                <span className="text-[10px] font-mono tracking-widest text-slate-400 uppercase">
+                  CERTIFICATE ID
                 </span>
+                <p className="text-xs font-mono font-bold text-slate-950">
+                  {data.certificateId}
+                </p>
               </div>
             </div>
 
-            {/* Main Title */}
-            <div className="mt-6 space-y-1">
-              <p className="text-[11px] font-bold tracking-[0.35em] text-infast-600 uppercase">
+            {/* Title Section */}
+            <div className="mt-8 space-y-1.5">
+              <span className="inline-block text-[10px] font-bold tracking-[0.4em] text-infast-600 uppercase">
                 RASMIY BITIRUV HUJJATI
-              </p>
-              <h1 className="text-4xl font-extrabold tracking-[0.2em] text-slate-900 uppercase">
+              </span>
+              <h1 className="text-4xl font-extrabold tracking-[0.22em] text-slate-950 uppercase">
                 SERTIFIKAT
               </h1>
-              <div className="w-24 h-1 bg-gradient-to-r from-infast-500 via-amber-500 to-infast-600 mx-auto rounded-full mt-2" />
+              <div className="w-16 h-0.5 bg-infast-500 mx-auto rounded-full mt-2" />
             </div>
           </div>
 
-          {/* 2. Middle Body Section */}
-          <div className="space-y-4 my-auto py-2">
-            <p className="text-sm font-medium text-slate-500 italic tracking-wide">
+          {/* Middle Body */}
+          <div className="my-auto py-4 space-y-4">
+            <p className="text-xs font-medium text-slate-400 tracking-widest uppercase">
               Ushbu sertifikat
             </p>
 
             {/* Graduate Name */}
-            <div className="py-1">
-              <div className="inline-block relative">
-                <h2 className="text-3xl sm:text-[34px] font-black text-slate-950 tracking-wide uppercase px-8 pb-2 border-b-2 border-slate-900">
-                  {data.fullName}
-                </h2>
-              </div>
+            <div className="py-2">
+              <h2 className="text-3xl font-black text-slate-950 tracking-wider uppercase px-6">
+                {data.fullName}
+              </h2>
+              <div className="w-64 h-px bg-slate-300 mx-auto mt-2" />
             </div>
 
-            <p className="text-sm font-medium text-slate-500 tracking-wide">
+            <p className="text-xs font-medium text-slate-400 tracking-widest uppercase">
               ga
             </p>
 
-            {/* Certificate Statement */}
-            <p className="text-base text-slate-800 max-w-2xl mx-auto leading-relaxed font-normal">
+            <p className="text-sm text-slate-700 max-w-2xl mx-auto leading-relaxed font-normal">
               <span className="font-bold text-slate-950">{data.duration || '15 oy'}lik</span>{' '}
               <span className="font-bold text-infast-600">{data.track || 'Full-Stack Development'}</span>{' '}
               ta’lim dasturini muvaffaqiyatli tamomlaganligi munosabati bilan berildi.
             </p>
 
-            {/* Course Meta Pills */}
-            <div className="inline-flex items-center justify-center gap-8 pt-3 pb-1 border-y border-slate-100 px-8">
+            {/* Minimal Course Metadata Row */}
+            <div className="inline-flex items-center justify-center gap-10 pt-4 pb-2 border-y border-slate-100 px-10">
               <div>
-                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-bold">
+                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-semibold">
                   Yo‘nalish
                 </span>
-                <span className="text-xs font-black text-slate-900 uppercase">
+                <span className="text-xs font-bold text-slate-900 uppercase">
                   {data.track || 'FULL-STACK DEVELOPMENT'}
                 </span>
               </div>
               <div className="w-px h-6 bg-slate-200" />
               <div>
-                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-bold">
+                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-semibold">
                   Davomiyligi
                 </span>
-                <span className="text-xs font-black text-slate-900 uppercase">
+                <span className="text-xs font-bold text-slate-900 uppercase">
                   {data.duration || '15 OY'}
                 </span>
               </div>
               <div className="w-px h-6 bg-slate-200" />
               <div>
-                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-bold">
+                <span className="block text-[9px] uppercase tracking-widest text-slate-400 font-semibold">
                   Kurs davri
                 </span>
-                <span className="text-xs font-black text-slate-900 uppercase">
+                <span className="text-xs font-bold text-slate-900 uppercase">
                   {startDateFormatted} — {endDateFormatted}
                 </span>
               </div>
             </div>
           </div>
 
-          {/* 3. Footer Section (Signatures, Official Seal, QR Verification) */}
+          {/* Footer: Clean Signing Areas & Stamp Space */}
           <div className="pt-2">
-            <div className="grid grid-cols-3 items-end gap-4">
-              {/* Left: Mentor Signature */}
-              <div className="text-center space-y-1">
-                <div className="h-14 flex items-end justify-center pb-1">
-                  {/* Stylized Digital Signature Graphic */}
-                  <svg className="w-36 h-10 text-slate-800 opacity-90" viewBox="0 0 160 50" fill="none">
-                    <path
-                      d="M10 35 C 30 10, 45 45, 65 20 C 85 -5, 100 40, 120 15 C 135 25, 150 10, 155 30"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M30 38 Q 70 30 140 38"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
+            <div className="grid grid-cols-3 items-end gap-6">
+              {/* Left: Mentor Hand-Signature Area (Clean blank space for pen signature) */}
+              <div className="text-center">
+                {/* 64px Blank space specifically for pen signature */}
+                <div className="h-16" />
                 <div className="w-44 h-px bg-slate-400 mx-auto" />
-                <p className="text-xs font-black text-slate-900 tracking-tight">
+                <p className="text-xs font-bold text-slate-950 mt-1.5 tracking-tight">
                   {data.mentor || 'M. Yakubov'}
                 </p>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
                   O‘quv markaz mentori
                 </p>
               </div>
 
-              {/* Center: Official Seal & QR Code */}
-              <div className="flex items-center justify-center space-x-4">
-                <div className="transform scale-95 transition-transform hover:scale-100">
-                  <InfastSeal size={96} variant="orange" />
+              {/* Center: Physical Stamp Area & QR Code */}
+              <div className="flex items-center justify-center space-x-6">
+                {/* Clean blank area reserved for physical academy stamp */}
+                <div className="w-20 h-20 rounded-full border border-dashed border-slate-300 flex items-center justify-center text-[9px] font-mono text-slate-300 uppercase tracking-wider select-none">
+                  M.O‘.
                 </div>
+
+                {/* Unique Verification QR */}
                 <div className="flex flex-col items-center">
-                  <div className="p-1 bg-white border border-slate-300 rounded-lg shadow-sm">
+                  <div className="p-1 bg-white border border-slate-200 rounded-lg shadow-sm">
                     {qrCodeDataUrl ? (
                       <img
                         src={qrCodeDataUrl}
                         alt="Verification QR"
-                        className="w-[72px] h-[72px] object-contain"
+                        className="w-[68px] h-[68px] object-contain"
                       />
                     ) : (
-                      <div className="w-[72px] h-[72px] bg-slate-100 animate-pulse rounded" />
+                      <div className="w-[68px] h-[68px] bg-slate-50 rounded" />
                     )}
                   </div>
-                  <span className="text-[8px] font-mono text-slate-400 mt-1 uppercase tracking-wider">
+                  <span className="text-[7.5px] font-mono text-slate-400 mt-1 uppercase tracking-wider">
                     Skaner qiling
                   </span>
                 </div>
               </div>
 
-              {/* Right: Director Signature */}
-              <div className="text-center space-y-1">
-                <div className="h-14 flex items-end justify-center pb-1">
-                  {/* Stylized Digital Signature Graphic */}
-                  <svg className="w-36 h-10 text-slate-800 opacity-90" viewBox="0 0 160 50" fill="none">
-                    <path
-                      d="M15 25 C 35 45, 55 5, 80 35 C 105 10, 125 45, 145 20 C 150 15, 155 35, 158 28"
-                      stroke="currentColor"
-                      strokeWidth="2"
-                      strokeLinecap="round"
-                    />
-                    <path
-                      d="M25 40 Q 80 34 148 40"
-                      stroke="currentColor"
-                      strokeWidth="1.5"
-                      strokeLinecap="round"
-                    />
-                  </svg>
-                </div>
+              {/* Right: Director Hand-Signature Area (Clean blank space for pen signature) */}
+              <div className="text-center">
+                {/* 64px Blank space specifically for pen signature */}
+                <div className="h-16" />
                 <div className="w-44 h-px bg-slate-400 mx-auto" />
-                <p className="text-xs font-black text-slate-900 tracking-tight">
+                <p className="text-xs font-bold text-slate-950 mt-1.5 tracking-tight">
                   {data.director || 'N. Yakubova'}
                 </p>
-                <p className="text-[10px] font-semibold text-slate-500 uppercase tracking-wider">
+                <p className="text-[10px] font-medium text-slate-400 uppercase tracking-wider mt-0.5">
                   InFast IT-Academy direktori
                 </p>
               </div>
             </div>
 
-            {/* Bottom Verification Text */}
-            <div className="flex items-center justify-between text-[9px] text-slate-400 pt-3 border-t border-slate-100 mt-2">
+            {/* Bottom Verification Note */}
+            <div className="flex items-center justify-between text-[9px] text-slate-400 pt-3 border-t border-slate-100 mt-3">
               <span>Berilgan sana: {formatUzbekDateDisplay(data.issuedDate || '02.10.2026')}</span>
-              <span className="font-mono">Rasmiy tekshirish manzili: infastacademy.uz/verify/{data.certificateId}</span>
+              <span className="font-mono">infastacademy.uz/verify/{data.certificateId}</span>
               <span>InFast Academy © 2026</span>
             </div>
           </div>
