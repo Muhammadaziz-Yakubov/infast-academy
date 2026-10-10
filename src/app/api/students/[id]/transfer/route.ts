@@ -14,6 +14,13 @@ export async function POST(request: Request, { params }: { params: { id: string 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin talabani filialga ko'chira olmaydi. Bu harakat menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { toBranchId, toGroupId, reason } = body;

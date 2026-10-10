@@ -32,6 +32,7 @@ export default function StudentDetailPage() {
   const [data, setData] = useState<any>(null);
   const [transfers, setTransfers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userSession, setUserSession] = useState<{ role?: string } | null>(null);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'attendance' | 'exams' | 'portfolio'>('overview');
 
@@ -56,6 +57,17 @@ export default function StudentDetailPage() {
     technologiesStr: '',
   });
   const [savingPortfolio, setSavingPortfolio] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((meData) => {
+        if (meData.authenticated) {
+          setUserSession(meData.user);
+        }
+      })
+      .catch((e) => console.error(e));
+  }, []);
 
   useEffect(() => {
     fetchStudentDetail();
@@ -226,13 +238,15 @@ export default function StudentDetailPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            <button
-              onClick={() => setIsTransferModalOpen(true)}
-              className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
-            >
-              <ArrowRightLeft className="w-3.5 h-3.5" />
-              <span>Filialga ko'chirish</span>
-            </button>
+            {userSession?.role !== 'ADMIN' && (
+              <button
+                onClick={() => setIsTransferModalOpen(true)}
+                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
+              >
+                <ArrowRightLeft className="w-3.5 h-3.5" />
+                <span>Filialga ko'chirish</span>
+              </button>
+            )}
 
             {/* Dynamic Course Month Badge */}
             <div className="px-3.5 py-1.5 rounded-xl bg-sky-50 text-sky-700 font-bold text-xs">
@@ -681,15 +695,17 @@ export default function StudentDetailPage() {
                 )}
               </div>
 
-              <div className="flex justify-end">
-                <button
-                  type="submit"
-                  disabled={savingPortfolio}
-                  className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all"
-                >
-                  {savingPortfolio ? "Saqlanmoqda..." : "Portfolio Va Rezumeni Saqlash"}
-                </button>
-              </div>
+                {userSession?.role !== 'ADMIN' && (
+                  <div className="flex justify-end">
+                    <button
+                      type="submit"
+                      disabled={savingPortfolio}
+                      className="px-6 py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 transition-all"
+                    >
+                      {savingPortfolio ? "Saqlanmoqda..." : "Portfolio Va Rezumeni Saqlash"}
+                    </button>
+                  </div>
+                )}
             </form>
           </div>
         )}

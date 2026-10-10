@@ -124,6 +124,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin o'quvchi qo'sha olmaydi. O'quvchi qo'shish va tahrirlash menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

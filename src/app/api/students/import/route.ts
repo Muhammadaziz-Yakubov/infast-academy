@@ -28,6 +28,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin talabalarni import qila olmaydi. Bu harakat menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { action, rows, validRowsToImport } = body;

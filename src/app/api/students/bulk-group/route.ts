@@ -11,6 +11,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin talabalarning guruhini o'zgartira olmaydi. Bu harakat menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
 

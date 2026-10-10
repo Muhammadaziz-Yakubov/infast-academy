@@ -80,7 +80,7 @@ export default function ReportsPage() {
             </div>
             <div className="grid grid-cols-2 gap-3 text-xs">
               <div className="p-3 bg-emerald-50 rounded-2xl col-span-2">
-                <p className="text-emerald-700 font-semibold">Jami Yig'ilgan Tushum</p>
+                <p className="text-emerald-700 font-semibold">Oylik Tushum</p>
                 <p className="text-2xl font-extrabold text-emerald-800 mt-1">
                   {loading ? '...' : formatMoneyUz(payments.totalRevenue)}
                 </p>

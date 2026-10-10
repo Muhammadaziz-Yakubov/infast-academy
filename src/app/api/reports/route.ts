@@ -9,6 +9,8 @@ import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculation
 
 import { getSession, getBranchFilter } from '@/lib/auth';
 
+import { startOfMonth, endOfMonth } from 'date-fns';
+
 export async function GET(request: Request) {
   try {
     const session = getSession();
@@ -33,9 +35,13 @@ export async function GET(request: Request) {
     const completedStudents = await Student.countDocuments({ status: 'COMPLETED', ...branchFilter });
     const leftStudents = await Student.countDocuments({ status: 'LEFT', ...branchFilter });
 
-    // 2. Payments Breakdown & Total Debt Calculation
-    const allPayments = await Payment.find({ ...branchFilter });
-    const totalPaymentsSum = allPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
+    // 2. Monthly Revenue & Total Debt Calculation
+    const now = new Date();
+    const monthPayments = await Payment.find({
+      ...branchFilter,
+      paymentDate: { $gte: startOfMonth(now), $lte: endOfMonth(now) },
+    });
+    const monthlyRevenueSum = monthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
     const activeSt = await Student.find({ status: 'ACTIVE', ...branchFilter }).populate('courseId', 'price');
     const studentIds = activeSt.map((s) => s._id);
@@ -82,7 +88,8 @@ export async function GET(request: Request) {
         left: leftStudents,
       },
       payments: {
-        totalRevenue: totalPaymentsSum,
+        totalRevenue: monthlyRevenueSum,
+        monthlyRevenue: monthlyRevenueSum,
         totalDebt: calculatedTotalDebt,
       },
       attendance: {

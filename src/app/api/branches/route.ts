@@ -7,6 +7,8 @@ import { Group } from '@/models/Group';
 import { Payment } from '@/models/Payment';
 import { getSession } from '@/lib/auth';
 
+import { startOfMonth, endOfMonth } from 'date-fns';
+
 export async function GET(request: Request) {
   try {
     const session = getSession();
@@ -35,6 +37,10 @@ export async function GET(request: Request) {
       .populate('managerId', 'name username role')
       .sort({ createdAt: -1 });
 
+    const now = new Date();
+    const startM = startOfMonth(now);
+    const endM = endOfMonth(now);
+
     // Calculate live counts for each branch
     const branchList = await Promise.all(
       branches.map(async (b) => {
@@ -42,18 +48,19 @@ export async function GET(request: Request) {
         const activeStudentsCount = await Student.countDocuments({ branchId: b._id, status: 'ACTIVE' });
         const activeGroupsCount = await Group.countDocuments({ branchId: b._id, status: 'ACTIVE' });
 
-        // Sum total revenue
+        // Sum monthly revenue
         const payments = await Payment.aggregate([
-          { $match: { branchId: b._id } },
+          { $match: { branchId: b._id, paymentDate: { $gte: startM, $lte: endM } } },
           { $group: { _id: null, total: { $sum: '$amount' } } },
         ]);
-        const totalRevenue = payments.length > 0 ? payments[0].total : 0;
+        const monthlyRevenue = payments.length > 0 ? payments[0].total : 0;
 
         return {
           ...bObj,
           activeStudentsCount,
           activeGroupsCount,
-          totalRevenue,
+          totalRevenue: monthlyRevenue,
+          monthlyRevenue,
         };
       })
     );

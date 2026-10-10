@@ -263,7 +263,7 @@ export default function BranchesPage() {
             <DollarSign className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400">Jami Tushum</span>
+            <span className="text-xs font-semibold text-slate-400">Oylik Tushum</span>
             <p className="text-lg font-black text-slate-900 dark:text-white">{formatMoneyUz(totalRevenueAll)}</p>
           </div>
         </div>
@@ -397,7 +397,7 @@ export default function BranchesPage() {
                     </p>
                   </div>
                   <div className="p-2 bg-slate-50 dark:bg-slate-800/50 rounded-xl">
-                    <span className="text-[10px] text-slate-400 font-medium">Tushum</span>
+                    <span className="text-[10px] text-slate-400 font-medium">Oylik Tushum</span>
                     <p className="text-xs font-bold text-emerald-600 dark:text-emerald-400 truncate">
                       {formatMoneyUz(branch.totalRevenue || 0)}
                     </p>
@@ -626,7 +626,7 @@ export default function BranchesPage() {
 
               <div className="p-4 bg-emerald-50 dark:bg-emerald-950/40 rounded-xl border border-emerald-100 dark:border-emerald-900/50">
                 <span className="text-emerald-600 dark:text-emerald-400 font-semibold">
-                  Jami Yig'ilgan To'lovlar (Tushum):
+                  Oylik Tushum:
                 </span>
                 <p className="text-xl font-black text-emerald-700 dark:text-emerald-300 mt-1">
                   {formatMoneyUz(viewingBranch.totalRevenue || 0)}

@@ -7,6 +7,8 @@ import { Group } from '@/models/Group';
 import { Payment } from '@/models/Payment';
 import { getSession } from '@/lib/auth';
 
+import { startOfMonth, endOfMonth } from 'date-fns';
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const session = getSession();
@@ -30,11 +32,12 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const totalStudentsCount = await Student.countDocuments({ branchId: branch._id });
     const activeGroupsCount = await Group.countDocuments({ branchId: branch._id, status: 'ACTIVE' });
     
+    const now = new Date();
     const payments = await Payment.aggregate([
-      { $match: { branchId: branch._id } },
+      { $match: { branchId: branch._id, paymentDate: { $gte: startOfMonth(now), $lte: endOfMonth(now) } } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]);
-    const totalRevenue = payments.length > 0 ? payments[0].total : 0;
+    const monthlyRevenue = payments.length > 0 ? payments[0].total : 0;
 
     return NextResponse.json({
       branch: {
@@ -42,7 +45,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
         activeStudentsCount,
         totalStudentsCount,
         activeGroupsCount,
-        totalRevenue,
+        totalRevenue: monthlyRevenue,
+        monthlyRevenue,
       },
     });
   } catch (error: any) {

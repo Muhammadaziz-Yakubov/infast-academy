@@ -9,6 +9,8 @@ import { Lead } from '@/models/Lead';
 import { getSession } from '@/lib/auth';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 
+import { startOfMonth, endOfMonth } from 'date-fns';
+
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
     const session = getSession();
@@ -33,12 +35,13 @@ export async function GET(request: Request, { params }: { params: { id: string }
     const activeGroupsCount = await Group.countDocuments({ branchId: branch._id, status: 'ACTIVE' });
     const totalGroupsCount = await Group.countDocuments({ branchId: branch._id });
 
-    // Revenue
+    // Monthly Revenue
+    const now = new Date();
     const payments = await Payment.aggregate([
-      { $match: { branchId: branch._id } },
+      { $match: { branchId: branch._id, paymentDate: { $gte: startOfMonth(now), $lte: endOfMonth(now) } } },
       { $group: { _id: null, total: { $sum: '$amount' } } },
     ]);
-    const totalRevenue = payments.length > 0 ? payments[0].total : 0;
+    const monthlyRevenue = payments.length > 0 ? payments[0].total : 0;
 
     // Debt calculation
     const studentIds = activeStudents.map((s) => s._id);
@@ -75,7 +78,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
       totalStudentsCount,
       activeGroupsCount,
       totalGroupsCount,
-      totalRevenue,
+      totalRevenue: monthlyRevenue,
+      monthlyRevenue,
       totalDebt,
       attendancePercentage,
       leadsCount,
