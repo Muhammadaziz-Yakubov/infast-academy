@@ -94,12 +94,12 @@ export function getBranchFilter(
 
   // MANAGER role
   if (!session.branchId) {
-    // If manager has no assigned branch, restrict to empty/null or error
+    // If manager has no assigned branch, restrict to empty/null
     return { filter: { branchId: null } };
   }
 
-  // If manager tries to request a different branchId, deny access
-  if (queryBranchId && queryBranchId !== 'ALL' && queryBranchId !== session.branchId.toString()) {
+  // If manager tries to request a different specific branchId, deny access
+  if (queryBranchId && queryBranchId !== 'ALL' && queryBranchId !== 'undefined' && queryBranchId !== 'null' && queryBranchId !== session.branchId.toString()) {
     return { filter: {}, error: 'Siz faqat o\'zingizga biriktirilgan filial ma\'lumotlariga kira olasiz' };
   }
 

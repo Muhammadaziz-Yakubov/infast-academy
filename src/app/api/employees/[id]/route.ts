@@ -14,7 +14,7 @@ export async function PUT(
 
     const { id } = params;
     const body = await request.json();
-    const { name, username, password, permissions } = body;
+    const { name, username, password, permissions, branchId, role } = body;
 
     await connectToDatabase();
 
@@ -32,7 +32,22 @@ export async function PUT(
     }
 
     if (name) employee.name = name.trim();
+    if (role && ['ADMIN', 'MANAGER'].includes(role)) employee.role = role;
     if (Array.isArray(permissions)) employee.permissions = permissions;
+
+    if (branchId !== undefined) {
+      const { Branch } = await import('@/models/Branch');
+      const oldBranchId = employee.branchId;
+      const newBranchId = branchId && branchId !== 'NONE' ? branchId : undefined;
+      employee.branchId = newBranchId;
+
+      if (oldBranchId && oldBranchId.toString() !== (newBranchId ? newBranchId.toString() : '')) {
+        await Branch.updateOne({ _id: oldBranchId, managerId: employee._id }, { $unset: { managerId: 1 } });
+      }
+      if (newBranchId) {
+        await Branch.updateOne({ _id: newBranchId }, { $set: { managerId: employee._id } });
+      }
+    }
     
     // Only update password if provided
     if (password && password.trim().length > 0) {

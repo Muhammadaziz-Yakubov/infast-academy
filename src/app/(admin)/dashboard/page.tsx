@@ -64,13 +64,12 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 pb-12">
-      <div className="flex items-center justify-between pr-6">
-        <Header title="Bosh sahifa" />
+      <Header title="Bosh sahifa">
         <BranchSelect
           selectedBranchId={selectedBranchId}
           onChange={(bId) => setSelectedBranchId(bId)}
         />
-      </div>
+      </Header>
 
       <main className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* KPI Cards Grid */}

@@ -14,6 +14,7 @@ export async function GET() {
       username: session.username,
       name: session.name,
       role: session.role,
+      branchId: session.branchId,
       permissions: session.permissions || (session.role === 'ADMIN' ? ['*'] : []),
     },
   });

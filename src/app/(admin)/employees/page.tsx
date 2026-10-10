@@ -85,8 +85,20 @@ export default function EmployeesPage() {
     setFormName('');
     setFormUsername('');
     setFormPassword('');
-    // Default manager gets standard essential permissions or empty
-    setSelectedPermissions(['dashboard', 'students', 'groups', 'attendance']);
+    // Default manager gets full operational permissions
+    setSelectedPermissions([
+      'dashboard',
+      'students',
+      'groups',
+      'attendance',
+      'payments',
+      'exams',
+      'courses',
+      'reports',
+      'notifications',
+      'marketing',
+      'branches',
+    ]);
     setErrorMsg('');
     setModalOpen(true);
   };

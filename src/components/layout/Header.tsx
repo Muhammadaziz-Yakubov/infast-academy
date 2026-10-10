@@ -7,16 +7,27 @@ import { GlobalSearch } from '@/components/common/GlobalSearch';
 
 interface HeaderProps {
   title: string;
+  children?: React.ReactNode;
 }
 
-export function Header({ title }: HeaderProps) {
+export function Header({ title, children }: HeaderProps) {
   const [notifications, setNotifications] = useState<any[]>([]);
   const [unreadCount, setUnreadCount] = useState(0);
   const [showNotifications, setShowNotifications] = useState(false);
   const [darkMode, setDarkMode] = useState(false);
+  const [userSession, setUserSession] = useState<{ name?: string; role?: string } | null>(null);
 
   useEffect(() => {
     fetchNotifications();
+
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated) {
+          setUserSession(data.user);
+        }
+      })
+      .catch((err) => console.error(err));
 
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme === 'dark') {
@@ -68,7 +79,7 @@ export function Header({ title }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200">
+    <header className="h-16 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200">
       <div className="flex items-center space-x-6">
         <h1 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h1>
         {/* Apple Spotlight Global Search Trigger */}
@@ -76,6 +87,8 @@ export function Header({ title }: HeaderProps) {
       </div>
 
       <div className="flex items-center space-x-3">
+        {children}
+
         {/* Dark Mode Toggle Button */}
         <button
           onClick={toggleDarkMode}
@@ -154,14 +167,18 @@ export function Header({ title }: HeaderProps) {
           )}
         </div>
 
-        {/* Admin Profile - Muhammadaziz Yakubov */}
+        {/* User Profile */}
         <div className="flex items-center space-x-2.5 pl-3 border-l border-slate-200 dark:border-slate-800">
           <div className="w-8 h-8 rounded-lg bg-infast-500 text-white font-bold flex items-center justify-center text-xs">
-            M
+            {(userSession?.name || 'M')[0].toUpperCase()}
           </div>
           <div className="hidden sm:block text-left">
-            <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">Muhammadaziz Yakubov</p>
-            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">Bosh Administrator</p>
+            <p className="text-xs font-bold text-slate-900 dark:text-white leading-tight">
+              {userSession?.name || 'Muhammadaziz Yakubov'}
+            </p>
+            <p className="text-[10px] text-slate-500 dark:text-slate-400 font-medium">
+              {userSession?.role === 'MANAGER' ? 'Menejer' : 'Bosh Administrator'}
+            </p>
           </div>
         </div>
       </div>

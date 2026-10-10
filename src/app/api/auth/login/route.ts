@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { verifyAdminCredentials, createAdminSession, createUserSession } from '@/lib/auth';
 import { connectToDatabase } from '@/lib/db';
 import { User } from '@/models/User';
+import { Branch } from '@/models/Branch';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
@@ -32,12 +33,46 @@ export async function POST(request: Request) {
         return NextResponse.json({ error: "Login yoki parol noto'g'ri." }, { status: 401 });
       }
 
+      let branchIdStr = user.branchId ? user.branchId.toString() : undefined;
+
+      // If user is a MANAGER and branchId is not directly on user, check if Branch has managerId set to this user
+      if (user.role === 'MANAGER' && !branchIdStr) {
+        const assignedBranch = await Branch.findOne({ managerId: user._id });
+        if (assignedBranch) {
+          branchIdStr = assignedBranch._id.toString();
+          user.branchId = assignedBranch._id;
+          await User.updateOne({ _id: user._id }, { $set: { branchId: assignedBranch._id } });
+        }
+      }
+
+      const defaultManagerPermissions = [
+        'dashboard',
+        'students',
+        'groups',
+        'attendance',
+        'payments',
+        'exams',
+        'courses',
+        'reports',
+        'notifications',
+        'marketing',
+        'branches',
+      ];
+
+      const userPermissions =
+        user.permissions && user.permissions.length > 0
+          ? user.permissions
+          : user.role === 'MANAGER'
+          ? defaultManagerPermissions
+          : ['*'];
+
       token = createUserSession({
         id: user._id.toString(),
         username: user.username,
         name: user.name,
         role: user.role || 'MANAGER',
-        permissions: user.permissions || [],
+        branchId: branchIdStr,
+        permissions: userPermissions,
       });
     }
 

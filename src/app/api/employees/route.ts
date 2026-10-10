@@ -42,15 +42,36 @@ export async function POST(request: Request) {
 
     const passwordHash = await bcrypt.hash(password, 10);
 
+    const defaultPermissions = [
+      'dashboard',
+      'students',
+      'groups',
+      'attendance',
+      'payments',
+      'exams',
+      'courses',
+      'reports',
+      'notifications',
+      'marketing',
+      'branches',
+    ];
+
+    const targetBranchId = branchId && branchId !== 'NONE' ? branchId : undefined;
+
     const newEmployee = await User.create({
       name: name.trim(),
       username: username.trim(),
       passwordHash,
       role: role || 'MANAGER',
-      branchId: branchId && branchId !== 'NONE' ? branchId : undefined,
-      permissions: Array.isArray(permissions) ? permissions : [],
+      branchId: targetBranchId,
+      permissions: Array.isArray(permissions) && permissions.length > 0 ? permissions : defaultPermissions,
       active: true,
     });
+
+    if (targetBranchId) {
+      const { Branch } = await import('@/models/Branch');
+      await Branch.updateOne({ _id: targetBranchId }, { $set: { managerId: newEmployee._id } });
+    }
 
     const userObj = newEmployee.toObject();
     const { passwordHash: _, ...userWithoutPassword } = userObj;

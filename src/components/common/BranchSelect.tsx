@@ -25,10 +25,26 @@ export default function BranchSelect({
 }: BranchSelectProps) {
   const [branches, setBranches] = useState<Branch[]>([]);
   const [loading, setLoading] = useState(true);
+  const [userRole, setUserRole] = useState<'ADMIN' | 'MANAGER' | null>(null);
+  const [managerBranchId, setManagerBranchId] = useState<string | null>(null);
 
   useEffect(() => {
-    async function fetchBranches() {
+    async function init() {
       try {
+        const meRes = await fetch('/api/auth/me');
+        if (meRes.ok) {
+          const meData = await meRes.json();
+          if (meData.authenticated && meData.user) {
+            setUserRole(meData.user.role);
+            if (meData.user.role === 'MANAGER' && meData.user.branchId) {
+              setManagerBranchId(meData.user.branchId);
+              if (selectedBranchId !== meData.user.branchId) {
+                onChange(meData.user.branchId);
+              }
+            }
+          }
+        }
+
         const res = await fetch('/api/branches?status=active');
         if (res.ok) {
           const data = await res.json();
@@ -41,8 +57,13 @@ export default function BranchSelect({
       }
     }
 
-    fetchBranches();
+    init();
   }, []);
+
+  const isManager = userRole === 'MANAGER';
+  const availableBranches = isManager && managerBranchId
+    ? branches.filter((b) => b._id === managerBranchId)
+    : branches;
 
   return (
     <div className={`relative inline-flex items-center ${className}`}>
@@ -50,13 +71,13 @@ export default function BranchSelect({
         <Building2 className="w-4 h-4" />
       </div>
       <select
-        value={selectedBranchId}
-        onChange={(e) => onChange(e.target.value)}
-        disabled={loading}
-        className="pl-9 pr-8 py-2 text-sm bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-lg text-slate-700 dark:text-slate-200 font-medium focus:outline-none focus:ring-2 focus:ring-blue-500 appearance-none shadow-sm cursor-pointer disabled:opacity-50"
+        value={isManager && managerBranchId ? managerBranchId : selectedBranchId}
+        onChange={(e) => !isManager && onChange(e.target.value)}
+        disabled={loading || isManager}
+        className="pl-9 pr-8 py-1.5 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500 appearance-none shadow-sm cursor-pointer disabled:opacity-80"
       >
-        {showAllOption && <option value="ALL">Barcha filiallar</option>}
-        {branches.map((b) => (
+        {!isManager && showAllOption && <option value="ALL">Barcha filiallar</option>}
+        {availableBranches.map((b) => (
           <option key={b._id} value={b._id}>
             {b.name} filiali
           </option>

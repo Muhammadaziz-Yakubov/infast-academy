@@ -83,6 +83,9 @@ export function Sidebar() {
   const hasPermission = (key: string) => {
     if (!userSession) return true;
     if (userSession.role === 'ADMIN' || userSession.permissions?.includes('*')) return true;
+    if (userSession.role === 'MANAGER' && (!userSession.permissions || userSession.permissions.length === 0)) {
+      return key !== 'employees';
+    }
     return userSession.permissions?.includes(key);
   };
 
