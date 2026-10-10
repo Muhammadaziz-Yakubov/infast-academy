@@ -100,6 +100,8 @@ export default function TransferModal({ isOpen, onClose, student, onSuccess }: T
 
   async function handleTransfer(e: React.FormEvent) {
     e.preventDefault();
+    if (!student) return;
+
     if (!selectedBranchId) {
       setError('Iltimos, yangi filialni tanlang.');
       return;
