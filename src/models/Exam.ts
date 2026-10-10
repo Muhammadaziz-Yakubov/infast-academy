@@ -23,6 +23,7 @@ export interface IExam extends Document {
   questions?: IQuestion[];
   isPublished: boolean;
   publicExamId: string;
+  branchId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -32,6 +33,7 @@ const ExamSchema: Schema<IExam> = new Schema(
     name: { type: String, required: true },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true },
     groupId: { type: Schema.Types.ObjectId, ref: "Group", required: true, index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
     examDate: { type: Date, required: true },
     startTime: { type: String, required: true },
     endTime: { type: String, required: true },

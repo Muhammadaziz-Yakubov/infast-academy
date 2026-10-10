@@ -5,7 +5,7 @@ import { MarketingExpense } from '@/models/MarketingExpense';
 import { Lead } from '@/models/Lead';
 import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
-import { getSession, requireAdminSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
 import { escapeRegex } from '@/lib/utils';
 
 export async function GET(req: NextRequest) {
@@ -18,11 +18,21 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
 
+    const branchIdParam = searchParams.get('branchId');
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+    const branchFilter = branchAccess.filter;
+
     const search = (searchParams.get('q') || '').trim();
     const status = searchParams.get('status') || '';
     const platform = searchParams.get('platform') || '';
 
     const filter: any = {};
+    if (branchFilter.branchId) {
+      filter.$or = [{ branchId: branchFilter.branchId }, { branchId: { $exists: false } }, { branchId: null }];
+    }
     if (status) filter.status = status;
     if (platform) filter.platform = platform;
 
@@ -42,13 +52,13 @@ export async function GET(req: NextRequest) {
 
     // Fetch Expenses, Leads, Students & Payments for attribution stats
     const [expenses, leads, students] = await Promise.all([
-      MarketingExpense.find({ campaignId: { $in: campaignIds } }),
-      Lead.find({ utmCampaignId: { $in: campaignIds } }),
-      Student.find({ campaignId: { $in: campaignIds } }),
+      MarketingExpense.find({ campaignId: { $in: campaignIds }, ...branchFilter }),
+      Lead.find({ utmCampaignId: { $in: campaignIds }, ...branchFilter }),
+      Student.find({ campaignId: { $in: campaignIds }, ...branchFilter }),
     ]);
 
     const studentIds = students.map((s) => s._id);
-    const payments = await Payment.find({ studentId: { $in: studentIds } });
+    const payments = await Payment.find({ studentId: { $in: studentIds }, ...branchFilter });
 
     // Map revenue per student
     const studentRevenueMap = new Map<string, number>();
@@ -113,13 +123,15 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { session, errorResponse } = requireAdminSession();
-    if (errorResponse) return errorResponse;
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     await connectToDatabase();
     const body = await req.json();
 
-    const { name, description, objective, status, startDate, endDate, budget, platform, courseId, branch } = body;
+    const { name, description, objective, status, startDate, endDate, budget, platform, courseId, branch, branchId } = body;
 
     if (!name || !name.trim()) {
       return NextResponse.json({ error: "Kampaniya nomini kiriting" }, { status: 400 });
@@ -129,6 +141,8 @@ export async function POST(req: NextRequest) {
     if (existing) {
       return NextResponse.json({ error: "Bunday nomli kampaniya allaqachon mavjud" }, { status: 400 });
     }
+
+    const targetBranchId = branchId || session.branchId;
 
     const campaign = await MarketingCampaign.create({
       name: name.trim(),
@@ -141,6 +155,7 @@ export async function POST(req: NextRequest) {
       platform: platform || 'Instagram',
       courseId: courseId || undefined,
       branch: branch ? branch.trim() : undefined,
+      branchId: targetBranchId || undefined,
     });
 
     return NextResponse.json({ success: true, campaign }, { status: 201 });

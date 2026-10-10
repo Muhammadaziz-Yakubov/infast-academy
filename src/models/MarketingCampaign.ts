@@ -14,6 +14,7 @@ export interface IMarketingCampaign extends Document {
   platform: string;
   courseId?: mongoose.Types.ObjectId;
   branch?: string;
+  branchId?: mongoose.Types.ObjectId;
   createdAt: Date;
   updatedAt: Date;
 }
@@ -39,6 +40,7 @@ const MarketingCampaignSchema = new Schema<IMarketingCampaign>(
     platform: { type: String, required: true, default: 'Instagram' },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', index: true },
     branch: { type: String },
+    branchId: { type: Schema.Types.ObjectId, ref: 'Branch', index: true },
   },
   { timestamps: true }
 );

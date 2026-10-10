@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { MarketingExpense } from '@/models/MarketingExpense';
-import { getSession, requireAdminSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
 import { startOfDay, endOfDay, startOfWeek, endOfWeek, startOfMonth, endOfMonth } from 'date-fns';
 
 export async function GET(req: NextRequest) {
@@ -14,12 +14,19 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
 
+    const branchIdParam = searchParams.get('branchId');
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+    const branchFilter = branchAccess.filter;
+
     const campaignId = searchParams.get('campaignId');
     const platform = searchParams.get('platform');
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
 
-    const filter: any = {};
+    const filter: any = { ...branchFilter };
     if (campaignId) filter.campaignId = campaignId;
     if (platform) filter.platform = platform;
 
@@ -35,12 +42,15 @@ export async function GET(req: NextRequest) {
 
     const now = new Date();
     const todayExpenses = await MarketingExpense.find({
+      ...branchFilter,
       date: { $gte: startOfDay(now), $lte: endOfDay(now) },
     });
     const weekExpenses = await MarketingExpense.find({
+      ...branchFilter,
       date: { $gte: startOfWeek(now), $lte: endOfWeek(now) },
     });
     const monthExpenses = await MarketingExpense.find({
+      ...branchFilter,
       date: { $gte: startOfMonth(now), $lte: endOfMonth(now) },
     });
 
@@ -59,17 +69,21 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { session, errorResponse } = requireAdminSession();
-    if (errorResponse) return errorResponse;
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     await connectToDatabase();
     const body = await req.json();
 
-    const { campaignId, platform, amount, date, description } = body;
+    const { campaignId, platform, amount, date, description, branchId } = body;
 
     if (!platform || !amount) {
       return NextResponse.json({ error: "Platforma va summa majburiy" }, { status: 400 });
     }
+
+    const targetBranchId = branchId || session.branchId;
 
     const expense = await MarketingExpense.create({
       campaignId: campaignId || undefined,
@@ -77,6 +91,7 @@ export async function POST(req: NextRequest) {
       amount: Number(amount),
       date: date ? new Date(date) : new Date(),
       description,
+      branchId: targetBranchId || undefined,
     });
 
     return NextResponse.json({ success: true, expense }, { status: 201 });

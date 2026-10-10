@@ -6,8 +6,8 @@ import { MarketingChannel } from '@/models/MarketingChannel';
 import { Lead } from '@/models/Lead';
 import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
-import { getSession } from '@/lib/auth';
-import { startOfDay, endOfDay, subDays, startOfMonth, endOfMonth } from 'date-fns';
+import { getSession, getBranchFilter } from '@/lib/auth';
+import { subDays, startOfMonth, endOfMonth } from 'date-fns';
 
 export const dynamic = 'force-dynamic';
 
@@ -33,15 +33,35 @@ export async function GET(req: NextRequest) {
       dateFilter = { $gte: startOfMonth(now), $lte: endOfMonth(now) };
     }
 
-    const leadFilter = Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {};
-    const expenseFilter = Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {};
-    const paymentFilter = Object.keys(dateFilter).length > 0 ? { paymentDate: dateFilter } : {};
+    const branchIdParam = searchParams.get('branchId');
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+    const branchFilter = branchAccess.filter;
+
+    const leadFilter = {
+      ...(Object.keys(dateFilter).length > 0 ? { createdAt: dateFilter } : {}),
+      ...branchFilter,
+    };
+    const expenseFilter = {
+      ...(Object.keys(dateFilter).length > 0 ? { date: dateFilter } : {}),
+      ...branchFilter,
+    };
+    const paymentFilter = {
+      ...(Object.keys(dateFilter).length > 0 ? { paymentDate: dateFilter } : {}),
+      ...branchFilter,
+    };
+
+    const campaignFilter = branchFilter.branchId
+      ? { $or: [{ branchId: branchFilter.branchId }, { branchId: { $exists: false } }, { branchId: null }] }
+      : {};
 
     const [campaigns, expenses, leads, students, payments, channels] = await Promise.all([
-      MarketingCampaign.find({}),
+      MarketingCampaign.find(campaignFilter),
       MarketingExpense.find(expenseFilter),
       Lead.find(leadFilter),
-      Student.find({}),
+      Student.find({ ...branchFilter }),
       Payment.find(paymentFilter),
       MarketingChannel.find({}),
     ]);

@@ -30,11 +30,26 @@ import {
 import { motion } from 'framer-motion';
 
 import BranchSelect from '@/components/common/BranchSelect';
+import { BranchDataMigrateModal } from '@/components/admin/BranchDataMigrateModal';
+import { ArrowRightLeft } from 'lucide-react';
 
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [selectedBranchId, setSelectedBranchId] = useState('ALL');
+  const [userSession, setUserSession] = useState<{ role?: string } | null>(null);
+  const [isMigrateModalOpen, setIsMigrateModalOpen] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((meData) => {
+        if (meData.authenticated) {
+          setUserSession(meData.user);
+        }
+      })
+      .catch((e) => console.error(e));
+  }, []);
 
   useEffect(() => {
     fetchDashboard(selectedBranchId);
@@ -65,11 +80,30 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 pb-12">
       <Header title="Bosh sahifa">
-        <BranchSelect
-          selectedBranchId={selectedBranchId}
-          onChange={(bId) => setSelectedBranchId(bId)}
-        />
+        <div className="flex items-center space-x-2">
+          {userSession?.role === 'ADMIN' && (
+            <button
+              onClick={() => setIsMigrateModalOpen(true)}
+              className="flex items-center space-x-1.5 px-3 py-1.5 rounded-xl bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs shadow-md shadow-infast-500/20 transition-all active:scale-95 shrink-0"
+              title="Super Admin ma'lumot ko'chirish vositasi"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <span className="hidden sm:inline">Ma’lumotlarni filialga ko‘chirish</span>
+            </button>
+          )}
+
+          <BranchSelect
+            selectedBranchId={selectedBranchId}
+            onChange={(bId) => setSelectedBranchId(bId)}
+          />
+        </div>
       </Header>
+
+      <BranchDataMigrateModal
+        isOpen={isMigrateModalOpen}
+        onClose={() => setIsMigrateModalOpen(false)}
+        onSuccess={() => fetchDashboard(selectedBranchId)}
+      />
 
       <main className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* KPI Cards Grid */}

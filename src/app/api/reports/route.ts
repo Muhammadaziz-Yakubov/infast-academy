@@ -7,9 +7,9 @@ import { Exam } from '@/models/Exam';
 import { ExamResult } from '@/models/ExamResult';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 
-import { getSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = getSession();
     if (!session) {
@@ -17,26 +17,34 @@ export async function GET() {
     }
 
     await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const branchIdParam = searchParams.get('branchId');
+
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+    const branchFilter = branchAccess.filter;
 
     // 1. Student Breakdown
-    const totalStudents = await Student.countDocuments({});
-    const activeStudents = await Student.countDocuments({ status: 'ACTIVE' });
-    const pausedStudents = await Student.countDocuments({ status: 'PAUSED' });
-    const completedStudents = await Student.countDocuments({ status: 'COMPLETED' });
-    const leftStudents = await Student.countDocuments({ status: 'LEFT' });
+    const totalStudents = await Student.countDocuments({ ...branchFilter });
+    const activeStudents = await Student.countDocuments({ status: 'ACTIVE', ...branchFilter });
+    const pausedStudents = await Student.countDocuments({ status: 'PAUSED', ...branchFilter });
+    const completedStudents = await Student.countDocuments({ status: 'COMPLETED', ...branchFilter });
+    const leftStudents = await Student.countDocuments({ status: 'LEFT', ...branchFilter });
 
     // 2. Payments Breakdown & Total Debt Calculation
-    const allPayments = await Payment.find({});
-    const totalPaymentsSum = allPayments.reduce((sum, p) => sum + p.amount, 0);
+    const allPayments = await Payment.find({ ...branchFilter });
+    const totalPaymentsSum = allPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
-    const activeSt = await Student.find({ status: 'ACTIVE' }).populate('courseId', 'price');
+    const activeSt = await Student.find({ status: 'ACTIVE', ...branchFilter }).populate('courseId', 'price');
     const studentIds = activeSt.map((s) => s._id);
     const studentPayments = await Payment.find({ studentId: { $in: studentIds } });
 
     const paidMap = new Map<string, number>();
     studentPayments.forEach((p) => {
       const sId = p.studentId.toString();
-      paidMap.set(sId, (paidMap.get(sId) || 0) + p.amount);
+      paidMap.set(sId, (paidMap.get(sId) || 0) + (p.amount || 0));
     });
 
     let calculatedTotalDebt = 0;
@@ -48,13 +56,13 @@ export async function GET() {
     });
 
     // 3. Attendance Breakdown
-    const allAttendances = await Attendance.find({});
+    const allAttendances = await Attendance.find({ ...branchFilter });
     const totalAttCount = allAttendances.length;
     const presentAttCount = allAttendances.filter((a) => a.status === 'PRESENT').length;
     const overallAttRate = totalAttCount > 0 ? Math.round((presentAttCount / totalAttCount) * 100) : 100;
 
     // 4. Exams Breakdown
-    const totalExams = await Exam.countDocuments({});
+    const totalExams = await Exam.countDocuments({ ...branchFilter });
     const allExamResults = await ExamResult.find({});
     const passedExams = allExamResults.filter((r) => r.status === 'PASSED').length;
     const failedExams = allExamResults.filter((r) => r.status === 'FAILED').length;

@@ -4,7 +4,7 @@ import { Lead } from '@/models/Lead';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
 import { MarketingCampaign } from '@/models/MarketingCampaign';
-import { getSession, requireAdminSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
 import { escapeRegex } from '@/lib/utils';
 
 export async function GET(req: NextRequest) {
@@ -17,12 +17,18 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const { searchParams } = new URL(req.url);
 
+    const branchIdParam = searchParams.get('branchId');
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+
     const search = (searchParams.get('q') || '').trim();
     const status = searchParams.get('status') || '';
     const campaignId = searchParams.get('campaignId') || '';
     const source = searchParams.get('source') || '';
 
-    const filter: any = {};
+    const filter: any = { ...branchAccess.filter };
     if (status) filter.status = status;
     if (campaignId) filter.utmCampaignId = campaignId;
     if (source) filter.utmSource = { $regex: escapeRegex(source), $options: 'i' };
@@ -72,23 +78,28 @@ export async function GET(req: NextRequest) {
 
 export async function POST(req: NextRequest) {
   try {
-    const { session, errorResponse } = requireAdminSession();
-    if (errorResponse) return errorResponse;
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+    }
 
     await connectToDatabase();
     const body = await req.json();
 
-    const { fullName, phone, email, courseId, utmSource, utmMedium, utmCampaignId, utmContent, utmTerm, notes } = body;
+    const { fullName, phone, email, courseId, utmSource, utmMedium, utmCampaignId, utmContent, utmTerm, notes, branchId } = body;
 
     if (!fullName || !phone) {
       return NextResponse.json({ error: "Ism va telefon raqami majburiy" }, { status: 400 });
     }
+
+    const targetBranchId = branchId || session.branchId;
 
     const lead = await Lead.create({
       fullName: fullName.trim(),
       phone: phone.trim(),
       email: email ? email.trim() : undefined,
       courseId: courseId || undefined,
+      branchId: targetBranchId || undefined,
       status: 'YANGI',
       utmSource: utmSource ? utmSource.trim() : 'Manual',
       utmMedium: utmMedium ? utmMedium.trim() : undefined,

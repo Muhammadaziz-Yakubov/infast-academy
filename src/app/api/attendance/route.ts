@@ -30,6 +30,12 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Guruh topilmadi" }, { status: 404 });
     }
 
+    if (session.role === 'MANAGER' && session.branchId) {
+      if (group.branchId && group.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz davomatini ko'ra olasiz" }, { status: 403 });
+      }
+    }
+
     // Check BUSINESS RULE 4: Future date lock
     const inFuture = isDateInFuture(dateStr);
 
