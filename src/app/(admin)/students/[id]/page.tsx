@@ -4,6 +4,7 @@ import React, { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { formatMoneyUz, formatDateUz } from '@/lib/utils';
+import TransferModal from '@/components/students/TransferModal';
 import {
   User,
   Phone,
@@ -18,6 +19,8 @@ import {
   ArrowLeft,
   GraduationCap,
   Percent,
+  Building2,
+  ArrowRightLeft,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -27,7 +30,9 @@ export default function StudentDetailPage() {
   const studentId = params.id as string;
 
   const [data, setData] = useState<any>(null);
+  const [transfers, setTransfers] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
   const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'attendance' | 'exams' | 'portfolio'>('overview');
 
   // Portfolio tab state
@@ -62,6 +67,12 @@ export default function StudentDetailPage() {
       if (res.ok) {
         const json = await res.json();
         setData(json);
+      }
+
+      const transferRes = await fetch(`/api/students/${studentId}/transfer`);
+      if (transferRes.ok) {
+        const tJson = await transferRes.json();
+        setTransfers(tJson.transfers || []);
       }
     } catch (e) {
       console.error(e);
@@ -204,13 +215,25 @@ export default function StudentDetailPage() {
                   ID: {student.studentCode || `INF-${student._id.slice(-4).toUpperCase()}`}
                 </span>
               </div>
-              <p className="text-xs font-medium text-slate-500 mt-0.5">
-                {student.courseId?.name || 'Kurs'} • {student.groupId?.name || 'Guruh'}
+              <p className="text-xs font-medium text-slate-500 mt-0.5 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 font-semibold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+                  <Building2 className="w-3 h-3" />
+                  {student.branchId?.name || 'Asosiy filial'}
+                </span>
+                <span>• {student.courseId?.name || 'Kurs'} • {student.groupId?.name || 'Guruh'}</span>
               </p>
             </div>
           </div>
 
-          <div className="flex items-center space-x-3">
+          <div className="flex flex-wrap items-center gap-2">
+            <button
+              onClick={() => setIsTransferModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <span>Filialga ko'chirish</span>
+            </button>
+
             {/* Dynamic Course Month Badge */}
             <div className="px-3.5 py-1.5 rounded-xl bg-sky-50 text-sky-700 font-bold text-xs">
               Joriy bosqich: {student.currentCourseMonth}
@@ -760,7 +783,13 @@ export default function StudentDetailPage() {
               </form>
             </div>
           </div>
-        )}
+        {/* Transfer Modal */}
+        <TransferModal
+          isOpen={isTransferModalOpen}
+          onClose={() => setIsTransferModalOpen(false)}
+          student={student}
+          onSuccess={() => fetchStudentDetail()}
+        />
       </main>
     </div>
   );

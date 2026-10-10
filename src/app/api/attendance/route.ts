@@ -96,10 +96,18 @@ export async function POST(request: Request) {
       );
     }
 
+    if (session.role === 'MANAGER' && session.branchId) {
+      if (group.branchId && group.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz davomatini belgilay olasiz" }, { status: 403 });
+      }
+    }
+
+    const branchId = group.branchId || session.branchId;
+
     // Upsert Attendance record
     const attendance = await Attendance.findOneAndUpdate(
       { studentId, groupId, date: dateStr },
-      { status },
+      { status, branchId },
       { upsert: true, new: true }
     );
 

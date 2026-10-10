@@ -18,6 +18,7 @@ export interface AdminUserSession {
   username: string;
   name: string;
   role: 'ADMIN' | 'MANAGER';
+  branchId?: string;
   permissions: string[];
 }
 
@@ -75,6 +76,34 @@ export function getSession(): AdminUserSession | null {
   } catch {
     return null;
   }
+}
+
+/**
+ * Helper to get MongoDB branch filter based on user role & requested branchId
+ */
+export function getBranchFilter(
+  session: AdminUserSession,
+  queryBranchId?: string | null
+): { filter: Record<string, any>; error?: string } {
+  if (session.role === 'ADMIN') {
+    if (queryBranchId && queryBranchId !== 'ALL' && queryBranchId !== 'undefined' && queryBranchId !== 'null') {
+      return { filter: { branchId: queryBranchId } };
+    }
+    return { filter: {} };
+  }
+
+  // MANAGER role
+  if (!session.branchId) {
+    // If manager has no assigned branch, restrict to empty/null or error
+    return { filter: { branchId: null } };
+  }
+
+  // If manager tries to request a different branchId, deny access
+  if (queryBranchId && queryBranchId !== 'ALL' && queryBranchId !== session.branchId.toString()) {
+    return { filter: {}, error: 'Siz faqat o\'zingizga biriktirilgan filial ma\'lumotlariga kira olasiz' };
+  }
+
+  return { filter: { branchId: session.branchId } };
 }
 
 /**

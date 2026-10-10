@@ -6,6 +6,7 @@ export interface IUser extends Document {
   passwordHash: string;
   name: string;
   role: 'ADMIN' | 'MANAGER';
+  branchId?: mongoose.Types.ObjectId;
   permissions: string[];
   active: boolean;
   createdAt: Date;
@@ -19,6 +20,7 @@ const UserSchema: Schema<IUser> = new Schema(
     passwordHash: { type: String, required: true },
     name: { type: String, required: true },
     role: { type: String, enum: ['ADMIN', 'MANAGER'], default: 'MANAGER' },
+    branchId: { type: Schema.Types.ObjectId, ref: 'Branch', index: true },
     permissions: { type: [String], default: [] },
     active: { type: Boolean, default: true },
   },

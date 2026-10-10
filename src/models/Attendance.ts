@@ -3,6 +3,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 export interface IAttendance extends Document {
   studentId: mongoose.Types.ObjectId;
   groupId: mongoose.Types.ObjectId;
+  branchId?: mongoose.Types.ObjectId;
   date: string; // YYYY-MM-DD
   status: "PRESENT" | "ABSENT";
   createdAt: Date;
@@ -13,6 +14,7 @@ const AttendanceSchema: Schema<IAttendance> = new Schema(
   {
     studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true, index: true },
     groupId: { type: Schema.Types.ObjectId, ref: "Group", required: true, index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
     date: { type: String, required: true, index: true },
     status: { type: String, enum: ["PRESENT", "ABSENT"], required: true },
   },

@@ -7,6 +7,7 @@ export interface ILead extends Document {
   phone: string;
   email?: string;
   courseId?: mongoose.Types.ObjectId;
+  branchId?: mongoose.Types.ObjectId;
   status: LeadStatus;
   utmSource?: string;
   utmMedium?: string;
@@ -27,6 +28,7 @@ const LeadSchema = new Schema<ILead>(
     phone: { type: String, required: true, index: true },
     email: { type: String },
     courseId: { type: Schema.Types.ObjectId, ref: 'Course', index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: 'Branch', index: true },
     status: {
       type: String,
       enum: ['YANGI', 'BOG‘LANILDI', 'SINOV_DARSI', 'TALABA_BO‘LDI', 'RAD_ETILDI'],

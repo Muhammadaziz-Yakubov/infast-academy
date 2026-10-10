@@ -20,6 +20,8 @@ import './Referral';
 import './LandingPage';
 import './SmsLog';
 import './Graduate';
+import './Branch';
+import './StudentTransfer';
 
 export { Course } from './Course';
 export { Group } from './Group';
@@ -43,4 +45,6 @@ export { Referral } from './Referral';
 export { LandingPage } from './LandingPage';
 export { SmsLog } from './SmsLog';
 export { Graduate } from './Graduate';
+export { Branch } from './Branch';
+export { StudentTransfer } from './StudentTransfer';
 

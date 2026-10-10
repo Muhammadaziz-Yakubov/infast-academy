@@ -6,8 +6,9 @@ import { Group } from '@/models/Group';
 import { Payment } from '@/models/Payment';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 import { generateNextStudentCode } from '@/lib/studentCode';
-import { getSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
 import { escapeRegex } from '@/lib/utils';
+import { Branch } from '@/models/Branch';
 
 export async function GET(request: Request) {
   try {
@@ -22,10 +23,16 @@ export async function GET(request: Request) {
     const search = searchParams.get('search') || '';
     const courseId = searchParams.get('courseId');
     const groupId = searchParams.get('groupId');
+    const branchIdParam = searchParams.get('branchId');
     const status = searchParams.get('status');
     const paymentStatusFilter = searchParams.get('paymentStatus');
 
-    let query: any = {};
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+
+    let query: any = { ...branchAccess.filter };
 
     if (search) {
       if (search.length > 100) {
@@ -47,6 +54,7 @@ export async function GET(request: Request) {
     const rawStudents = await Student.find(query)
       .populate('courseId', 'name price')
       .populate('groupId', 'name')
+      .populate('branchId', 'name code')
       .sort({ createdAt: 1 });
 
     // Auto-ensure distinct unique studentCodes across all students
@@ -127,6 +135,7 @@ export async function POST(request: Request) {
       birthDate,
       courseId,
       groupId,
+      branchId,
       joinedDate,
       monthlyFee,
       paymentDueDay,
@@ -146,6 +155,26 @@ export async function POST(request: Request) {
     const group = await Group.findById(groupId);
     if (!group) {
       return NextResponse.json({ error: "Tanlangan guruh topilmadi" }, { status: 400 });
+    }
+
+    // Determine branchId: body.branchId || group.branchId || session.branchId || default active branch
+    let targetBranchId = branchId;
+    if (!targetBranchId) {
+      if (group.branchId) {
+        targetBranchId = group.branchId;
+      } else if (session.branchId) {
+        targetBranchId = session.branchId;
+      } else {
+        const defaultBranch = await Branch.findOne({ status: 'active' });
+        targetBranchId = defaultBranch?._id;
+      }
+    }
+
+    // Check MANAGER permission
+    if (session.role === 'MANAGER' && session.branchId) {
+      if (targetBranchId && targetBranchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingizga talaba qo'sha olasiz" }, { status: 403 });
+      }
     }
 
     function parseDateSafely(val: any): Date | undefined {
@@ -169,6 +198,7 @@ export async function POST(request: Request) {
       birthDate: parsedBirthDate,
       courseId,
       groupId,
+      branchId: targetBranchId,
       joinedDate: parsedJoinedDate,
       monthlyFee: monthlyFee ? Number(monthlyFee) : undefined,
       paymentDueDay: paymentDueDay ? Number(paymentDueDay) : 5,

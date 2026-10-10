@@ -4,9 +4,10 @@ import { Group } from '@/models/Group';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
 
-import { getSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
+import { Branch } from '@/models/Branch';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = getSession();
     if (!session) {
@@ -14,9 +15,17 @@ export async function GET() {
     }
 
     await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const branchIdParam = searchParams.get('branchId');
 
-    const groups = await Group.find({})
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+
+    const groups = await Group.find(branchAccess.filter)
       .populate('courseId', 'name price')
+      .populate('branchId', 'name code')
       .sort({ createdAt: -1 });
 
     const groupIds = groups.map((g) => g._id);
@@ -50,7 +59,7 @@ export async function POST(request: Request) {
     await connectToDatabase();
     const body = await request.json();
 
-    const { name, courseId, room, telegramChatId, schedules, status } = body;
+    const { name, courseId, room, telegramChatId, schedules, status, branchId } = body;
 
     if (!name || !courseId || !room || !schedules || schedules.length === 0) {
       return NextResponse.json({ error: "Barcha majburiy maydonlar va jadvalni to'ldiring" }, { status: 400 });
@@ -61,9 +70,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Bunday nomli guruh mavjud" }, { status: 400 });
     }
 
+    let targetBranchId = branchId;
+    if (!targetBranchId) {
+      if (session.branchId) {
+        targetBranchId = session.branchId;
+      } else {
+        const defaultBranch = await Branch.findOne({ status: 'active' });
+        targetBranchId = defaultBranch?._id;
+      }
+    }
+
+    if (session.role === 'MANAGER' && session.branchId) {
+      if (targetBranchId && targetBranchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingizda guruh yarata olasiz" }, { status: 403 });
+      }
+    }
+
     const newGroup = await Group.create({
       name: name.trim(),
       courseId,
+      branchId: targetBranchId,
       room,
       telegramChatId: telegramChatId ? telegramChatId.trim() : undefined,
       schedules,

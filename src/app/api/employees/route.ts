@@ -10,7 +10,10 @@ export async function GET() {
     if (errorResponse) return errorResponse;
 
     await connectToDatabase();
-    const employees = await User.find({}).select('-passwordHash').sort({ createdAt: -1 });
+    const employees = await User.find({})
+      .select('-passwordHash')
+      .populate('branchId', 'name code')
+      .sort({ createdAt: -1 });
 
     return NextResponse.json(employees);
   } catch (error: any) {
@@ -24,7 +27,7 @@ export async function POST(request: Request) {
     if (errorResponse) return errorResponse;
 
     const body = await request.json();
-    const { name, username, password, permissions } = body;
+    const { name, username, password, permissions, branchId, role } = body;
 
     if (!name || !username || !password) {
       return NextResponse.json({ error: 'Ism, Login va Parol kiritilishi shart' }, { status: 400 });
@@ -43,7 +46,8 @@ export async function POST(request: Request) {
       name: name.trim(),
       username: username.trim(),
       passwordHash,
-      role: 'MANAGER', // Always Manager role as requested
+      role: role || 'MANAGER',
+      branchId: branchId && branchId !== 'NONE' ? branchId : undefined,
       permissions: Array.isArray(permissions) ? permissions : [],
       active: true,
     });

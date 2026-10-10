@@ -4,6 +4,7 @@ import { jwtVerify } from 'jose';
 
 const PROTECTED_PAGE_PREFIXES = [
   '/dashboard',
+  '/branches',
   '/marketing',
   '/students',
   '/groups',
@@ -19,6 +20,7 @@ const PROTECTED_PAGE_PREFIXES = [
 ];
 
 const PROTECTED_API_PREFIXES = [
+  '/api/branches',
   '/api/marketing',
   '/api/students',
   '/api/payments',
@@ -89,6 +91,7 @@ export const config = {
   matcher: [
     '/login',
     '/dashboard/:path*',
+    '/branches/:path*',
     '/marketing/:path*',
     '/students/:path*',
     '/groups/:path*',
@@ -101,6 +104,7 @@ export const config = {
     '/notifications/:path*',
     '/settings/:path*',
     '/employees/:path*',
+    '/api/branches/:path*',
     '/api/marketing/:path*',
     '/api/students/:path*',
     '/api/payments/:path*',

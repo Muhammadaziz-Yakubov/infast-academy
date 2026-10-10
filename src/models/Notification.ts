@@ -4,6 +4,7 @@ export interface INotification extends Document {
   title: string;
   message: string;
   type: "SUCCESS" | "WARNING" | "DANGER" | "INFO";
+  branchId?: mongoose.Types.ObjectId;
   isRead: boolean;
   createdAt: Date;
 }
@@ -13,6 +14,7 @@ const NotificationSchema: Schema<INotification> = new Schema(
     title: { type: String, required: true },
     message: { type: String, required: true },
     type: { type: String, enum: ["SUCCESS", "WARNING", "DANGER", "INFO"], default: "INFO" },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
     isRead: { type: Boolean, default: false },
   },
   { timestamps: true }

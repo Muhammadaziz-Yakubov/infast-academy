@@ -9,6 +9,7 @@ export interface IGroupSchedule {
 export interface IGroup extends Document {
   name: string;
   courseId: mongoose.Types.ObjectId;
+  branchId?: mongoose.Types.ObjectId;
   room: string;
   telegramChatId?: string;
   schedules: IGroupSchedule[];
@@ -30,6 +31,7 @@ const GroupSchema: Schema<IGroup> = new Schema(
   {
     name: { type: String, required: true, unique: true, index: true },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
     room: { type: String, required: true },
     telegramChatId: { type: String, index: true },
     schedules: [GroupScheduleSchema],

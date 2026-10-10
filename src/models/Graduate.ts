@@ -18,6 +18,7 @@ export interface IGraduate extends Document {
   endDate: string; // "02.10.2026"
   mentor: string; // "M. Yakubov"
   director: string; // "N. Yakubova"
+  branchId?: mongoose.Types.ObjectId;
   status: 'active' | 'revoked';
   nomination: string; // e.g. "Best Full-Stack Developer"
   issuedDate: string; // "02.10.2026"
@@ -120,6 +121,11 @@ const GraduateSchema = new Schema<IGraduate>(
       type: String,
       default: 'N. Yakubova',
       trim: true,
+    },
+    branchId: {
+      type: Schema.Types.ObjectId,
+      ref: 'Branch',
+      index: true,
     },
     status: {
       type: String,

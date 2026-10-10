@@ -29,17 +29,22 @@ import {
 } from 'recharts';
 import { motion } from 'framer-motion';
 
+import BranchSelect from '@/components/common/BranchSelect';
+
 export default function DashboardPage() {
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [selectedBranchId, setSelectedBranchId] = useState('ALL');
 
   useEffect(() => {
-    fetchDashboard();
-  }, []);
+    fetchDashboard(selectedBranchId);
+  }, [selectedBranchId]);
 
-  const fetchDashboard = async () => {
+  const fetchDashboard = async (branchId: string) => {
+    setLoading(true);
     try {
-      const res = await fetch('/api/dashboard');
+      const url = branchId && branchId !== 'ALL' ? `/api/dashboard?branchId=${branchId}` : '/api/dashboard';
+      const res = await fetch(url);
       if (res.ok) {
         const json = await res.json();
         setData(json);
@@ -59,7 +64,13 @@ export default function DashboardPage() {
 
   return (
     <div className="flex-1 pb-12">
-      <Header title="Bosh sahifa" />
+      <div className="flex items-center justify-between pr-6">
+        <Header title="Bosh sahifa" />
+        <BranchSelect
+          selectedBranchId={selectedBranchId}
+          onChange={(bId) => setSelectedBranchId(bId)}
+        />
+      </div>
 
       <main className="p-6 space-y-8 max-w-7xl mx-auto">
         {/* KPI Cards Grid */}

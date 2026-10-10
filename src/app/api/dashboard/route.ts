@@ -9,11 +9,12 @@ import { Exam } from '@/models/Exam';
 import { calculateCourseMonth, calculatePaymentPeriods, isGroupScheduledOnDate } from '@/lib/calculations';
 import { format, startOfMonth, endOfMonth, startOfDay, endOfDay } from 'date-fns';
 
-import { getSession } from '@/lib/auth';
+import { getSession, getBranchFilter } from '@/lib/auth';
+import { Branch } from '@/models/Branch';
 
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+export async function GET(request: Request) {
   try {
     const session = getSession();
     if (!session) {
@@ -21,27 +22,39 @@ export async function GET() {
     }
 
     await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const branchIdParam = searchParams.get('branchId');
+
+    const branchAccess = getBranchFilter(session, branchIdParam);
+    if (branchAccess.error) {
+      return NextResponse.json({ error: branchAccess.error }, { status: 403 });
+    }
+
+    const branchFilter = branchAccess.filter;
+
     const today = new Date();
     const todayStr = format(today, 'yyyy-MM-dd');
 
     // 1. Core Counts
-    const totalStudents = await Student.countDocuments({});
-    const activeStudents = await Student.countDocuments({ status: 'ACTIVE' });
-    const totalGroups = await Group.countDocuments({ status: 'ACTIVE' });
+    const totalStudents = await Student.countDocuments({ ...branchFilter });
+    const activeStudents = await Student.countDocuments({ status: 'ACTIVE', ...branchFilter });
+    const totalGroups = await Group.countDocuments({ status: 'ACTIVE', ...branchFilter });
 
     // 2. Revenue Calculations
     const todayPayments = await Payment.find({
+      ...branchFilter,
       paymentDate: { $gte: startOfDay(today), $lte: endOfDay(today) },
     });
     const todayRevenue = todayPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
     const monthPayments = await Payment.find({
+      ...branchFilter,
       paymentDate: { $gte: startOfMonth(today), $lte: endOfMonth(today) },
     });
     const monthlyRevenue = monthPayments.reduce((sum, p) => sum + (p.amount || 0), 0);
 
     // 3. Student Debts & Status Breakdown
-    const students = await Student.find({ status: 'ACTIVE' })
+    const students = await Student.find({ status: 'ACTIVE', ...branchFilter })
       .populate('courseId', 'name price')
       .populate('groupId', 'name');
 
@@ -86,12 +99,12 @@ export async function GET() {
     });
 
     // 4. Today's Attendance
-    const todayAtt = await Attendance.find({ date: todayStr });
+    const todayAtt = await Attendance.find({ date: todayStr, ...branchFilter });
     const todayPresent = todayAtt.filter((a) => a.status === 'PRESENT').length;
     const todayAbsent = todayAtt.filter((a) => a.status === 'ABSENT').length;
 
     // 5. Today's Scheduled Classes
-    const allGroups = await Group.find({ status: 'ACTIVE' })
+    const allGroups = await Group.find({ status: 'ACTIVE', ...branchFilter })
       .populate('courseId', 'name');
 
     const todayClasses: any[] = [];
