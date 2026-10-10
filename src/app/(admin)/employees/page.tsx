@@ -39,12 +39,12 @@ const ALL_PERMISSIONS = [
   { id: 'reports', label: '📊 Hisobotlar', desc: 'Moliyaviy va akademik hisobotlar' },
   { id: 'notifications', label: '🔔 Xabarnomalar', desc: 'Tizim bildirishnomalari' },
   { id: 'settings', label: '⚙️ Sozlamalar', desc: 'Tizim va profil sozlamalari' },
-  { id: 'employees', label: '🛡️ Xodimlar', desc: 'Xodimlarni boshqarish va huquqlar' },
 ];
 
 export default function EmployeesPage() {
   const [employees, setEmployees] = useState<Employee[]>([]);
   const [loading, setLoading] = useState(true);
+  const [isAdmin, setIsAdmin] = useState<boolean | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   
   // Modal state
@@ -62,7 +62,21 @@ export default function EmployeesPage() {
   const [deleting, setDeleting] = useState(false);
 
   useEffect(() => {
-    fetchEmployees();
+    fetch('/api/auth/me')
+      .then((res) => res.json())
+      .then((data) => {
+        if (data.authenticated && data.user?.role === 'ADMIN') {
+          setIsAdmin(true);
+          fetchEmployees();
+        } else {
+          setIsAdmin(false);
+          setLoading(false);
+        }
+      })
+      .catch(() => {
+        setIsAdmin(false);
+        setLoading(false);
+      });
   }, []);
 
   const fetchEmployees = async () => {
@@ -202,6 +216,20 @@ export default function EmployeesPage() {
       e.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       e.username.toLowerCase().includes(searchTerm.toLowerCase())
   );
+
+  if (isAdmin === false) {
+    return (
+      <div className="p-8 max-w-lg mx-auto text-center mt-16 bg-white dark:bg-slate-900 rounded-3xl border border-slate-200 dark:border-slate-800 p-8 shadow-xl space-y-4">
+        <div className="w-16 h-16 bg-rose-100 dark:bg-rose-950/50 text-rose-600 dark:text-rose-400 rounded-2xl flex items-center justify-center mx-auto">
+          <Lock className="w-8 h-8" />
+        </div>
+        <h2 className="text-xl font-bold text-slate-900 dark:text-white">Ruxsat Berilmagan</h2>
+        <p className="text-xs text-slate-500 dark:text-slate-400">
+          Ushbu Xodimlar bo'limiga faqat Bosh Administrator (Super Admin) kirishi va boshqarishi mumkin.
+        </p>
+      </div>
+    );
+  }
 
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">

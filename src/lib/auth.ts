@@ -116,9 +116,7 @@ export function requireAdminSession(requiredPermission?: string): { session: Adm
   }
   
   if (session.role !== 'ADMIN') {
-    if (requiredPermission && !session.permissions?.includes('*') && !session.permissions?.includes(requiredPermission)) {
-      return { session: null, errorResponse: NextResponse.json({ error: 'Ruxsat berilmagan' }, { status: 403 }) };
-    }
+    return { session: null, errorResponse: NextResponse.json({ error: 'Faqat Super Admin (Bosh Administrator) kirishi mumkin' }, { status: 403 }) };
   }
   
   return { session, errorResponse: null };
