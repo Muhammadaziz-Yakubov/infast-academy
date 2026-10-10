@@ -76,7 +76,9 @@ export default function BranchSelect({
         disabled={loading || isManager}
         className="pl-9 pr-8 py-1.5 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500 appearance-none shadow-sm cursor-pointer disabled:opacity-80"
       >
-        {!isManager && showAllOption && <option value="ALL">Barcha filiallar</option>}
+        {!isManager && showAllOption && (
+          <option value="ALL">🌐 Barcha filiallar (Super Admin)</option>
+        )}
         {availableBranches.map((b) => (
           <option key={b._id} value={b._id}>
             {b.name} filiali

@@ -78,14 +78,8 @@ export function BranchDataMigrateModal({ isOpen, onClose, onSuccess }: Props) {
         setBranches(branchList);
         setUnassigned(data.unassigned || null);
 
-        // Auto-select defaults
-        // Source default: UNASSIGNED or branch with code 'main'
-        const mainBranch = branchList.find((b) => b.code?.toLowerCase() === 'main' || b.name.toLowerCase().includes('main'));
-        if (mainBranch) {
-          setSourceBranchId(mainBranch.id);
-        } else {
-          setSourceBranchId('UNASSIGNED');
-        }
+        // Source default: UNASSIGNED
+        setSourceBranchId('UNASSIGNED');
 
         // Target default: Branch with name/code 'buloqboshi'
         const buloqboshi = branchList.find(
