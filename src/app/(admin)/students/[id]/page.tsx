@@ -783,6 +783,8 @@ export default function StudentDetailPage() {
               </form>
             </div>
           </div>
+        )}
+
         {/* Transfer Modal */}
         <TransferModal
           isOpen={isTransferModalOpen}
