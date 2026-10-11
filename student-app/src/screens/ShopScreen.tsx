@@ -8,10 +8,11 @@ import {
   ActivityIndicator,
   Alert,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { apiRequest } from '../services/api';
 import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { Coins, Sparkles, Gift } from 'lucide-react-native';
+import { Coins, Sparkles, Gift, CheckCircle2, PackageCheck } from 'lucide-react-native';
 
 export default function ShopScreen() {
   const [data, setData] = useState<any | null>(null);
@@ -42,14 +43,14 @@ export default function ShopScreen() {
     if ((data?.balanceXCoin || 0) < product.priceXCoin) {
       Alert.alert(
         'Tangalar yetarli emas',
-        `Sizda ${data?.balanceXCoin || 0} XCoin bor. Ushbu sovg'a narxi esa ${product.priceXCoin} XCoin. Darslar va testlarni topshirib ko'proq tanga to'plang!`
+        `Sizda ${data?.balanceXCoin || 0} XCoin bor. Ushbu sovg'a narxi esa ${product.priceXCoin} XCoin. Darslar, tadbirlar va testlarni topshirib ko'proq tanga to'plang!`
       );
       return;
     }
 
     Alert.alert(
       'Xaridni tasdiqlash',
-      `"${product.title}" mahsulotini ${product.priceXCoin} XCoin evaziga xarid qilishni xohlaysizmi?`,
+      `"${product.title}" mahsulotini ${product.priceXCoin} XCoin evaziga xarid qilishni xohlaysizmi?\n\nBuyurtmangiz admin tomonidan qabul qilinadi va sizga topshiriladi.`,
       [
         { text: 'Bekor qilish', style: 'cancel' },
         {
@@ -128,47 +129,68 @@ export default function ShopScreen() {
         </View>
       </View>
 
-      {/* Product Catalog */}
+      {/* Product Catalog Grid (1 qatorda 2 tadan yoki nafis visual card) */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>MAVSUMIY SOVG'ALAR</Text>
+        <Text style={styles.sectionTitle}>MAVSUMIY SOVG'ALAR ({products.length})</Text>
       </View>
 
-      <View style={styles.productsContainer}>
+      <View style={styles.productsGrid}>
         {products.map((product: any) => {
           const canAfford = balance >= product.priceXCoin;
           const isBuying = purchasingId === product._id;
+          const inStock = (product.stock || 0) > 0;
 
           return (
             <View key={product._id} style={styles.productCard}>
-              <View style={styles.productIconBox}>
-                <Gift size={28} color="#FFD60A" />
+              {/* Product Photo */}
+              <View style={styles.productImageWrapper}>
+                {product.imageUrl ? (
+                  <Image source={{ uri: product.imageUrl }} style={styles.productImage} />
+                ) : (
+                  <View style={styles.productPlaceholder}>
+                    <Gift size={32} color="#FF9500" />
+                  </View>
+                )}
+                <View style={styles.stockBadge}>
+                  <Text style={styles.stockBadgeText}>
+                    {inStock ? `${product.stock} dona` : 'Tugagan'}
+                  </Text>
+                </View>
               </View>
 
+              {/* Product Details */}
               <View style={styles.productInfoCol}>
-                <Text style={styles.productTitle}>{product.title}</Text>
+                <Text style={styles.productTitle} numberOfLines={1}>{product.title}</Text>
                 <Text style={styles.productDescription} numberOfLines={2}>
                   {product.description || "InFast IT-Academy dasturchilar uchun original mahsuloti"}
                 </Text>
-                <Text style={styles.stockText}>Qoldiq: {product.stock || 10} dona</Text>
               </View>
 
-              <TouchableOpacity
-                style={[
-                  styles.buyPillButton,
-                  !canAfford && styles.buyPillButtonDisabled,
-                ]}
-                disabled={isBuying || !canAfford}
-                onPress={() => handleBuy(product)}
-                activeOpacity={0.7}
-              >
-                {isBuying ? (
-                  <ActivityIndicator size="small" color="#FFD60A" />
-                ) : (
-                  <Text style={[styles.buyPillText, !canAfford && styles.buyPillTextDisabled]}>
-                    {product.priceXCoin} 🪙
-                  </Text>
-                )}
-              </TouchableOpacity>
+              {/* Buy Row */}
+              <View style={styles.productFooter}>
+                <View style={styles.priceRow}>
+                  <Coins size={14} color="#FFD60A" />
+                  <Text style={styles.priceText}>{product.priceXCoin}</Text>
+                </View>
+
+                <TouchableOpacity
+                  style={[
+                    styles.buyBtn,
+                    (!canAfford || !inStock) && styles.buyBtnDisabled,
+                  ]}
+                  disabled={isBuying || !canAfford || !inStock}
+                  onPress={() => handleBuy(product)}
+                  activeOpacity={0.8}
+                >
+                  {isBuying ? (
+                    <ActivityIndicator size="small" color="#000000" />
+                  ) : (
+                    <Text style={[styles.buyBtnText, (!canAfford || !inStock) && styles.buyBtnTextDisabled]}>
+                      {!inStock ? "Tugagan" : "Olish"}
+                    </Text>
+                  )}
+                </TouchableOpacity>
+              </View>
             </View>
           );
         })}
@@ -178,38 +200,58 @@ export default function ShopScreen() {
       {orders.length > 0 && (
         <>
           <View style={styles.sectionHeader}>
-            <Text style={styles.sectionTitle}>XARIDLAR TARIXI</Text>
+            <Text style={styles.sectionTitle}>BUYURTMALAR TARIXI</Text>
           </View>
 
           <View style={styles.groupedCard}>
             {orders.map((order: any, idx: number) => {
               const isFulfilled = order.status === 'FULFILLED';
+              const isCancelled = order.status === 'CANCELLED';
 
               return (
                 <React.Fragment key={order._id || idx}>
                   {idx > 0 && <View style={styles.separator} />}
 
                   <View style={styles.orderRow}>
-                    <View style={styles.orderInfo}>
-                      <Text style={styles.orderTitle}>{order.productTitle || "Mahsulot"}</Text>
-                      <Text style={styles.orderDate}>
-                        {new Date(order.createdAt).toLocaleDateString('uz-UZ')} • {order.priceXCoin} XCoin
-                      </Text>
+                    <View style={styles.orderLeftCol}>
+                      {order.productId?.imageUrl ? (
+                        <Image source={{ uri: order.productId.imageUrl }} style={styles.orderThumb} />
+                      ) : (
+                        <View style={styles.orderThumbPlaceholder}>
+                          <PackageCheck size={18} color="#FF9500" />
+                        </View>
+                      )}
+                      <View style={styles.orderInfo}>
+                        <Text style={styles.orderTitle} numberOfLines={1}>
+                          {order.productId?.title || order.productTitle || "Mahsulot"}
+                        </Text>
+                        <Text style={styles.orderDate}>
+                          {new Date(order.createdAt).toLocaleDateString('uz-UZ')} • {order.priceXCoin} XCoin
+                        </Text>
+                      </View>
                     </View>
 
                     <View
                       style={[
                         styles.orderBadge,
-                        isFulfilled ? styles.orderBadgeSuccess : styles.orderBadgePending,
+                        isFulfilled
+                          ? styles.orderBadgeSuccess
+                          : isCancelled
+                          ? styles.orderBadgeCancelled
+                          : styles.orderBadgePending,
                       ]}
                     >
                       <Text
                         style={[
                           styles.orderBadgeText,
-                          isFulfilled ? styles.orderBadgeTextSuccess : styles.orderBadgeTextPending,
+                          isFulfilled
+                            ? styles.orderBadgeTextSuccess
+                            : isCancelled
+                            ? styles.orderBadgeTextCancelled
+                            : styles.orderBadgeTextPending,
                         ]}
                       >
-                        {isFulfilled ? "Yetkazildi" : "Kutilmoqda"}
+                        {isFulfilled ? "Yetkazildi" : isCancelled ? "Bekor qilingan" : "Kutilmoqda"}
                       </Text>
                     </View>
                   </View>
@@ -327,70 +369,109 @@ const styles = StyleSheet.create({
     letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
-  productsContainer: {
+  /* 2-columns Product Grid */
+  productsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
     paddingHorizontal: 16,
+    justifyContent: 'space-between',
     gap: 12,
     marginBottom: 24,
   },
   productCard: {
+    width: '48%',
     backgroundColor: '#1C1C1E',
     borderRadius: 20,
-    padding: 16,
-    flexDirection: 'row',
-    alignItems: 'center',
+    overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
+    justifyContent: 'space-between',
     ...APPLE_SHADOW,
   },
-  productIconBox: {
-    width: 52,
-    height: 52,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 214, 10, 0.12)',
+  productImageWrapper: {
+    width: '100%',
+    height: 120,
+    backgroundColor: '#2C2C2E',
+    position: 'relative',
+  },
+  productImage: {
+    width: '100%',
+    height: '100%',
+    resizeMode: 'cover',
+  },
+  productPlaceholder: {
+    width: '100%',
+    height: '100%',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+  },
+  stockBadge: {
+    position: 'absolute',
+    top: 8,
+    right: 8,
+    backgroundColor: 'rgba(0, 0, 0, 0.65)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 6,
+  },
+  stockBadgeText: {
+    color: '#FFFFFF',
+    fontSize: 10,
+    fontWeight: '700',
   },
   productInfoCol: {
-    flex: 1,
-    marginRight: 12,
+    padding: 12,
+    paddingBottom: 6,
   },
   productTitle: {
-    fontSize: 16,
+    fontSize: 14,
     fontWeight: '700',
     color: '#FFFFFF',
-    letterSpacing: -0.3,
+    letterSpacing: -0.2,
+    marginBottom: 3,
   },
   productDescription: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 2,
-    lineHeight: 16,
-  },
-  stockText: {
     fontSize: 11,
-    color: '#636366',
-    marginTop: 4,
-    fontWeight: '600',
+    color: '#8E8E93',
+    lineHeight: 15,
   },
-  buyPillButton: {
-    backgroundColor: '#FFD60A',
-    paddingHorizontal: 14,
-    paddingVertical: 9,
-    borderRadius: 14,
-    minWidth: 70,
+  productFooter: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  priceRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+  },
+  priceText: {
+    fontSize: 14,
+    fontWeight: '800',
+    color: '#FFD60A',
+  },
+  buyBtn: {
+    backgroundColor: '#FF9500',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 10,
+    minWidth: 50,
     alignItems: 'center',
     justifyContent: 'center',
   },
-  buyPillButtonDisabled: {
+  buyBtnDisabled: {
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
-  buyPillText: {
-    color: '#000000',
-    fontSize: 13,
+  buyBtnText: {
+    color: '#FFFFFF',
+    fontSize: 12,
     fontWeight: '800',
   },
-  buyPillTextDisabled: {
+  buyBtnTextDisabled: {
     color: '#636366',
   },
   groupedCard: {
@@ -406,26 +487,46 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    padding: 16,
+    padding: 14,
+  },
+  orderLeftCol: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    flex: 1,
+    marginRight: 10,
+  },
+  orderThumb: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    marginRight: 10,
+  },
+  orderThumbPlaceholder: {
+    width: 40,
+    height: 40,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255, 149, 0, 0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   orderInfo: {
     flex: 1,
-    marginRight: 12,
   },
   orderTitle: {
-    fontSize: 15,
+    fontSize: 14,
     fontWeight: '600',
     color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   orderDate: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#8E8E93',
     marginTop: 2,
   },
   orderBadge: {
-    paddingHorizontal: 10,
-    paddingVertical: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
     borderRadius: 8,
   },
   orderBadgeSuccess: {
@@ -434,8 +535,11 @@ const styles = StyleSheet.create({
   orderBadgePending: {
     backgroundColor: 'rgba(255, 149, 0, 0.16)',
   },
+  orderBadgeCancelled: {
+    backgroundColor: 'rgba(255, 69, 58, 0.16)',
+  },
   orderBadgeText: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '700',
   },
   orderBadgeTextSuccess: {
@@ -444,9 +548,12 @@ const styles = StyleSheet.create({
   orderBadgeTextPending: {
     color: '#FF9500',
   },
+  orderBadgeTextCancelled: {
+    color: '#FF453A',
+  },
   separator: {
     height: StyleSheet.hairlineWidth,
     backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginLeft: 16,
+    marginLeft: 60,
   },
 });

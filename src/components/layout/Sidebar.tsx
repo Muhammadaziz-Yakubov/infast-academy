@@ -26,6 +26,8 @@ import {
   Award,
   Building2,
   Layers,
+  ShoppingBag,
+  Calendar,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -55,6 +57,8 @@ const NAV_ITEMS = [
   { name: 'Imtihonlar', href: '/exams', icon: GraduationCap, key: 'exams' },
   { name: 'Kurslar', href: '/courses', icon: BookOpen, key: 'courses' },
   { name: 'LMS Tizimi', href: '/lms', icon: Layers, key: 'lms' },
+  { name: "Do'kon & Sovg'alar", href: '/shop', icon: ShoppingBag, key: 'shop' },
+  { name: 'Tadbirlar', href: '/events', icon: Calendar, key: 'events' },
   { name: 'Hisobotlar', href: '/reports', icon: BarChart3, key: 'reports' },
   { name: 'Xabarnomalar', href: '/notifications', icon: Bell, key: 'notifications' },
   { name: 'Sozlamalar', href: '/settings', icon: Settings, key: 'settings' },

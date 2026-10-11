@@ -22,6 +22,7 @@ import {
   Building2,
   ChevronRight,
   Gift,
+  Calendar,
   GraduationCap,
   Award,
   Layers,
@@ -31,9 +32,14 @@ import {
 interface HomeScreenProps {
   onNavigateToLearning: (lessonId?: string) => void;
   onNavigateToShop: () => void;
+  onNavigateToEvents?: () => void;
 }
 
-export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: HomeScreenProps) {
+export default function HomeScreen({
+  onNavigateToLearning,
+  onNavigateToShop,
+  onNavigateToEvents,
+}: HomeScreenProps) {
   const { student } = useAuth();
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
@@ -290,6 +296,36 @@ export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: H
             <ChevronRight size={14} color="#FFD60A" strokeWidth={2.4} />
           </View>
         </TouchableOpacity>
+
+        {/* Feature Card 3: Tadbirlar (+500/-500 XCoin) */}
+        {onNavigateToEvents && (
+          <TouchableOpacity
+            style={styles.featureSquareCard}
+            onPress={onNavigateToEvents}
+            activeOpacity={0.8}
+          >
+            <View style={styles.featureCardHeader}>
+              <View style={[styles.featureIconBadge, { backgroundColor: 'rgba(10, 132, 255, 0.18)' }]}>
+                <Calendar size={22} color="#0A84FF" strokeWidth={2.4} />
+              </View>
+              <View style={[styles.featureTagPill, { backgroundColor: 'rgba(10, 132, 255, 0.16)' }]}>
+                <Text style={[styles.featureTagText, { color: '#0A84FF' }]}>EVENT</Text>
+              </View>
+            </View>
+
+            <View style={styles.featureCardBody}>
+              <Text style={styles.featureSquareTitle}>Tadbirlar</Text>
+              <Text style={styles.featureSquareSubtitle} numberOfLines={2}>
+                Qatnashib +500 XCoin oling, faol bo'ling!
+              </Text>
+            </View>
+
+            <View style={styles.featureSquareFooter}>
+              <Text style={[styles.featureActionLink, { color: '#0A84FF' }]}>Yozilish</Text>
+              <ChevronRight size={14} color="#0A84FF" strokeWidth={2.4} />
+            </View>
+          </TouchableOpacity>
+        )}
       </View>
 
       {/* 3. GURUH VA FILIAL */}

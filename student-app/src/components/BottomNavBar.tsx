@@ -1,10 +1,10 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet, Platform, Pressable } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { Home, BookOpen, Trophy, ShoppingBag, User } from 'lucide-react-native';
+import { Home, BookOpen, Trophy, ShoppingBag, Calendar, User } from 'lucide-react-native';
 import { COLORS } from '../constants/theme';
 
-export type TabType = 'home' | 'learning' | 'leaderboard' | 'shop' | 'profile';
+export type TabType = 'home' | 'learning' | 'leaderboard' | 'shop' | 'events' | 'profile';
 
 interface BottomNavBarProps {
   activeTab: TabType;
@@ -23,6 +23,7 @@ const TABS: TabItem[] = [
   { id: 'learning', label: "Ta'lim", IconComponent: BookOpen },
   { id: 'leaderboard', label: 'Reyting', IconComponent: Trophy },
   { id: 'shop', label: "Do'kon", IconComponent: ShoppingBag },
+  { id: 'events', label: 'Tadbirlar', IconComponent: Calendar },
   { id: 'profile', label: 'Profil', IconComponent: User },
 ];
 
@@ -32,7 +33,6 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   shopBadge,
 }) => {
   const insets = useSafeAreaInsets();
-  // Safe margin so icons never collide with gesture pill or navigation bar
   const bottomPadding = insets.bottom > 0 ? insets.bottom + 6 : 22;
 
   return (
@@ -48,7 +48,6 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               style={styles.tabButton}
               onPress={() => onSelectTab(tab.id)}
               activeOpacity={0.7}
-              // Remove gray rectangular hover effect on web and android ripple
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
               {...(Platform.OS === 'web'
@@ -63,7 +62,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
             >
               <View style={styles.iconContainer}>
                 <IconComponent
-                  size={23}
+                  size={21}
                   color={isActive ? COLORS.primary : '#8E8E93'}
                   strokeWidth={isActive ? 2.5 : 1.8}
                 />
@@ -87,7 +86,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: '#121214', // Apple Dark Frosted Surface
+    backgroundColor: '#121214',
     borderTopWidth: StyleSheet.hairlineWidth,
     borderTopColor: 'rgba(255, 255, 255, 0.12)',
     shadowColor: '#000000',
@@ -110,15 +109,15 @@ const styles = StyleSheet.create({
     backgroundColor: 'transparent',
   },
   iconContainer: {
-    width: 38,
-    height: 30,
+    width: 36,
+    height: 28,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
     backgroundColor: 'transparent',
   },
   label: {
-    fontSize: 10,
+    fontSize: 9.5,
     fontWeight: '500',
     color: '#8E8E93',
     marginTop: 2,
@@ -131,7 +130,7 @@ const styles = StyleSheet.create({
   badge: {
     position: 'absolute',
     top: -2,
-    right: 2,
+    right: 0,
     backgroundColor: '#FF453A',
     borderRadius: 8,
     minWidth: 16,

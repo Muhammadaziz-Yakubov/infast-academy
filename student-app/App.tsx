@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, StatusBar, Platform } from 'react-native';
+import { View, StyleSheet, Text, StatusBar } from 'react-native';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import LoginScreen from './src/screens/LoginScreen';
@@ -8,6 +8,7 @@ import CurriculumScreen from './src/screens/CurriculumScreen';
 import LessonDetailScreen from './src/screens/LessonDetailScreen';
 import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import ShopScreen from './src/screens/ShopScreen';
+import EventsScreen from './src/screens/EventsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import { COLORS } from './src/constants/theme';
 import BottomNavBar, { TabType } from './src/components/BottomNavBar';
@@ -52,7 +53,7 @@ function MainAppContent() {
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="dark-content" backgroundColor="#F2F2F7" />
+      <StatusBar barStyle="light-content" backgroundColor="#000000" />
 
       {/* Main Screen Content */}
       <View style={styles.screenWrapper}>
@@ -66,6 +67,7 @@ function MainAppContent() {
               }
             }}
             onNavigateToShop={() => setActiveTab('shop')}
+            onNavigateToEvents={() => setActiveTab('events')}
           />
         )}
 
@@ -76,6 +78,8 @@ function MainAppContent() {
         {activeTab === 'leaderboard' && <LeaderboardScreen />}
 
         {activeTab === 'shop' && <ShopScreen />}
+
+        {activeTab === 'events' && <EventsScreen />}
 
         {activeTab === 'profile' && <ProfileScreen />}
       </View>
@@ -105,21 +109,20 @@ export default function App() {
 const styles = StyleSheet.create({
   mainContainer: {
     flex: 1,
-    backgroundColor: COLORS.background, // iOS #F2F2F7
+    backgroundColor: '#000000',
   },
   screenWrapper: {
     flex: 1,
   },
   center: {
     flex: 1,
+    backgroundColor: '#000000',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.background,
   },
   loadingText: {
-    fontSize: 15,
-    color: COLORS.textMuted,
-    fontWeight: '600',
-    letterSpacing: -0.2,
+    color: '#8E8E93',
+    fontSize: 14,
+    fontWeight: '500',
   },
 });
