@@ -20,6 +20,7 @@ interface AuthContextType {
   student: StudentProfile | null;
   loading: boolean;
   login: (phone: string, pass: string) => Promise<void>;
+  loginDemo: () => Promise<void>;
   logout: () => Promise<void>;
   refreshProfile: () => Promise<void>;
 }
@@ -29,6 +30,7 @@ const AuthContext = createContext<AuthContextType>({
   student: null,
   loading: true,
   login: async () => {},
+  loginDemo: async () => {},
   logout: async () => {},
   refreshProfile: async () => {},
 });
@@ -85,6 +87,23 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     }
   };
 
+  const loginDemo = async () => {
+    const demoStudent: StudentProfile = {
+      id: 'demo-student-id',
+      studentCode: 'INF-2024-001',
+      firstName: 'Azizbek',
+      lastName: 'Rustamov',
+      phone: '+998901234567',
+      course: { name: 'Full-Stack Web Development' },
+      group: { name: 'FS-24-01' },
+      branch: { name: 'Toshkent Asosiy Filial' },
+    };
+    await AuthStorage.saveToken('demo-jwt-session');
+    await AuthStorage.saveProfile(demoStudent);
+    setToken('demo-jwt-session');
+    setStudent(demoStudent);
+  };
+
   const logout = async () => {
     await AuthStorage.clear();
     setToken(null);
@@ -104,7 +123,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
 
   return (
-    <AuthContext.Provider value={{ token, student, loading, login, logout, refreshProfile }}>
+    <AuthContext.Provider value={{ token, student, loading, login, loginDemo, logout, refreshProfile }}>
       {children}
     </AuthContext.Provider>
   );

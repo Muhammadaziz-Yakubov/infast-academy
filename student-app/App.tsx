@@ -9,9 +9,7 @@ import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import ShopScreen from './src/screens/ShopScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
 import { COLORS } from './src/constants/theme';
-import { Home, BookOpen, Trophy, ShoppingBag, User } from 'lucide-react-native';
-
-type TabType = 'home' | 'learning' | 'leaderboard' | 'shop' | 'profile';
+import BottomNavBar, { TabType } from './src/components/BottomNavBar';
 
 function MainAppContent() {
   const { token, loading } = useAuth();
@@ -73,83 +71,14 @@ function MainAppContent() {
         {activeTab === 'profile' && <ProfileScreen />}
       </View>
 
-      {/* Bottom Navigation Bar (Matching reference app layout) */}
-      <View style={styles.bottomNav}>
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab('home')}
-          activeOpacity={0.7}
-        >
-          <Home
-            size={22}
-            color={activeTab === 'home' ? COLORS.primary : COLORS.textMuted}
-            strokeWidth={activeTab === 'home' ? 2.5 : 2}
-          />
-          <Text style={[styles.navText, activeTab === 'home' && styles.navTextActive]}>
-            Bosh sahifa
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab('learning')}
-          activeOpacity={0.7}
-        >
-          <BookOpen
-            size={22}
-            color={activeTab === 'learning' ? COLORS.primary : COLORS.textMuted}
-            strokeWidth={activeTab === 'learning' ? 2.5 : 2}
-          />
-          <Text style={[styles.navText, activeTab === 'learning' && styles.navTextActive]}>
-            Ta'lim
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab('leaderboard')}
-          activeOpacity={0.7}
-        >
-          <Trophy
-            size={22}
-            color={activeTab === 'leaderboard' ? COLORS.primary : COLORS.textMuted}
-            strokeWidth={activeTab === 'leaderboard' ? 2.5 : 2}
-          />
-          <Text style={[styles.navText, activeTab === 'leaderboard' && styles.navTextActive]}>
-            Reyting
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab('shop')}
-          activeOpacity={0.7}
-        >
-          <ShoppingBag
-            size={22}
-            color={activeTab === 'shop' ? COLORS.primary : COLORS.textMuted}
-            strokeWidth={activeTab === 'shop' ? 2.5 : 2}
-          />
-          <Text style={[styles.navText, activeTab === 'shop' && styles.navTextActive]}>
-            Do'kon
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={styles.navItem}
-          onPress={() => setActiveTab('profile')}
-          activeOpacity={0.7}
-        >
-          <User
-            size={22}
-            color={activeTab === 'profile' ? COLORS.primary : COLORS.textMuted}
-            strokeWidth={activeTab === 'profile' ? 2.5 : 2}
-          />
-          <Text style={[styles.navText, activeTab === 'profile' && styles.navTextActive]}>
-            Profil
-          </Text>
-        </TouchableOpacity>
-      </View>
+      {/* Modern Dedicated Bottom Navigation Bar */}
+      <BottomNavBar
+        activeTab={activeTab}
+        onSelectTab={(tab) => {
+          setSelectedLessonId(null);
+          setActiveTab(tab);
+        }}
+      />
     </SafeAreaView>
   );
 }
@@ -183,33 +112,5 @@ const styles = StyleSheet.create({
   },
   mainArea: {
     flex: 1,
-  },
-  bottomNav: {
-    flexDirection: 'row',
-    backgroundColor: '#FFFFFF',
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border,
-    paddingVertical: 8,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 6,
-    elevation: 8,
-  },
-  navItem: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  navText: {
-    fontSize: 10,
-    fontWeight: '600',
-    color: COLORS.textMuted,
-    marginTop: 4,
-  },
-  navTextActive: {
-    color: COLORS.primary,
-    fontWeight: '800',
   },
 });

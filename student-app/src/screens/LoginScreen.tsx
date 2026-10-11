@@ -15,7 +15,7 @@ import { COLORS, SPACING } from '../constants/theme';
 import { Lock, Phone, Eye, EyeOff, Sparkles, BookOpen } from 'lucide-react-native';
 
 export default function LoginScreen() {
-  const { login } = useAuth();
+  const { login, loginDemo } = useAuth();
   const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -132,6 +132,24 @@ export default function LoginScreen() {
             ) : (
               <Text style={styles.submitButtonText}>Kirish</Text>
             )}
+          </TouchableOpacity>
+
+          {/* Demo Mode Button */}
+          <TouchableOpacity
+            style={styles.demoButton}
+            onPress={async () => {
+              try {
+                setLoading(true);
+                await loginDemo();
+              } finally {
+                setLoading(false);
+              }
+            }}
+            disabled={loading}
+            activeOpacity={0.8}
+          >
+            <Sparkles size={16} color={COLORS.primary} />
+            <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo o'quvchi)</Text>
           </TouchableOpacity>
 
           <View style={styles.infoBox}>
@@ -292,5 +310,22 @@ const styles = StyleSheet.create({
     color: COLORS.primaryDark,
     lineHeight: 16,
     fontWeight: '500',
+  },
+  demoButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: '#FFF7ED',
+    borderWidth: 1.5,
+    borderColor: '#FFEDD5',
+    borderRadius: 16,
+    height: 48,
+    marginTop: 10,
+    gap: 8,
+  },
+  demoButtonText: {
+    color: COLORS.primaryDark,
+    fontSize: 13,
+    fontWeight: '800',
   },
 });
