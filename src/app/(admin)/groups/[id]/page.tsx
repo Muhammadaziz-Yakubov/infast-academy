@@ -16,6 +16,7 @@ import {
   ArrowLeft,
   Lock,
   ExternalLink,
+  Unlock,
 } from 'lucide-react';
 
 export default function GroupDetailPage() {
@@ -25,6 +26,7 @@ export default function GroupDetailPage() {
 
   const [data, setData] = useState<any>(null);
   const [loading, setLoading] = useState(true);
+  const [unlocking, setUnlocking] = useState(false);
   const [activeTab, setActiveTab] = useState<'students' | 'attendance' | 'payments' | 'info'>('students');
 
   useEffect(() => {
@@ -42,6 +44,31 @@ export default function GroupDetailPage() {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUnlockNextLesson = async () => {
+    if (!group) return;
+    if (!confirm(`"${group.name}" guruhi uchun navbatdagi dars barcha o'quvchilarga ochilsinmi?\n\nEslatma: Agar o'quvchi oldingi darsni tugatmagan bo'lsa, dars ochiladi, ammo avvalgi dars bajarilgandan so'ng faollashadi.`)) {
+      return;
+    }
+
+    try {
+      setUnlocking(true);
+      const res = await fetch(`/api/groups/${groupId}/unlock-next-lesson`, {
+        method: 'POST',
+      });
+      const resJson = await res.json();
+      if (res.ok) {
+        alert(resJson.message || "Keyingi dars ochildi!");
+        fetchGroupDetail();
+      } else {
+        alert(resJson.error || "Darsni ochishda xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setUnlocking(false);
     }
   };
 
@@ -93,7 +120,16 @@ export default function GroupDetailPage() {
             </p>
           </div>
 
-          <div className="flex items-center space-x-3 text-xs">
+          <div className="flex flex-wrap items-center gap-3 text-xs">
+            <button
+              onClick={handleUnlockNextLesson}
+              disabled={unlocking}
+              className="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-2xl flex items-center space-x-1.5 shadow-md shadow-indigo-500/20 transition-all"
+            >
+              <Unlock className="w-4 h-4" />
+              <span>{unlocking ? 'Ochilmoqda...' : 'Keyingi darsni ochish'}</span>
+            </button>
+
             <div className="p-3 bg-slate-50 rounded-2xl border border-slate-100 text-center">
               <p className="text-slate-400 font-semibold">Talabalar</p>
               <p className="text-lg font-bold text-slate-900">{students.length} ta</p>

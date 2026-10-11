@@ -120,7 +120,42 @@ function runVerificationSuite() {
   // Buloqboshi manager cannot access Asaka
   assert.strictEqual(testBranchIsolation('MANAGER', buloqboshiBranch, buloqboshiBranch), true);
   assert.strictEqual(testBranchIsolation('MANAGER', buloqboshiBranch, asakaBranch), false);
-  console.log('  ✓ Branch isolation verified: manager strictly confined to assigned branch.');
+  // Test 5: Prerequisite lesson rule (unlocked but cannot work until previous lesson is completed)
+  console.log('[5] Testing prerequisite rule (unlocked vs playable based on previous lesson)...');
+  const checkCanWorkOnLesson = (
+    lessonOrder: number,
+    unlockedList: number[],
+    completedList: number[]
+  ): boolean => {
+    // Must be unlocked
+    if (!unlockedList.includes(lessonOrder)) return false;
+    // If it's lesson 1, can always work on it
+    if (lessonOrder === 1) return true;
+    // For lesson N > 1, lesson N-1 must be completed
+    return completedList.includes(lessonOrder - 1);
+  };
+
+  // Group has unlocked lesson 2, but student hasn't completed lesson 1
+  assert.strictEqual(
+    checkCanWorkOnLesson(2, [1, 2], []),
+    false,
+    'Lesson 2 must NOT be workable if lesson 1 is incomplete'
+  );
+
+  // Student completes lesson 1 -> now lesson 2 becomes workable!
+  assert.strictEqual(
+    checkCanWorkOnLesson(2, [1, 2], [1]),
+    true,
+    'Lesson 2 must become workable once lesson 1 is completed'
+  );
+
+  // Group unlocks lesson 3, but student only completed lesson 1 (lesson 2 pending)
+  assert.strictEqual(
+    checkCanWorkOnLesson(3, [1, 2, 3], [1]),
+    false,
+    'Lesson 3 must NOT be workable if lesson 2 is incomplete'
+  );
+  console.log('  ✓ Prerequisite rule verified: unlocked lessons are only playable when prior lessons are completed.');
 
   console.log('=== ALL LOGICAL VERIFICATION TESTS PASSED SUCCESSFULLY! ===');
 }

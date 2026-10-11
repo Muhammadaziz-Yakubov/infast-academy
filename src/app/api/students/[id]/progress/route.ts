@@ -95,7 +95,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     // Group lessons by module
     const lessonsByModule = new Map<string, any[]>();
-    for (const l of lessons) {
+    for (let idx = 0; idx < lessons.length; idx++) {
+      const l = lessons[idx];
       const lIdStr = l._id.toString();
       const mIdStr = l.moduleId.toString();
       const st = stateMap.get(lIdStr);
@@ -107,6 +108,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
         status = st?.theoryRead || st?.testPassed ? 'IN_PROGRESS' : 'UNLOCKED';
       }
 
+      // Check prerequisite: previous lesson must be completed
+      let prerequisiteMet = true;
+      if (idx > 0) {
+        const startingIdx = startingLessonIdStr
+          ? lessons.findIndex((les: any) => les._id.toString() === startingLessonIdStr)
+          : 0;
+        if (idx > Math.max(0, startingIdx)) {
+          const prevLessonId = lessons[idx - 1]._id.toString();
+          prerequisiteMet = completedSet.has(prevLessonId);
+        }
+      }
+
       const lessonSummary = {
         _id: l._id,
         moduleId: l.moduleId,
@@ -114,6 +127,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         order: l.order,
         description: l.description,
         status,
+        prerequisiteMet,
         isStarting: lIdStr === startingLessonIdStr,
         isCurrent: lIdStr === currentLessonIdStr,
         theoryRead: st?.theoryRead || false,

@@ -27,6 +27,7 @@ import {
   ClipboardCheck,
   Code,
   ArrowRight,
+  RotateCcw,
 } from 'lucide-react';
 import LessonMapTab from '@/components/students/LessonMapTab';
 
@@ -53,6 +54,11 @@ export default function LmsDashboardPage() {
   const [groupUnlockModal, setGroupUnlockModal] = useState(false);
   const [groupUnlockForm, setGroupUnlockForm] = useState({ groupId: '', lessonId: '' });
   const [groupUnlockSubmitting, setGroupUnlockSubmitting] = useState(false);
+
+  // Reset modal state
+  const [resetModalOpen, setResetModalOpen] = useState(false);
+  const [resetScope, setResetScope] = useState<'group' | 'all'>('group');
+  const [resetSubmitting, setResetSubmitting] = useState(false);
 
   // Module creation modal
   const [showAddModule, setShowAddModule] = useState(false);
@@ -286,6 +292,47 @@ export default function LmsDashboardPage() {
       alert(e.message);
     } finally {
       setGroupUnlockSubmitting(false);
+    }
+  };
+
+  const handleResetProgress = async () => {
+    if (!confirm("DIQQAT! Barcha tanlangan o'quvchilarning darajasi, XP, XCoin va ochilgan darslari 0 ga qaytariladi (xuddi yangi o'quvchi kabi toza bo'ladi). Haqiqatan ham tasdiqlaysizmi?")) {
+      return;
+    }
+
+    try {
+      setResetSubmitting(true);
+      const payload: any = { confirmReset: true };
+      if (resetScope === 'group') {
+        if (selectedGroupId === 'ALL') {
+          alert("Iltimos, guruhni tanlang yoki 'Barcha talabalar' variantini belgilang");
+          setResetSubmitting(false);
+          return;
+        }
+        payload.groupId = selectedGroupId;
+      } else {
+        if (selectedBranchId !== 'ALL') {
+          payload.branchId = selectedBranchId;
+        }
+      }
+
+      const res = await fetch('/api/lms/reset-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload),
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message);
+        setResetModalOpen(false);
+        fetchStudentsList();
+      } else {
+        alert(data.error || "Progressni qayta tiklashda xatolik");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setResetSubmitting(false);
     }
   };
 
@@ -573,14 +620,27 @@ export default function LmsDashboardPage() {
                 </select>
               </div>
 
-              {/* Group Batch Unlock Button */}
-              <button
-                onClick={() => setGroupUnlockModal(true)}
-                className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 flex items-center space-x-1.5 transition-all"
-              >
-                <Unlock className="w-4 h-4" />
-                <span>Guruhga Darsni Ommaviy Ochish</span>
-              </button>
+              {/* Action Buttons */}
+              <div className="flex flex-wrap items-center gap-2">
+                {/* Reset Progress Button */}
+                <button
+                  onClick={() => setResetModalOpen(true)}
+                  className="px-3.5 py-2.5 rounded-xl bg-rose-50 hover:bg-rose-100 text-rose-700 border border-rose-200 font-bold text-xs flex items-center space-x-1.5 transition-all shadow-sm"
+                  title="O'quvchilar progressini, darajasini va darslarini to'liq nollashtirish (Reset)"
+                >
+                  <RotateCcw className="w-4 h-4 text-rose-600" />
+                  <span>Reset (0 qilish)</span>
+                </button>
+
+                {/* Group Batch Unlock Button */}
+                <button
+                  onClick={() => setGroupUnlockModal(true)}
+                  className="px-4 py-2.5 rounded-xl bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-md shadow-indigo-500/20 flex items-center space-x-1.5 transition-all"
+                >
+                  <Unlock className="w-4 h-4" />
+                  <span>Guruhga Darsni Ommaviy Ochish</span>
+                </button>
+              </div>
             </div>
 
             {/* Students Table */}
@@ -1073,6 +1133,82 @@ export default function LmsDashboardPage() {
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* Modal: Reset Progress */}
+      {resetModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm">
+          <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center space-x-2 text-rose-600">
+                <RotateCcw className="w-5 h-5" />
+                <h3 className="font-extrabold text-base text-slate-900">Progressni Qayta Tiklash (Reset)</h3>
+              </div>
+              <button onClick={() => setResetModalOpen(false)} className="p-1.5 text-slate-400">
+                <X className="w-5 h-5" />
+              </button>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div className="p-3 bg-rose-50 rounded-2xl border border-rose-200 text-rose-900 space-y-1">
+                <p className="font-bold">⚠️ Ushbu amal qaytarilmaydi!</p>
+                <p className="text-[11px] text-rose-800 leading-relaxed">
+                  Tanlangan talabalarning barcha <strong>XP</strong> va <strong>XCoin</strong> ballari 0 ga tushadi, <strong>Darajasi</strong> 1 (boshlang'ich) qilinadi, boshlang'ich dars belgilanmagan holatga qaytadi va barcha ochilgan/tugatilgan darslar tozalanadi (xuddi yangi talaba kabi).
+                </p>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1.5">Qamrovni tanlang:</label>
+                <div className="space-y-2">
+                  <label className="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                    <input
+                      type="radio"
+                      name="resetScope"
+                      checked={resetScope === 'group'}
+                      onChange={() => setResetScope('group')}
+                      className="text-rose-600"
+                    />
+                    <span className="font-semibold text-slate-800">
+                      Faqat tanlangan guruh ({selectedGroupId !== 'ALL' ? (groups.find(g => g._id === selectedGroupId)?.name || 'Guruh') : 'Yuqoridagi guruh tanlang'})
+                    </span>
+                  </label>
+
+                  <label className="flex items-center space-x-2 p-2.5 rounded-xl border border-slate-200 cursor-pointer hover:bg-slate-50">
+                    <input
+                      type="radio"
+                      name="resetScope"
+                      checked={resetScope === 'all'}
+                      onChange={() => setResetScope('all')}
+                      className="text-rose-600"
+                    />
+                    <span className="font-semibold text-slate-800">
+                      Barcha faol talabalar {selectedBranchId !== 'ALL' && `(${branches.find(b => b._id === selectedBranchId)?.name || 'filial'} bo'yicha)`}
+                    </span>
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-end space-x-2 pt-3 border-t border-slate-100">
+              <button
+                type="button"
+                onClick={() => setResetModalOpen(false)}
+                className="px-4 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold"
+              >
+                Bekor qilish
+              </button>
+              <button
+                type="button"
+                onClick={handleResetProgress}
+                disabled={resetSubmitting}
+                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold shadow-md transition-all flex items-center space-x-1"
+              >
+                <RotateCcw className="w-4 h-4" />
+                <span>{resetSubmitting ? 'Nollashtirilmoqda...' : 'Ha, 0 ga qaytarish (Reset)'}</span>
+              </button>
+            </div>
           </div>
         </div>
       )}

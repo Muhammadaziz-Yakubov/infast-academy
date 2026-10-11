@@ -15,6 +15,7 @@ import {
   Edit,
   Trash2,
   X,
+  Unlock,
 } from 'lucide-react';
 
 const DAYS = ["Dushanba", "Seshanba", "Chorshanba", "Payshanba", "Juma", "Shanba", "Yakshanba"];
@@ -26,6 +27,7 @@ export default function GroupsPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingGroup, setEditingGroup] = useState<any>(null);
+  const [unlockingGroupId, setUnlockingGroupId] = useState<string | null>(null);
 
   // Add form state
   const [formData, setFormData] = useState({
@@ -92,6 +94,29 @@ export default function GroupsPage() {
       console.error(e);
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleUnlockNextLesson = async (group: any) => {
+    if (!confirm(`"${group.name}" guruhi uchun navbatdagi dars barcha o'quvchilarga ochilsinmi?\n\nEslatma: Agar o'quvchi oldingi darsni tugatmagan bo'lsa, dars ochiladi, lekin avvalgi dars bajarilgandan so'ng faollashadi.`)) {
+      return;
+    }
+
+    try {
+      setUnlockingGroupId(group._id);
+      const res = await fetch(`/api/groups/${group._id}/unlock-next-lesson`, {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (res.ok) {
+        alert(data.message || "Keyingi dars ochildi!");
+      } else {
+        alert(data.error || "Darsni ochishda xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert(e.message);
+    } finally {
+      setUnlockingGroupId(null);
     }
   };
 
@@ -287,13 +312,25 @@ export default function GroupsPage() {
                 </div>
 
                 <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
-                  <Link
-                    href={`/groups/${g._id}`}
-                    className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl flex items-center space-x-1"
-                  >
-                    <Eye className="w-3.5 h-3.5" />
-                    <span>Tafsilotlar</span>
-                  </Link>
+                  <div className="flex items-center space-x-2">
+                    <Link
+                      href={`/groups/${g._id}`}
+                      className="px-3.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold text-xs rounded-xl flex items-center space-x-1"
+                    >
+                      <Eye className="w-3.5 h-3.5" />
+                      <span>Tafsilotlar</span>
+                    </Link>
+
+                    <button
+                      onClick={() => handleUnlockNextLesson(g)}
+                      disabled={unlockingGroupId === g._id}
+                      className="px-3 py-1.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 border border-indigo-200 font-bold text-xs rounded-xl flex items-center space-x-1.5 transition-all shadow-sm"
+                      title="Guruhdagi barcha o'quvchilarga navbatdagi darsni ochish"
+                    >
+                      <Unlock className="w-3.5 h-3.5 text-indigo-600" />
+                      <span>{unlockingGroupId === g._id ? 'Ochilmoqda...' : 'Keyingi darsni ochish'}</span>
+                    </button>
+                  </div>
 
                   <div className="flex items-center space-x-1">
                     <button

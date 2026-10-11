@@ -26,6 +26,7 @@ interface LessonItem {
   order: number;
   description?: string;
   status: 'LOCKED' | 'UNLOCKED' | 'IN_PROGRESS' | 'COMPLETED';
+  prerequisiteMet?: boolean;
   isStarting: boolean;
   isCurrent: boolean;
   theoryRead: boolean;
@@ -151,6 +152,10 @@ export default function LessonMapTab({ studentId, courseName, onRefreshStudent }
   };
 
   const openTestModal = async (lesson: LessonItem) => {
+    if (lesson.status !== 'COMPLETED' && lesson.prerequisiteMet === false) {
+      alert("Ushbu dars ochilgan, lekin oldingi dars hali to'liq yakunlanmagan. Avval oldingi darsni bajaring, shundan so'ng bu dars to'liq faollashadi.");
+      return;
+    }
     setTestModalLesson(lesson);
     setTestResult(null);
     setSelectedAnswers(new Array(9).fill(0));
@@ -183,6 +188,8 @@ export default function LessonMapTab({ studentId, courseName, onRefreshStudent }
       if (res.ok) {
         await fetchProgress();
         if (onRefreshStudent) onRefreshStudent();
+      } else {
+        alert(json.error || 'Test tekshirishda xatolik');
       }
     } catch (e: any) {
       alert(e.message);
@@ -192,6 +199,10 @@ export default function LessonMapTab({ studentId, courseName, onRefreshStudent }
   };
 
   const openPracticeModal = (lesson: LessonItem) => {
+    if (lesson.status !== 'COMPLETED' && lesson.prerequisiteMet === false) {
+      alert("Ushbu dars ochilgan, lekin oldingi dars hali to'liq yakunlanmagan. Avval oldingi darsni bajaring, shundan so'ng bu dars to'liq faollashadi.");
+      return;
+    }
     setPracticeModalLesson(lesson);
     setPracticeSubmission('Amaliy vazifa topshirildi va tekshirildi');
   };
@@ -412,25 +423,31 @@ export default function LessonMapTab({ studentId, courseName, onRefreshStudent }
                                   </span>
                                 )}
 
-                                <span
-                                  className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                                    isCompleted
-                                      ? 'bg-emerald-100 text-emerald-800'
+                                {isUnlocked && !isCompleted && lesson.prerequisiteMet === false ? (
+                                  <span className="px-2 py-0.5 rounded-md text-[10px] font-bold bg-amber-50 text-amber-800 border border-amber-300 flex items-center gap-1">
+                                    <Lock className="w-3 h-3 text-amber-600" /> OCHILGAN (Oldingi dars kutilmoqda)
+                                  </span>
+                                ) : (
+                                  <span
+                                    className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
+                                      isCompleted
+                                        ? 'bg-emerald-100 text-emerald-800'
+                                        : isInProgress
+                                        ? 'bg-amber-100 text-amber-800'
+                                        : isUnlocked
+                                        ? 'bg-blue-100 text-blue-800'
+                                        : 'bg-slate-200 text-slate-700'
+                                    }`}
+                                  >
+                                    {isCompleted
+                                      ? 'YAKUNLANGAN'
                                       : isInProgress
-                                      ? 'bg-amber-100 text-amber-800'
+                                      ? "O'RGANILMOQDA"
                                       : isUnlocked
-                                      ? 'bg-blue-100 text-blue-800'
-                                      : 'bg-slate-200 text-slate-700'
-                                  }`}
-                                >
-                                  {isCompleted
-                                    ? 'YAKUNLANGAN'
-                                    : isInProgress
-                                    ? "O'RGANILMOQDA"
-                                    : isUnlocked
-                                    ? 'OCHIQ'
-                                    : 'QULFLANGAN'}
-                                </span>
+                                      ? 'OCHIQ'
+                                      : 'QULFLANGAN'}
+                                  </span>
+                                )}
                               </div>
 
                               {lesson.description && (

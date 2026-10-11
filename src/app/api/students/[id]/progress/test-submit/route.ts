@@ -75,6 +75,34 @@ export async function POST(request: Request, { params }: { params: { id: string 
       );
     }
 
+    // Prerequisite check: If previous lesson is not completed, this lesson cannot be worked on yet!
+    const allCourseLessons = await Lesson.find({ courseId: lesson.courseId, status: 'ACTIVE' })
+      .sort({ moduleId: 1, order: 1 })
+      .lean();
+
+    const currentLessonIdx = allCourseLessons.findIndex((l: any) => l._id.toString() === lessonId);
+    if (currentLessonIdx > 0) {
+      const startingLessonIdStr = progress.startingLessonId?.toString();
+      const startingIdx = startingLessonIdStr
+        ? allCourseLessons.findIndex((l: any) => l._id.toString() === startingLessonIdStr)
+        : 0;
+
+      if (currentLessonIdx > Math.max(0, startingIdx)) {
+        const prevLesson = allCourseLessons[currentLessonIdx - 1];
+        const isPrevCompleted = (progress.completedLessonIds || []).some(
+          (id: any) => id.toString() === prevLesson._id.toString()
+        );
+        if (!isPrevCompleted) {
+          return NextResponse.json(
+            {
+              error: `Oldingi dars (${prevLesson.order}-dars: "${prevLesson.title}") hali to'liq yakunlanmagan. Avval uni bajaring, so'ngra bu dars faollashadi.`,
+            },
+            { status: 400 }
+          );
+        }
+      }
+    }
+
     // Evaluate answers strictly on server
     const questions = lesson.testQuestions || [];
     const totalQuestions = questions.length || 9;
