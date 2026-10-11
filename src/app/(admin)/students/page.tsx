@@ -244,6 +244,7 @@ export default function StudentsPage() {
     monthlyFee: '',
     paymentDueDay: '5',
     status: 'ACTIVE',
+    password: '',
   });
 
   // Add form state
@@ -259,6 +260,7 @@ export default function StudentsPage() {
     monthlyFee: '',
     paymentDueDay: '5',
     status: 'ACTIVE',
+    password: '',
   });
 
   // Import state
@@ -349,6 +351,7 @@ export default function StudentsPage() {
           monthlyFee: '',
           paymentDueDay: '5',
           status: 'ACTIVE',
+          password: '',
         });
         fetchStudents();
       } else {
@@ -374,6 +377,7 @@ export default function StudentsPage() {
       monthlyFee: student.monthlyFee ? String(student.monthlyFee) : '',
       paymentDueDay: String(student.paymentDueDay || 5),
       status: student.status || 'ACTIVE',
+      password: '',
     });
     setShowEditModal(true);
   };
@@ -505,17 +509,6 @@ export default function StudentsPage() {
       <Header title="Talabalar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        {userSession?.role === 'ADMIN' && (
-          <div className="bg-amber-50 border border-amber-200 text-amber-900 p-4 rounded-2xl flex items-center justify-between text-xs font-semibold shadow-sm">
-            <div className="flex items-center space-x-2.5">
-              <ShieldCheck className="w-5 h-5 text-amber-600 shrink-0" />
-              <span>
-                <strong>Super Admin Boshqaruvi:</strong> Super admin talabalarni faqat ko'rishi va monitoring qilishi mumkin. Talaba qo'shish, tahrirlash va o'chirish menejerlarga topshirilgan.
-              </span>
-            </div>
-          </div>
-        )}
-
         {/* Search & Filter Bar */}
         <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-card flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <div className="flex flex-1 flex-wrap items-center gap-2.5">
@@ -580,15 +573,13 @@ export default function StudentsPage() {
               <span>{checkingPayments ? "Tekshirilmoqda..." : "To'lovlarni Tekshirish"}</span>
             </button>
 
-            {userSession?.role !== 'ADMIN' && (
-              <button
-                onClick={() => setShowImportModal(true)}
-                className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all"
-              >
-                <Upload className="w-4 h-4" />
-                <span>Import Excel</span>
-              </button>
-            )}
+            <button
+              onClick={() => setShowImportModal(true)}
+              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all"
+            >
+              <Upload className="w-4 h-4" />
+              <span>Import Excel</span>
+            </button>
 
             <button
               onClick={handleExport}
@@ -598,15 +589,13 @@ export default function StudentsPage() {
               <span>Export Excel</span>
             </button>
 
-            {userSession?.role !== 'ADMIN' && (
-              <button
-                onClick={() => setShowAddModal(true)}
-                className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-infast-500/20 flex items-center space-x-1.5 transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Talaba Qo'shish</span>
-              </button>
-            )}
+            <button
+              onClick={() => setShowAddModal(true)}
+              className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-infast-500/20 flex items-center space-x-1.5 transition-all"
+            >
+              <Plus className="w-4 h-4" />
+              <span>Talaba Qo'shish</span>
+            </button>
           </div>
         </div>
 
@@ -774,24 +763,20 @@ export default function StudentsPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
-                          {userSession?.role !== 'ADMIN' && (
-                            <>
-                              <button
-                                onClick={() => handleOpenEditModal(s)}
-                                className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                                title="Tahrirlash"
-                              >
-                                <Edit className="w-4 h-4" />
-                              </button>
-                              <button
-                                onClick={() => handleDelete(s._id)}
-                                className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
-                                title="O'chirish"
-                              >
-                                <Trash2 className="w-4 h-4" />
-                              </button>
-                            </>
-                          )}
+                          <button
+                            onClick={() => handleOpenEditModal(s)}
+                            className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                            title="Tahrirlash"
+                          >
+                            <Edit className="w-4 h-4" />
+                          </button>
+                          <button
+                            onClick={() => handleDelete(s._id)}
+                            className="p-1.5 text-slate-400 hover:text-rose-600 hover:bg-rose-50 rounded-lg transition-colors"
+                            title="O'chirish"
+                          >
+                            <Trash2 className="w-4 h-4" />
+                          </button>
                         </div>
                       </td>
                     </tr>
@@ -916,6 +901,19 @@ export default function StudentsPage() {
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Student App Paroli <span className="text-slate-400 font-normal">(Ixtiyoriy — bo'sh qolsa: student kodi yoki telefon raqam)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Masalan: 123456 yoki yangi parol"
+                  value={formData.password}
+                  onChange={(e) => setFormData({ ...formData, password: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                />
               </div>
 
               <div className="pt-4 flex justify-end space-x-2">
@@ -1061,6 +1059,19 @@ export default function StudentsPage() {
                   <option value="LEFT">Tark etgan (LEFT)</option>
                   <option value="COMPLETED">Tugatgan (COMPLETED)</option>
                 </select>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">
+                  Yangi Parol o'rnatish <span className="text-slate-400 font-normal">(Student App uchun. O'zgartirmaslik uchun bo'sh qoldiring)</span>
+                </label>
+                <input
+                  type="text"
+                  placeholder="Yangi parol kiriting (masalan: 123456)..."
+                  value={editFormData.password}
+                  onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
+                />
               </div>
 
               <div className="pt-4 flex justify-end space-x-2">

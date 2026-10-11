@@ -9,6 +9,7 @@ import { generateNextStudentCode } from '@/lib/studentCode';
 import { getSession, getBranchFilter } from '@/lib/auth';
 import { escapeRegex } from '@/lib/utils';
 import { Branch } from '@/models/Branch';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: Request) {
   try {
@@ -105,13 +106,6 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
-      return NextResponse.json(
-        { error: "Super admin o'quvchi qo'sha olmaydi. O'quvchi qo'shish va tahrirlash menejerga topshirilgan." },
-        { status: 403 }
-      );
-    }
-
     await connectToDatabase();
     const body = await request.json();
 
@@ -128,6 +122,7 @@ export async function POST(request: Request) {
       monthlyFee,
       paymentDueDay,
       status,
+      password,
     } = body;
 
     if (!firstName || !lastName || !phone || !courseId || !groupId) {
@@ -197,6 +192,11 @@ export async function POST(request: Request) {
 
     const studentCode = body.studentCode || (await generateNextStudentCode());
 
+    let passwordHash: string | undefined = undefined;
+    if (password && typeof password === 'string' && password.trim().length > 0) {
+      passwordHash = await bcrypt.hash(password.trim(), 10);
+    }
+
     const newStudent = await Student.create({
       studentCode,
       firstName,
@@ -211,6 +211,7 @@ export async function POST(request: Request) {
       monthlyFee: monthlyFee ? Number(monthlyFee) : undefined,
       paymentDueDay: paymentDueDay ? Number(paymentDueDay) : 5,
       status: status || "ACTIVE",
+      passwordHash,
     });
 
     return NextResponse.json({ success: true, student: newStudent }, { status: 201 });

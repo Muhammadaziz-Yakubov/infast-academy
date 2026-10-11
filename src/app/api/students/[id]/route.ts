@@ -8,6 +8,7 @@ import { Exam } from '@/models/Exam';
 import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
 
 import { getSession } from '@/lib/auth';
+import bcrypt from 'bcryptjs';
 
 export async function GET(request: Request, { params }: { params: { id: string } }) {
   try {
@@ -112,6 +113,11 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     const updateData: any = { ...body };
     // Branch transfers must only be done through the transfer API
     delete updateData.branchId;
+
+    if (body.password && typeof body.password === 'string' && body.password.trim().length > 0) {
+      updateData.passwordHash = await bcrypt.hash(body.password.trim(), 10);
+    }
+    delete updateData.password;
 
     if ('birthDate' in body) {
       updateData.birthDate = parseDateSafely(body.birthDate);

@@ -22,6 +22,17 @@ export interface AdminUserSession {
   permissions: string[];
 }
 
+export interface StudentUserSession {
+  id: string; // studentId
+  phone: string;
+  firstName: string;
+  lastName: string;
+  courseId: string;
+  groupId: string;
+  branchId: string;
+  role: 'STUDENT';
+}
+
 /**
  * Validates admin login credentials against process.env ADMIN_LOGIN & ADMIN_PASSWORD
  */
@@ -45,6 +56,39 @@ export function createUserSession(user: AdminUserSession): string {
   const secret = getAuthSecret();
   const token = jwt.sign(user, secret, { expiresIn: '7d' });
   return token;
+}
+
+/**
+  * Creates JWT session token for Student
+  */
+export function createStudentSession(student: StudentUserSession): string {
+  const secret = getAuthSecret();
+  const token = jwt.sign(student, secret, { expiresIn: '30d' });
+  return token;
+}
+
+/**
+ * Verifies student token from Authorization Bearer header or cookies
+ */
+export function getStudentSession(authHeader?: string | null): StudentUserSession | null {
+  try {
+    let token = '';
+    if (authHeader && authHeader.startsWith('Bearer ')) {
+      token = authHeader.substring(7).trim();
+    } else {
+      const cookieStore = cookies();
+      token = cookieStore.get('infast_student_session')?.value || '';
+    }
+
+    if (!token) return null;
+
+    const secret = getAuthSecret();
+    const decoded = jwt.verify(token, secret) as StudentUserSession;
+    if (decoded.role !== 'STUDENT') return null;
+    return decoded;
+  } catch {
+    return null;
+  }
 }
 
 /**

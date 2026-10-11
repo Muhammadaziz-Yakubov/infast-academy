@@ -26,6 +26,9 @@ import {
   Sparkles,
   Award,
   Coins,
+  Key,
+  Lock,
+  X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -63,6 +66,37 @@ export default function StudentDetailPage() {
     technologiesStr: '',
   });
   const [savingPortfolio, setSavingPortfolio] = useState(false);
+  const [showPasswordModal, setShowPasswordModal] = useState(false);
+  const [newPassword, setNewPassword] = useState('');
+  const [savingPassword, setSavingPassword] = useState(false);
+
+  const handleSavePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword.trim()) {
+      alert("Iltimos, yangi parol kiriting");
+      return;
+    }
+    setSavingPassword(true);
+    try {
+      const res = await fetch(`/api/students/${studentId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password: newPassword.trim() }),
+      });
+      if (res.ok) {
+        alert("O'quvchi paroli muvaffaqiyatli o'rnatildi!");
+        setShowPasswordModal(false);
+        setNewPassword('');
+      } else {
+        const err = await res.json();
+        alert(err.error || "Xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      alert("Xatolik: " + e.message);
+    } finally {
+      setSavingPassword(false);
+    }
+  };
 
   useEffect(() => {
     fetch('/api/auth/me')
@@ -262,6 +296,15 @@ export default function StudentDetailPage() {
             >
               <ArrowRightLeft className="w-3.5 h-3.5" />
               <span>Filialga ko'chirish</span>
+            </button>
+
+            <button
+              onClick={() => setShowPasswordModal(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all flex items-center space-x-1.5"
+              title="Student mobil ilovasi uchun yangi parol o'rnatish"
+            >
+              <Key className="w-3.5 h-3.5" />
+              <span>Parol o'rnatish</span>
             </button>
 
             {/* Dynamic Course Month Badge */}
@@ -848,6 +891,67 @@ export default function StudentDetailPage() {
                     className="px-5 py-2 bg-infast-500 hover:bg-infast-600 text-white font-bold rounded-xl shadow-md"
                   >
                     Qo'shish
+                  </button>
+                </div>
+              </form>
+            </div>
+          </div>
+        )}
+
+        {/* Password Modal */}
+        {showPasswordModal && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                    <Key className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-slate-900">Student App Paroli</h3>
+                    <p className="text-xs text-slate-500">{student.firstName} {student.lastName}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setShowPasswordModal(false)}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <form onSubmit={handleSavePassword} className="space-y-4">
+                <div>
+                  <label className="block text-xs font-bold text-slate-700 mb-1">
+                    Yangi Parol <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    type="text"
+                    required
+                    placeholder="Masalan: 123456 yoki yangi parol"
+                    value={newPassword}
+                    onChange={(e) => setNewPassword(e.target.value)}
+                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-amber-500/20"
+                  />
+                  <p className="text-[11px] text-slate-400 mt-1">
+                    O'quvchi mobil ilovaga telefon raqami va ushbu parol bilan kiradi.
+                  </p>
+                </div>
+
+                <div className="pt-2 flex justify-end space-x-2">
+                  <button
+                    type="button"
+                    onClick={() => setShowPasswordModal(false)}
+                    className="px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl"
+                  >
+                    Bekor qilish
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={savingPassword}
+                    className="px-5 py-2 bg-amber-500 hover:bg-amber-600 text-white text-xs font-bold rounded-xl shadow-md transition-all disabled:opacity-50"
+                  >
+                    {savingPassword ? "Saqlanmoqda..." : "Parolni Saqlash"}
                   </button>
                 </div>
               </form>
