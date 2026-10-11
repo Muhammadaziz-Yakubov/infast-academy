@@ -16,7 +16,9 @@ import {
   CheckCircle2,
   HelpCircle,
   Code,
+  Edit3,
 } from 'lucide-react';
+import LessonEditorModal from '@/components/lms/LessonEditorModal';
 
 interface CourseCurriculumModalProps {
   course: any;
@@ -35,32 +37,7 @@ export default function CourseCurriculumModal({ course, onClose }: CourseCurricu
 
   // Lesson creation/edit state
   const [showAddLesson, setShowAddLesson] = useState<string | null>(null); // moduleId
-  const [lessonForm, setLessonForm] = useState<any>({
-    title: '',
-    order: '',
-    description: '',
-    theoryContent: '',
-    xpReward: 50,
-    xcoinReward: 10,
-    practiceTask: {
-      title: 'Amaliy mashg\'ulot',
-      instructions: 'O\'rganilgan mavzu bo\'yicha amaliy vazifani bajaring.',
-      starterCode: '',
-      expectedOutput: '',
-    },
-    testQuestions: [
-      // 9 default questions (3 rounds x 3 questions)
-      { round: 1, question: '1-Bosqich: 1-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 1, question: '1-Bosqich: 2-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 1, question: '1-Bosqich: 3-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 2, question: '2-Bosqich: 1-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 2, question: '2-Bosqich: 2-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 2, question: '2-Bosqich: 3-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 3, question: '3-Bosqich: 1-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 3, question: '3-Bosqich: 2-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-      { round: 3, question: '3-Bosqich: 3-savol', options: ['A', 'B', 'C', 'D'], correctAnswerIndex: 0 },
-    ],
-  });
+  const [editingLesson, setEditingLesson] = useState<{ moduleId: string; lessonId: string } | null>(null);
 
   // Module lessons cache
   const [moduleLessons, setModuleLessons] = useState<Record<string, any[]>>({});
@@ -142,32 +119,6 @@ export default function CourseCurriculumModal({ course, onClose }: CourseCurricu
       }
     } catch (e: any) {
       alert(e.message);
-    }
-  };
-
-  const handleSaveLesson = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!showAddLesson) return;
-    try {
-      setSubmitting(true);
-      const res = await fetch(`/api/courses/${course._id}/modules/${showAddLesson}/lessons`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(lessonForm),
-      });
-      if (res.ok) {
-        const targetModuleId = showAddLesson;
-        setShowAddLesson(null);
-        fetchLessons(targetModuleId);
-        fetchModules();
-      } else {
-        const json = await res.json();
-        alert(json.error || 'Dars yaratishda xatolik');
-      }
-    } catch (e: any) {
-      alert(e.message);
-    } finally {
-      setSubmitting(false);
     }
   };
 
@@ -273,34 +224,7 @@ export default function CourseCurriculumModal({ course, onClose }: CourseCurricu
                         {lessons.length} ta dars
                       </span>
                       <button
-                        onClick={() => {
-                          setShowAddLesson(m._id);
-                          setLessonForm({
-                            title: '',
-                            order: String(lessons.length + 1),
-                            description: '',
-                            theoryContent: `# ${m.title} - Dars\n\nNazariy qism matni va ko'rsatmalar.`,
-                            xpReward: 50,
-                            xcoinReward: 10,
-                            practiceTask: {
-                              title: 'Amaliy mashg\'ulot',
-                              instructions: 'Vazifani bajaring.',
-                              starterCode: '',
-                              expectedOutput: '',
-                            },
-                            testQuestions: [
-                              { round: 1, question: '1-Bosqich 1-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 1, question: '1-Bosqich 2-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 1, question: '1-Bosqich 3-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 2, question: '2-Bosqich 1-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 2, question: '2-Bosqich 2-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 2, question: '2-Bosqich 3-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 3, question: '3-Bosqich 1-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 3, question: '3-Bosqich 2-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                              { round: 3, question: '3-Bosqich 3-savol', options: ['A variant', 'B variant', 'C variant', 'D variant'], correctAnswerIndex: 0 },
-                            ],
-                          });
-                        }}
+                        onClick={() => setShowAddLesson(m._id)}
                         className="px-2.5 py-1 rounded-lg bg-blue-50 text-blue-700 hover:bg-blue-100 text-xs font-bold transition-all flex items-center space-x-1"
                       >
                         <Plus className="w-3.5 h-3.5" />
@@ -342,12 +266,22 @@ export default function CourseCurriculumModal({ course, onClose }: CourseCurricu
                               </div>
                             </div>
 
-                            <button
-                              onClick={() => handleDeleteLesson(m._id, les._id)}
-                              className="p-1 text-slate-400 hover:text-rose-600 rounded"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
+                            <div className="flex items-center space-x-1">
+                              <button
+                                onClick={() => setEditingLesson({ moduleId: m._id, lessonId: les._id })}
+                                className="p-1 text-slate-400 hover:text-indigo-600 rounded transition-colors"
+                                title="Darsni tahrirlash"
+                              >
+                                <Edit3 className="w-3.5 h-3.5" />
+                              </button>
+                              <button
+                                onClick={() => handleDeleteLesson(m._id, les._id)}
+                                className="p-1 text-slate-400 hover:text-rose-600 rounded transition-colors"
+                                title="Darsni o'chirish"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
                           </div>
                         ))
                       )}
@@ -424,139 +358,24 @@ export default function CourseCurriculumModal({ course, onClose }: CourseCurricu
           </div>
         )}
 
-        {/* Add Lesson Modal */}
-        {showAddLesson && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/60 backdrop-blur-sm overflow-y-auto">
-            <div className="bg-white w-full max-w-2xl rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4 my-8 max-h-[85vh] flex flex-col">
-              <div className="flex items-center justify-between pb-2 border-b border-slate-100 shrink-0">
-                <h3 className="font-extrabold text-base text-slate-900">
-                  Yangi Dars Qo'shish (Videodarslarsiz arxitektura)
-                </h3>
-                <button onClick={() => setShowAddLesson(null)} className="p-1.5 text-slate-400">
-                  <X className="w-5 h-5" />
-                </button>
-              </div>
-
-              <form onSubmit={handleSaveLesson} className="flex-1 overflow-y-auto space-y-4 text-xs pr-1">
-                <div className="grid grid-cols-3 gap-3">
-                  <div className="col-span-2">
-                    <label className="block font-bold text-slate-700 mb-1">Dars Nomi *</label>
-                    <input
-                      type="text"
-                      required
-                      value={lessonForm.title}
-                      onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                      placeholder="Semantik teglari va formalar"
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">Tartib *</label>
-                    <input
-                      type="number"
-                      required
-                      value={lessonForm.order}
-                      onChange={(e) => setLessonForm({ ...lessonForm, order: e.target.value })}
-                      className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div className="grid grid-cols-2 gap-3">
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">XP Mukofoti</label>
-                    <input
-                      type="number"
-                      value={lessonForm.xpReward}
-                      onChange={(e) =>
-                        setLessonForm({ ...lessonForm, xpReward: Number(e.target.value) })
-                      }
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold"
-                    />
-                  </div>
-                  <div>
-                    <label className="block font-bold text-slate-700 mb-1">XCoin Mukofoti</label>
-                    <input
-                      type="number"
-                      value={lessonForm.xcoinReward}
-                      onChange={(e) =>
-                        setLessonForm({ ...lessonForm, xcoinReward: Number(e.target.value) })
-                      }
-                      className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-bold"
-                    />
-                  </div>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    1. Nazariy Material (Markdown / Matn) * (Videodars kiritilmaydi)
-                  </label>
-                  <textarea
-                    rows={4}
-                    required
-                    value={lessonForm.theoryContent}
-                    onChange={(e) => setLessonForm({ ...lessonForm, theoryContent: e.target.value })}
-                    placeholder="Darsning batafsil tushuntirishi, nazariy qoidalar va kod namunalari..."
-                    className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono text-[11px]"
-                  />
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">
-                    2. Test Savollari (3 bosqich &times; 3 savol = 9 ta savol, &ge; 8/9 o'tish bali)
-                  </label>
-                  <p className="text-[11px] text-slate-500 mb-2">
-                    Standart 9 ta savol avtomatik tuziladi. Har bir savol 4 ta variantdan iborat bo'ladi.
-                  </p>
-                </div>
-
-                <div>
-                  <label className="block font-bold text-slate-700 mb-1">3. Amaliy Topshiriq</label>
-                  <input
-                    type="text"
-                    value={lessonForm.practiceTask?.title || ''}
-                    onChange={(e) =>
-                      setLessonForm({
-                        ...lessonForm,
-                        practiceTask: { ...lessonForm.practiceTask, title: e.target.value },
-                      })
-                    }
-                    placeholder="Amaliy topshiriq sarlavhasi"
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold mb-2"
-                  />
-                  <textarea
-                    rows={2}
-                    value={lessonForm.practiceTask?.instructions || ''}
-                    onChange={(e) =>
-                      setLessonForm({
-                        ...lessonForm,
-                        practiceTask: { ...lessonForm.practiceTask, instructions: e.target.value },
-                      })
-                    }
-                    placeholder="Topshiriq yo'riqnomasi..."
-                    className="w-full p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium"
-                  />
-                </div>
-
-                <div className="flex items-center justify-end space-x-2 pt-2 border-t border-slate-100">
-                  <button
-                    type="button"
-                    onClick={() => setShowAddLesson(null)}
-                    className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
-                  >
-                    Bekor qilish
-                  </button>
-                  <button
-                    type="submit"
-                    disabled={submitting}
-                    className="px-4 py-2 rounded-xl bg-infast-500 hover:bg-infast-600 text-white font-bold"
-                  >
-                    Darsni Saqlash
-                  </button>
-                </div>
-              </form>
-            </div>
-          </div>
+        {/* Revamped Lesson Editor Modal (Create / Edit) */}
+        {(showAddLesson || editingLesson) && (
+          <LessonEditorModal
+            courseId={course._id}
+            moduleId={showAddLesson || editingLesson?.moduleId || ''}
+            lessonId={editingLesson?.lessonId || null}
+            onClose={() => {
+              setShowAddLesson(null);
+              setEditingLesson(null);
+            }}
+            onSuccess={() => {
+              const targetModId = showAddLesson || editingLesson?.moduleId;
+              if (targetModId) {
+                fetchLessons(targetModId);
+              }
+              fetchModules();
+            }}
+          />
         )}
       </div>
     </div>

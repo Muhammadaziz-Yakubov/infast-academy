@@ -37,6 +37,7 @@ interface LessonItem {
   xpReward: number;
   xcoinReward: number;
   totalQuestions: number;
+  interactiveActivity?: any;
 }
 
 interface ModuleItem {
@@ -689,20 +690,30 @@ export default function LessonMapTab({ studentId, courseName, onRefreshStudent }
             </div>
 
             <div className="space-y-3 text-xs">
-              <p className="text-slate-600">
-                Talaba nazariya va testdan o'tgandan so'ng amaliy vazifani bajarganini tasdiqlang. Dars to'liq yakunlanadi va talabaga yakuniy bonus XP beriladi.
-              </p>
+              <div className="p-3 bg-indigo-50 border border-indigo-200 rounded-2xl space-y-1.5">
+                <div className="flex items-center space-x-2">
+                  <span className="px-2 py-0.5 bg-indigo-600 text-white font-bold rounded-lg text-[10px]">
+                    Interaktiv mashg'ulot
+                  </span>
+                  <span className="font-extrabold text-indigo-950">
+                    {practiceModalLesson.interactiveActivity?.title || "Amaliy topshiriq"}
+                  </span>
+                </div>
+                <p className="text-indigo-800 text-[11px] leading-relaxed">
+                  {practiceModalLesson.interactiveActivity?.instructions || "Dars bo'yicha interaktiv mashg'ulotni o'quvchi bilan bajaring va tekshiring."}
+                </p>
+              </div>
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  Amaliyot natijasi / Izoh / Havola:
+                  Mashg'ulot natijasi / Izoh / Havola:
                 </label>
                 <textarea
                   rows={3}
                   value={practiceSubmission}
                   onChange={(e) => setPracticeSubmission(e.target.value)}
-                  placeholder="Vazifa amalda ko'rib chiqildi va qabul qilindi..."
-                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium"
+                  placeholder="Vazifa amalda ko'rib chiqildi va to'liq qabul qilindi..."
+                  className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-medium focus:outline-none focus:ring-2 focus:ring-indigo-400"
                 />
               </div>
             </div>

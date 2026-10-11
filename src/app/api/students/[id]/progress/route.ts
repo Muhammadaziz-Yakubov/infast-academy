@@ -138,6 +138,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
         xpReward: l.xpReward,
         xcoinReward: l.xcoinReward,
         totalQuestions: l.testQuestions?.length || 9,
+        interactiveActivity: l.interactiveActivity,
       };
 
       if (!lessonsByModule.has(mIdStr)) {

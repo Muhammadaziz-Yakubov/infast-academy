@@ -16,6 +16,53 @@ export interface IPracticeTask {
   expectedOutput?: string;
 }
 
+export type InteractiveActivityType =
+  | "MATCH_PAIRS"
+  | "ORDER_STEPS"
+  | "FIND_BUG"
+  | "FILL_BLANKS"
+  | "QUICK_QUIZ";
+
+export interface IMatchPair {
+  left: string;
+  right: string;
+}
+
+export interface IOrderStep {
+  id: string;
+  text: string;
+  correctOrder: number;
+}
+
+export interface IBugTask {
+  code: string;
+  options: string[];
+  correctOptionIndex: number;
+  explanation?: string;
+}
+
+export interface IFillBlank {
+  textWithBlanks: string; // e.g. "const name = {blank1};"
+  missingWords: string[];
+}
+
+export interface IQuickQuizQuestion {
+  question: string;
+  options: string[];
+  correctOptionIndex: number;
+}
+
+export interface IInteractiveActivity {
+  type: InteractiveActivityType;
+  title: string;
+  instructions: string;
+  pairs?: IMatchPair[];
+  steps?: IOrderStep[];
+  bugTask?: IBugTask;
+  fillBlanks?: IFillBlank;
+  quickQuiz?: IQuickQuizQuestion[];
+}
+
 export interface ILesson extends Document {
   courseId: mongoose.Types.ObjectId;
   moduleId: mongoose.Types.ObjectId;
@@ -25,6 +72,7 @@ export interface ILesson extends Document {
   theoryContent: string; // Markdown or rich text. Explicitly NO video support.
   testQuestions: ITestQuestion[]; // 3 rounds x 3 questions = 9 questions total
   practiceTask: IPracticeTask;
+  interactiveActivity?: IInteractiveActivity;
   xpReward: number;
   xcoinReward: number;
   status: "ACTIVE" | "INACTIVE";
@@ -54,6 +102,50 @@ const PracticeTaskSchema = new Schema<IPracticeTask>(
   { _id: false }
 );
 
+const InteractiveActivitySchema = new Schema<IInteractiveActivity>(
+  {
+    type: {
+      type: String,
+      required: true,
+      enum: ["MATCH_PAIRS", "ORDER_STEPS", "FIND_BUG", "FILL_BLANKS", "QUICK_QUIZ"],
+      default: "MATCH_PAIRS",
+    },
+    title: { type: String, required: true, default: "Interaktiv mashg'ulot" },
+    instructions: { type: String, required: true, default: "Vazifani bajaring" },
+    pairs: [
+      {
+        left: { type: String, required: true },
+        right: { type: String, required: true },
+      },
+    ],
+    steps: [
+      {
+        id: { type: String, required: true },
+        text: { type: String, required: true },
+        correctOrder: { type: Number, required: true },
+      },
+    ],
+    bugTask: {
+      code: { type: String },
+      options: [{ type: String }],
+      correctOptionIndex: { type: Number, default: 0 },
+      explanation: { type: String },
+    },
+    fillBlanks: {
+      textWithBlanks: { type: String },
+      missingWords: [{ type: String }],
+    },
+    quickQuiz: [
+      {
+        question: { type: String, required: true },
+        options: [{ type: String, required: true }],
+        correctOptionIndex: { type: Number, required: true, default: 0 },
+      },
+    ],
+  },
+  { _id: false }
+);
+
 const LessonSchema: Schema<ILesson> = new Schema(
   {
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
@@ -68,6 +160,19 @@ const LessonSchema: Schema<ILesson> = new Schema(
       default: () => ({
         title: "Amaliy topshiriq",
         instructions: "Berilgan vazifani amalda bajaring va natijani tekshiring.",
+      }),
+    },
+    interactiveActivity: {
+      type: InteractiveActivitySchema,
+      default: () => ({
+        type: "MATCH_PAIRS",
+        title: "Tushunchalar juftligini toping",
+        instructions: "Chap tomondagi tushunchani o'ng tomondagi to'g'ri ta'rif yoki natija bilan moslashtiring.",
+        pairs: [
+          { left: "const", right: "O'zgarmas o'zgaruvchi e'loni" },
+          { left: "let", right: "O'zgaruvchan qiymat e'loni" },
+          { left: "function", right: "Qayta ishlatiluvchi kod bloki" },
+        ],
       }),
     },
     xpReward: { type: Number, default: 50 },
