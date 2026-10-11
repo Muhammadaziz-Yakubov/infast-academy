@@ -175,11 +175,13 @@ export default function EventsScreen() {
           const isProcessing = processingId === evt._id;
           const dateObj = new Date(evt.date);
           const dateFormatted = dateObj.toLocaleDateString('uz-UZ', {
+            timeZone: 'Asia/Tashkent',
             weekday: 'short',
             day: 'numeric',
             month: 'long',
             hour: '2-digit',
             minute: '2-digit',
+            hour12: false,
           });
 
           return (

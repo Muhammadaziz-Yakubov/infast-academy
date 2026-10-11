@@ -142,3 +142,34 @@ export async function PATCH(request: Request) {
     );
   }
 }
+
+// DELETE product from shop
+export async function DELETE(request: Request) {
+  try {
+    const session = getSession();
+    if (!session || session.role !== 'ADMIN') {
+      return NextResponse.json({ error: "Faqat Super Admin mahsulotni o'chira oladi" }, { status: 403 });
+    }
+
+    await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const productId = searchParams.get('productId');
+
+    if (!productId) {
+      return NextResponse.json({ error: "Mahsulot ID si ko'rsatilmadi" }, { status: 400 });
+    }
+
+    await ShopProduct.findByIdAndDelete(productId);
+
+    return NextResponse.json({
+      success: true,
+      message: "Mahsulot muvaffaqiyatli o'chirildi",
+    });
+  } catch (error: any) {
+    return NextResponse.json(
+      { error: error.message || "Mahsulotni o'chirishda xatolik" },
+      { status: 500 }
+    );
+  }
+}
+

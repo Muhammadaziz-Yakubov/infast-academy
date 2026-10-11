@@ -14,6 +14,7 @@ import {
   ExternalLink,
   Search,
   Filter,
+  Trash2,
 } from 'lucide-react';
 
 interface Product {
@@ -158,6 +159,27 @@ export default function AdminShopPage() {
       alert(e.message);
     } finally {
       setOrderActionLoading(null);
+    }
+  };
+
+  const handleDeleteProduct = async (product: Product) => {
+    if (!confirm(`Haqiqatan ham "${product.title}" mahsulotini do'kondan butunlay o'chirmoqchimisiz?`)) {
+      return;
+    }
+
+    try {
+      const res = await fetch(`/api/admin/shop?productId=${product._id}`, {
+        method: 'DELETE',
+      });
+      const data = await res.json();
+      if (data.success) {
+        alert("Mahsulot o'chirildi!");
+        fetchShopData();
+      } else {
+        alert(data.error || "O'chirishda xatolik yuz berdi");
+      }
+    } catch (err: any) {
+      alert(err.message);
     }
   };
 
@@ -429,13 +451,24 @@ export default function AdminShopPage() {
                 <span className="font-extrabold text-amber-600 text-lg">
                   {product.priceXCoin} 🪙
                 </span>
-                <span
-                  className={`text-xs font-bold px-2.5 py-1 rounded-full ${
-                    product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
-                  }`}
-                >
-                  {product.isActive ? 'Faol' : 'Nofaol'}
-                </span>
+                
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-xs font-bold px-2.5 py-1 rounded-full ${
+                      product.isActive ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'
+                    }`}
+                  >
+                    {product.isActive ? 'Faol' : 'Nofaol'}
+                  </span>
+
+                  <button
+                    onClick={() => handleDeleteProduct(product)}
+                    className="p-1.5 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors"
+                    title="Mahsulotni o'chirish"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </button>
+                </div>
               </div>
             </div>
           ))}

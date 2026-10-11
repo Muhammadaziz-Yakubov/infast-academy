@@ -178,3 +178,61 @@ export async function PATCH(request: Request) {
     );
   }
 }
+
+// PUT or PATCH event status (e.g. COMPLETED / ARCHIVED)
+export async function PUT(request: Request) {
+  try {
+    const session = getSession();
+    if (!session) {
+      return NextResponse.json({ error: "Avtorizatsiyadan o'tilmagan" }, { status: 401 });
+    }
+
+    await connectToDatabase();
+    const body = await request.json();
+    const { eventId, status } = body; // 'UPCOMING' | 'COMPLETED' | 'CANCELLED'
+
+    if (!eventId || !status) {
+      return NextResponse.json({ error: "Parametrlar yetarli emas" }, { status: 400 });
+    }
+
+    const event = await Event.findByIdAndUpdate(eventId, { status }, { new: true });
+    if (!event) {
+      return NextResponse.json({ error: "Tadbir topilmadi" }, { status: 404 });
+    }
+
+    return NextResponse.json({
+      success: true,
+      message: status === 'COMPLETED' ? "Tadbir 'O'tib ketgan' deb arxivga o'tkazildi" : "Holat yangilandi",
+      event,
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Xatolik" }, { status: 500 });
+  }
+}
+
+// DELETE event
+export async function DELETE(request: Request) {
+  try {
+    const session = getSession();
+    if (!session || session.role !== 'ADMIN') {
+      return NextResponse.json({ error: "Faqat Super Admin tadbirni o'chira oladi" }, { status: 403 });
+    }
+
+    await connectToDatabase();
+    const { searchParams } = new URL(request.url);
+    const eventId = searchParams.get('eventId');
+
+    if (!eventId) {
+      return NextResponse.json({ error: "Tadbir ID si ko'rsatilmadi" }, { status: 400 });
+    }
+
+    await Event.findByIdAndDelete(eventId);
+
+    return NextResponse.json({
+      success: true,
+      message: "Tadbir muvaffaqiyatli o'chirildi",
+    });
+  } catch (error: any) {
+    return NextResponse.json({ error: error.message || "Tadbirni o'chirishda xatolik" }, { status: 500 });
+  }
+}
