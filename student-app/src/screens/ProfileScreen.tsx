@@ -15,13 +15,12 @@ import {
   Building2,
   Users,
   BookOpen,
-  Calendar,
-  CreditCard,
   LogOut,
   ChevronRight,
   ShieldCheck,
   Phone,
   Sparkles,
+  Coins,
 } from 'lucide-react-native';
 
 export default function ProfileScreen() {
@@ -81,7 +80,7 @@ export default function ProfileScreen() {
         <Text style={styles.studentCodeText}>Talaba ID: {profile?.studentCode || 'INF-STD'}</Text>
 
         <View style={styles.statusPill}>
-          <ShieldCheck size={12} color="#34C759" />
+          <ShieldCheck size={12} color="#30D158" />
           <Text style={styles.statusPillText}>Faol talaba</Text>
         </View>
       </View>
@@ -93,8 +92,8 @@ export default function ProfileScreen() {
 
       <View style={styles.groupedCard}>
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#EBF5FF' }]}>
-            <Building2 size={18} color="#007AFF" />
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(10, 132, 255, 0.16)' }]}>
+            <Building2 size={18} color="#0A84FF" />
           </View>
           <View style={styles.rowContent}>
             <Text style={styles.rowLabel}>Filial</Text>
@@ -105,7 +104,7 @@ export default function ProfileScreen() {
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#FFF4E6' }]}>
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(255, 149, 0, 0.16)' }]}>
             <BookOpen size={18} color="#FF9500" />
           </View>
           <View style={styles.rowContent}>
@@ -117,8 +116,8 @@ export default function ProfileScreen() {
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#F0EEFF' }]}>
-            <Users size={18} color="#5856D6" />
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(94, 92, 230, 0.16)' }]}>
+            <Users size={18} color="#5E5CE6" />
           </View>
           <View style={styles.rowContent}>
             <Text style={styles.rowLabel}>Guruh</Text>
@@ -129,8 +128,8 @@ export default function ProfileScreen() {
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#EAF8EE' }]}>
-            <Phone size={18} color="#34C759" />
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(48, 209, 88, 0.16)' }]}>
+            <Phone size={18} color="#30D158" />
           </View>
           <View style={styles.rowContent}>
             <Text style={styles.rowLabel}>Telefon raqam</Text>
@@ -146,7 +145,7 @@ export default function ProfileScreen() {
 
       <View style={styles.groupedCard}>
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#FFF4E6' }]}>
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(255, 149, 0, 0.16)' }]}>
             <Sparkles size={18} color="#FF9500" />
           </View>
           <View style={styles.rowContent}>
@@ -158,8 +157,8 @@ export default function ProfileScreen() {
         <View style={styles.separator} />
 
         <View style={styles.row}>
-          <View style={[styles.iconBox, { backgroundColor: '#FFFBE6' }]}>
-            <Sparkles size={18} color="#E5A100" />
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(255, 214, 10, 0.16)' }]}>
+            <Coins size={18} color="#FFD60A" />
           </View>
           <View style={styles.rowContent}>
             <Text style={styles.rowLabel}>XCoin Balansi</Text>
@@ -175,13 +174,13 @@ export default function ProfileScreen() {
 
       <View style={styles.groupedCard}>
         <TouchableOpacity style={styles.rowAction} onPress={handleLogout} activeOpacity={0.6}>
-          <View style={[styles.iconBox, { backgroundColor: '#FEE2E2' }]}>
-            <LogOut size={18} color="#EF4444" />
+          <View style={[styles.iconBox, { backgroundColor: 'rgba(255, 69, 58, 0.16)' }]}>
+            <LogOut size={18} color="#FF453A" />
           </View>
           <View style={styles.rowContent}>
-            <Text style={[styles.rowValue, { color: '#FF3B30' }]}>Akkauntdan chiqish</Text>
+            <Text style={[styles.rowValue, { color: '#FF453A' }]}>Akkauntdan chiqish</Text>
           </View>
-          <ChevronRight size={18} color="#C7C7CC" />
+          <ChevronRight size={18} color="#636366" />
         </TouchableOpacity>
       </View>
 
@@ -193,7 +192,7 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000', // Apple OLED True Black
   },
   contentContainer: {
     paddingTop: 8,
@@ -212,99 +211,103 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   largeTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.5,
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.6,
   },
   profileHeaderCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 22,
     marginHorizontal: 16,
-    padding: 20,
+    padding: 24,
     alignItems: 'center',
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   avatarLarge: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: COLORS.primary,
+    width: 76,
+    height: 76,
+    borderRadius: 38,
+    backgroundColor: '#FF9500',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
-    shadowColor: COLORS.primary,
+    marginBottom: 14,
+    shadowColor: '#FF9500',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
+    shadowOpacity: 0.35,
     shadowRadius: 8,
     elevation: 4,
   },
   avatarLargeText: {
-    fontSize: 26,
-    fontWeight: '700',
+    fontSize: 28,
+    fontWeight: '800',
     color: '#FFFFFF',
   },
   fullName: {
-    fontSize: 20,
+    fontSize: 22,
     fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.4,
+    color: '#FFFFFF',
+    letterSpacing: -0.3,
+    marginBottom: 4,
   },
   studentCodeText: {
     fontSize: 13,
     color: '#8E8E93',
-    marginTop: 2,
-    fontWeight: '500',
+    fontWeight: '600',
+    marginBottom: 12,
   },
   statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#EAF8EE',
+    backgroundColor: 'rgba(48, 209, 88, 0.16)',
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 10,
-    marginTop: 10,
-    gap: 4,
+    gap: 5,
   },
   statusPillText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#34C759',
+    color: '#30D158',
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#8E8E93',
-    letterSpacing: -0.1,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   groupedCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     marginHorizontal: 16,
     overflow: 'hidden',
-    marginBottom: 20,
+    marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: 16,
   },
   rowAction: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: 14,
+    padding: 16,
   },
   iconBox: {
     width: 36,
     height: 36,
-    borderRadius: 10,
+    borderRadius: 11,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
@@ -319,13 +322,13 @@ const styles = StyleSheet.create({
   },
   rowValue: {
     fontSize: 15,
-    color: '#000000',
+    color: '#FFFFFF',
     fontWeight: '600',
-    marginTop: 1,
+    marginTop: 2,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
-    marginLeft: 64,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    marginLeft: 66,
   },
 });

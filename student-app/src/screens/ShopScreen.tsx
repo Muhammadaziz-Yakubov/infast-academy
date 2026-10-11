@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import { apiRequest } from '../services/api';
 import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { ShoppingBag, Coins, Sparkles, Check, PackageCheck, Gift } from 'lucide-react-native';
+import { Coins, Sparkles, Gift } from 'lucide-react-native';
 
 export default function ShopScreen() {
   const [data, setData] = useState<any | null>(null);
@@ -95,7 +95,14 @@ export default function ShopScreen() {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchShop(); }} tintColor={COLORS.primary} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchShop();
+          }}
+          tintColor={COLORS.primary}
+        />
       }
     >
       {/* Apple Large Title Header */}
@@ -108,7 +115,7 @@ export default function ShopScreen() {
       <View style={styles.balanceCard}>
         <View style={styles.balanceLeft}>
           <View style={styles.coinIconCircle}>
-            <Coins size={22} color="#E5A100" />
+            <Coins size={22} color="#FFD60A" />
           </View>
           <View>
             <Text style={styles.balanceLabel}>XCoin Balansingiz</Text>
@@ -116,7 +123,7 @@ export default function ShopScreen() {
           </View>
         </View>
         <View style={styles.balanceTag}>
-          <Sparkles size={13} color="#FF9500" />
+          <Sparkles size={13} color="#FFD60A" />
           <Text style={styles.balanceTagText}>Jonli hisob</Text>
         </View>
       </View>
@@ -134,7 +141,7 @@ export default function ShopScreen() {
           return (
             <View key={product._id} style={styles.productCard}>
               <View style={styles.productIconBox}>
-                <Gift size={28} color="#FF9500" />
+                <Gift size={28} color="#FFD60A" />
               </View>
 
               <View style={styles.productInfoCol}>
@@ -155,7 +162,7 @@ export default function ShopScreen() {
                 activeOpacity={0.7}
               >
                 {isBuying ? (
-                  <ActivityIndicator size="small" color="#FF9500" />
+                  <ActivityIndicator size="small" color="#FFD60A" />
                 ) : (
                   <Text style={[styles.buyPillText, !canAfford && styles.buyPillTextDisabled]}>
                     {product.priceXCoin} 🪙
@@ -190,14 +197,18 @@ export default function ShopScreen() {
                       </Text>
                     </View>
 
-                    <View style={[
-                      styles.orderBadge,
-                      isFulfilled ? styles.orderBadgeSuccess : styles.orderBadgePending,
-                    ]}>
-                      <Text style={[
-                        styles.orderBadgeText,
-                        isFulfilled ? styles.orderBadgeTextSuccess : styles.orderBadgeTextPending,
-                      ]}>
+                    <View
+                      style={[
+                        styles.orderBadge,
+                        isFulfilled ? styles.orderBadgeSuccess : styles.orderBadgePending,
+                      ]}
+                    >
+                      <Text
+                        style={[
+                          styles.orderBadgeText,
+                          isFulfilled ? styles.orderBadgeTextSuccess : styles.orderBadgeTextPending,
+                        ]}
+                      >
                         {isFulfilled ? "Yetkazildi" : "Kutilmoqda"}
                       </Text>
                     </View>
@@ -217,7 +228,7 @@ export default function ShopScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000', // Apple OLED True Black
   },
   contentContainer: {
     paddingTop: 8,
@@ -227,7 +238,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000',
   },
   loadingText: {
     marginTop: 8,
@@ -248,20 +259,22 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   largeTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.5,
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.6,
   },
   balanceCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 22,
     marginHorizontal: 16,
-    padding: 18,
+    padding: 20,
     marginBottom: 24,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   balanceLeft: {
@@ -271,47 +284,47 @@ const styles = StyleSheet.create({
   coinIconCircle: {
     width: 44,
     height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FFFBE6',
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 214, 10, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   balanceLabel: {
     fontSize: 12,
     color: '#8E8E93',
-    fontWeight: '500',
+    fontWeight: '600',
   },
   balanceValue: {
     fontSize: 22,
     fontWeight: '800',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.4,
     marginTop: 2,
   },
   balanceTag: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF4E6',
+    backgroundColor: 'rgba(255, 214, 10, 0.16)',
     paddingHorizontal: 10,
     paddingVertical: 5,
-    borderRadius: 12,
+    borderRadius: 10,
     gap: 4,
   },
   balanceTagText: {
     fontSize: 11,
     fontWeight: '700',
-    color: '#FF9500',
+    color: '#FFD60A',
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#8E8E93',
-    letterSpacing: -0.1,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   productsContainer: {
@@ -320,31 +333,33 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   productCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     padding: 16,
     flexDirection: 'row',
     alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   productIconBox: {
-    width: 48,
-    height: 48,
-    borderRadius: 14,
-    backgroundColor: '#FFF4E6',
+    width: 52,
+    height: 52,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 214, 10, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 14,
   },
   productInfoCol: {
     flex: 1,
-    marginRight: 10,
+    marginRight: 12,
   },
   productTitle: {
-    fontSize: 15,
-    fontWeight: '600',
-    color: '#000000',
-    letterSpacing: -0.2,
+    fontSize: 16,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    letterSpacing: -0.3,
   },
   productDescription: {
     fontSize: 12,
@@ -354,34 +369,37 @@ const styles = StyleSheet.create({
   },
   stockText: {
     fontSize: 11,
-    color: '#C7C7CC',
+    color: '#636366',
     marginTop: 4,
-    fontWeight: '500',
+    fontWeight: '600',
   },
   buyPillButton: {
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#FFD60A',
     paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 16,
+    paddingVertical: 9,
+    borderRadius: 14,
     minWidth: 70,
     alignItems: 'center',
+    justifyContent: 'center',
   },
   buyPillButtonDisabled: {
-    opacity: 0.45,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
   },
   buyPillText: {
+    color: '#000000',
     fontSize: 13,
-    fontWeight: '700',
-    color: '#FF9500',
+    fontWeight: '800',
   },
   buyPillTextDisabled: {
-    color: '#8E8E93',
+    color: '#636366',
   },
   groupedCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     marginHorizontal: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   orderRow: {
@@ -392,11 +410,12 @@ const styles = StyleSheet.create({
   },
   orderInfo: {
     flex: 1,
+    marginRight: 12,
   },
   orderTitle: {
     fontSize: 15,
     fontWeight: '600',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   orderDate: {
@@ -406,28 +425,28 @@ const styles = StyleSheet.create({
   },
   orderBadge: {
     paddingHorizontal: 10,
-    paddingVertical: 4,
+    paddingVertical: 5,
     borderRadius: 8,
   },
   orderBadgeSuccess: {
-    backgroundColor: '#EAF8EE',
+    backgroundColor: 'rgba(48, 209, 88, 0.16)',
   },
   orderBadgePending: {
-    backgroundColor: '#FFF4E6',
+    backgroundColor: 'rgba(255, 149, 0, 0.16)',
   },
   orderBadgeText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   orderBadgeTextSuccess: {
-    color: '#34C759',
+    color: '#30D158',
   },
   orderBadgeTextPending: {
     color: '#FF9500',
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     marginLeft: 16,
   },
 });

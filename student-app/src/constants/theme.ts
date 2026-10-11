@@ -1,36 +1,38 @@
 export const COLORS = {
-  // Apple System Palette
-  primary: '#FF9500', // Apple System Orange (InFast signature)
+  // Apple Dark Mode Primary Accents
+  primary: '#FF9500', // Apple System Vibrant Orange
   primaryDark: '#E08500',
-  primaryLight: '#FFE8CC',
-  primarySoft: '#FFF6ED',
+  primaryLight: '#3D2800',
+  primarySoft: 'rgba(255, 149, 0, 0.12)',
 
-  systemBlue: '#007AFF',
-  systemGreen: '#34C759',
-  accentGreen: '#34C759',
-  systemIndigo: '#5856D6',
-  secondary: '#5856D6',
-  systemPurple: '#AF52DE',
-  systemRed: '#FF3B30',
-  systemYellow: '#FFCC00',
-  systemTeal: '#5AC8FA',
+  systemBlue: '#0A84FF',
+  systemGreen: '#30D158',
+  accentGreen: '#30D158',
+  systemIndigo: '#5E5CE6',
+  secondary: '#5E5CE6',
+  systemPurple: '#BF5AF2',
+  systemRed: '#FF453A',
+  systemYellow: '#FFD60A',
+  systemTeal: '#64D2FF',
 
-  // Semantic surfaces (iOS 17/18 Human Interface Guidelines)
-  background: '#F2F2F7', // Apple Grouped Background
-  card: '#FFFFFF',
-  surface: '#E5E5EA',
-  surfaceSecondary: '#F9F9FB',
+  // Apple OLED & Dark Surfaces
+  background: '#000000', // Apple True Black (OLED)
+  backgroundSecondary: '#121214',
+  card: '#1C1C1E', // Apple Dark Card Surface
+  cardElevated: '#2C2C2E', // Apple Elevated Surface
+  surface: '#2C2C2E',
+  surfaceSecondary: '#3A3A3C',
 
-  // Typography
-  textPrimary: '#000000', // Apple primary label
-  textSecondary: '#636366', // Apple secondary label
-  textMuted: '#8E8E93', // Apple tertiary label
-  textPlaceholder: '#C7C7CC',
+  // Dark Typography
+  textPrimary: '#FFFFFF', // High emphasis label
+  textSecondary: '#EBEBF5', // Medium emphasis
+  textMuted: '#8E8E93', // Secondary / tertiary label
+  textPlaceholder: '#636366',
 
-  // Hairline separators
-  border: '#E5E5EA',
-  borderLight: '#F2F2F7',
-  separator: '#D1D1D6',
+  // Dark Hairline Borders & Separators
+  border: 'rgba(255, 255, 255, 0.10)',
+  borderLight: 'rgba(255, 255, 255, 0.06)',
+  separator: 'rgba(255, 255, 255, 0.12)',
 };
 
 export const SPACING = {
@@ -46,7 +48,7 @@ export const SPACING = {
 export const APPLE_SHADOW = {
   shadowColor: '#000000',
   shadowOffset: { width: 0, height: 4 },
-  shadowOpacity: 0.05,
+  shadowOpacity: 0.35,
   shadowRadius: 10,
-  elevation: 2,
+  elevation: 3,
 };

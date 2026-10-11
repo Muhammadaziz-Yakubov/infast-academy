@@ -62,16 +62,24 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
     return (
       <View style={styles.centerContainer}>
         <ActivityIndicator size="small" color={COLORS.primary} />
-        <Text style={styles.loadingText}>O'quv rejasi yuklanmoqda...</Text>
+        <Text style={styles.loadingText}>O'quv dasturi yuklanmoqda...</Text>
       </View>
     );
   }
 
+  const course = data?.course || {
+    name: 'Frontend Development',
+    description: "Zamonaviy veb va mobil ilovalar yaratish bo'yicha to'liq kurs.",
+  };
+
   const modules = data?.modules || [];
-  const progress = data?.progress || { completedLessonCount: 0, totalLessonCount: 0 };
-  const percent = progress.totalLessonCount > 0
-    ? Math.round((progress.completedLessonCount / progress.totalLessonCount) * 100)
-    : 0;
+  const totalLessons = modules.reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0);
+  const completedLessons = modules.reduce(
+    (acc: number, m: any) =>
+      acc + (m.lessons?.filter((l: any) => l.isCompleted)?.length || 0),
+    0
+  );
+  const percent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
 
   return (
     <ScrollView
@@ -79,37 +87,45 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchCurriculum(); }} tintColor={COLORS.primary} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchCurriculum();
+          }}
+          tintColor={COLORS.primary}
+        />
       }
     >
-      {/* Apple Large Title Navigation Header */}
+      {/* Apple Large Title Header */}
       <View style={styles.header}>
         <Text style={styles.categoryLabel}>O'QUV DASTURI</Text>
-        <Text style={styles.largeTitle}>Ta'lim</Text>
+        <Text style={styles.largeTitle}>LMS Xaritasi</Text>
       </View>
 
-      {/* Course Overview Card (Apple Style) */}
+      {/* Course Overview Card */}
       <View style={styles.courseCard}>
         <View style={styles.courseBadgeRow}>
           <View style={styles.coursePill}>
-            <Text style={styles.coursePillText}>Asosiy Kurs</Text>
+            <Text style={styles.coursePillText}>ASOSIY KURS</Text>
           </View>
-          <Text style={styles.progressPercentText}>{percent}% tamomlandi</Text>
+          <Text style={styles.progressPercentText}>{percent}% O'zlashtirildi</Text>
         </View>
 
-        <Text style={styles.courseTitle}>{data?.course?.name || "Frontend & Web Dasturlash"}</Text>
-        <Text style={styles.courseSubtitle}>
-          {data?.course?.description || "Zamonaviy IT ta'limi bo'yicha amaliy darslar va topshiriqlar"}
-        </Text>
+        <Text style={styles.courseTitle}>{course.name}</Text>
+        <Text style={styles.courseSubtitle}>{course.description}</Text>
 
-        {/* Minimal Apple Progress Bar */}
+        {/* Progress Bar */}
         <View style={styles.progressBarTrack}>
           <View style={[styles.progressBarFill, { width: `${Math.max(5, percent)}%` }]} />
         </View>
 
         <View style={styles.progressFooter}>
           <Text style={styles.progressCountText}>
-            {progress.completedLessonCount} / {progress.totalLessonCount} dars yakunlangan
+            {completedLessons} / {totalLessons} dars yakunlangan
+          </Text>
+          <Text style={styles.progressCountText}>
+            {modules.length} ta modul
           </Text>
         </View>
       </View>
@@ -120,9 +136,9 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
       </View>
 
       {modules.map((module: any, mIdx: number) => {
-        const isExpanded = expandedModules[module._id] !== false;
+        const isExpanded = !!expandedModules[module._id];
         const lessons = module.lessons || [];
-        const completedInModule = lessons.filter((l: any) => l.isCompleted).length;
+        const modCompleted = lessons.filter((l: any) => l.isCompleted).length;
 
         return (
           <View key={module._id} style={styles.moduleCard}>
@@ -139,7 +155,7 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
               <View style={styles.moduleHeaderInfo}>
                 <Text style={styles.moduleTitle}>{module.title}</Text>
                 <Text style={styles.moduleMeta}>
-                  {completedInModule}/{lessons.length} dars tugatildi
+                  {lessons.length} ta dars • {modCompleted}/{lessons.length} yakunlandi
                 </Text>
               </View>
 
@@ -170,9 +186,9 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
                         {/* Status Icon */}
                         <View style={styles.statusIconBox}>
                           {isCompleted ? (
-                            <CheckCircle2 size={22} color="#34C759" />
+                            <CheckCircle2 size={22} color="#30D158" />
                           ) : isLocked ? (
-                            <Lock size={18} color="#C7C7CC" />
+                            <Lock size={18} color="#636366" />
                           ) : (
                             <PlayCircle size={22} color="#FF9500" />
                           )}
@@ -189,7 +205,7 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
                         </View>
 
                         {!isLocked && (
-                          <ChevronRight size={18} color="#C7C7CC" />
+                          <ChevronRight size={18} color="#636366" />
                         )}
                       </TouchableOpacity>
                     </React.Fragment>
@@ -209,7 +225,7 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000', // Apple OLED True Black
   },
   contentContainer: {
     paddingTop: 8,
@@ -219,7 +235,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000',
   },
   loadingText: {
     marginTop: 8,
@@ -240,17 +256,19 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   largeTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.5,
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.6,
   },
   courseCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
+    backgroundColor: '#1C1C1E', // Apple Dark Slate
+    borderRadius: 22,
     marginHorizontal: 16,
-    padding: 18,
+    padding: 20,
     marginBottom: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   courseBadgeRow: {
@@ -260,10 +278,10 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   coursePill: {
-    backgroundColor: '#FFF4E6',
+    backgroundColor: 'rgba(255, 149, 0, 0.16)',
     paddingHorizontal: 8,
     paddingVertical: 3,
-    borderRadius: 8,
+    borderRadius: 6,
   },
   coursePillText: {
     color: '#FF9500',
@@ -278,19 +296,19 @@ const styles = StyleSheet.create({
   courseTitle: {
     fontSize: 20,
     fontWeight: '700',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.4,
-    marginBottom: 4,
+    marginBottom: 6,
   },
   courseSubtitle: {
     fontSize: 13,
-    color: '#636366',
+    color: '#8E8E93',
     lineHeight: 18,
     marginBottom: 16,
   },
   progressBarTrack: {
     height: 6,
-    backgroundColor: '#E5E5EA',
+    backgroundColor: 'rgba(255, 255, 255, 0.12)',
     borderRadius: 3,
     overflow: 'hidden',
     marginBottom: 8,
@@ -311,21 +329,23 @@ const styles = StyleSheet.create({
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#8E8E93',
-    letterSpacing: -0.1,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   moduleCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     marginHorizontal: 16,
     marginBottom: 14,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   moduleHeader: {
@@ -337,7 +357,7 @@ const styles = StyleSheet.create({
     width: 32,
     height: 32,
     borderRadius: 16,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -345,7 +365,7 @@ const styles = StyleSheet.create({
   moduleNumberText: {
     fontSize: 14,
     fontWeight: '700',
-    color: '#000000',
+    color: '#FFFFFF',
   },
   moduleHeaderInfo: {
     flex: 1,
@@ -353,7 +373,7 @@ const styles = StyleSheet.create({
   moduleTitle: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.3,
   },
   moduleMeta: {
@@ -363,16 +383,16 @@ const styles = StyleSheet.create({
   },
   lessonsContainer: {
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#E5E5EA',
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
   },
   lessonRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 13,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   lessonRowLocked: {
-    opacity: 0.5,
+    opacity: 0.45,
   },
   statusIconBox: {
     width: 32,
@@ -386,7 +406,7 @@ const styles = StyleSheet.create({
   lessonTitle: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   lessonTitleLocked: {
@@ -399,7 +419,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
     marginLeft: 58,
   },
 });

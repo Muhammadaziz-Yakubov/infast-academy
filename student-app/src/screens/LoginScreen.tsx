@@ -74,7 +74,7 @@ export default function LoginScreen() {
             <TextInput
               style={styles.textInput}
               placeholder="Telefon raqam (+998 90 123 45 67)"
-              placeholderTextColor="#8E8E93"
+              placeholderTextColor="#636366"
               keyboardType="phone-pad"
               autoCapitalize="none"
               value={phone}
@@ -94,7 +94,7 @@ export default function LoginScreen() {
             <TextInput
               style={[styles.textInput, { flex: 1 }]}
               placeholder="Parol"
-              placeholderTextColor="#8E8E93"
+              placeholderTextColor="#636366"
               secureTextEntry={!showPassword}
               value={password}
               onChangeText={(val) => {
@@ -144,7 +144,7 @@ export default function LoginScreen() {
           disabled={loading}
           activeOpacity={0.7}
         >
-          <Sparkles size={16} color={COLORS.primary} />
+          <Sparkles size={16} color="#FF9500" />
           <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo rejim)</Text>
         </TouchableOpacity>
 
@@ -161,7 +161,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000', // Apple OLED True Black
   },
   scrollContent: {
     flexGrow: 1,
@@ -174,112 +174,122 @@ const styles = StyleSheet.create({
     marginBottom: 32,
   },
   logoBadge: {
-    width: 68,
-    height: 68,
-    borderRadius: 20,
-    backgroundColor: COLORS.primary,
+    width: 72,
+    height: 72,
+    borderRadius: 22,
+    backgroundColor: '#FF9500',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 14,
-    shadowColor: COLORS.primary,
+    marginBottom: 16,
+    shadowColor: '#FF9500',
     shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.25,
-    shadowRadius: 8,
-    elevation: 4,
+    shadowOpacity: 0.35,
+    shadowRadius: 10,
+    elevation: 5,
   },
   brandTitle: {
-    fontSize: 26,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.4,
+    fontSize: 28,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.5,
   },
   brandSubtitle: {
     fontSize: 14,
     color: '#8E8E93',
     fontWeight: '500',
-    marginTop: 3,
+    marginTop: 4,
   },
   errorBanner: {
-    backgroundColor: '#FFEBEE',
+    backgroundColor: 'rgba(255, 69, 58, 0.16)',
+    paddingHorizontal: 16,
+    paddingVertical: 12,
     borderRadius: 14,
-    padding: 12,
-    marginBottom: 16,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 69, 58, 0.25)',
   },
   errorText: {
-    color: '#D32F2F',
+    color: '#FF453A',
     fontSize: 13,
     fontWeight: '600',
     textAlign: 'center',
   },
   inputGroupCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 16,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 18,
     overflow: 'hidden',
-    marginBottom: 18,
+    marginBottom: 20,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 13,
+    paddingVertical: 14,
   },
   iconCircle: {
-    marginRight: 12,
+    width: 28,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
   },
   textInput: {
     flex: 1,
     fontSize: 15,
-    color: '#000000',
+    color: '#FFFFFF',
     paddingVertical: 0,
   },
   eyeButton: {
-    padding: 4,
+    padding: 6,
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
-    marginLeft: 44,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    marginLeft: 54,
   },
   primaryButton: {
-    backgroundColor: '#000000', // Apple Black CTA
+    backgroundColor: '#FF9500',
+    paddingVertical: 15,
     borderRadius: 14,
-    height: 50,
     alignItems: 'center',
     justifyContent: 'center',
     marginBottom: 12,
-    ...APPLE_SHADOW,
+    shadowColor: '#FF9500',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
   buttonDisabled: {
-    opacity: 0.6,
+    opacity: 0.5,
   },
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '600',
+    fontWeight: '700',
     letterSpacing: -0.2,
   },
   demoButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#E5E5EA',
+    backgroundColor: 'rgba(255, 149, 0, 0.12)',
+    paddingVertical: 14,
     borderRadius: 14,
-    height: 48,
     gap: 8,
-    marginBottom: 20,
-    ...APPLE_SHADOW,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 149, 0, 0.25)',
   },
   demoButtonText: {
-    color: COLORS.primary,
+    color: '#FF9500',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   footerNote: {
-    paddingHorizontal: 10,
-    alignItems: 'center',
+    marginTop: 28,
+    paddingHorizontal: 16,
   },
   footerNoteText: {
     fontSize: 12,

@@ -10,7 +10,7 @@ import {
 } from 'react-native';
 import { apiRequest } from '../services/api';
 import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { Trophy, Award, Flame, Sparkles } from 'lucide-react-native';
+import { Trophy, Flame } from 'lucide-react-native';
 
 export default function LeaderboardScreen() {
   const [data, setData] = useState<any | null>(null);
@@ -54,7 +54,14 @@ export default function LeaderboardScreen() {
       contentContainerStyle={styles.contentContainer}
       showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchLeaderboard(); }} tintColor={COLORS.primary} />
+        <RefreshControl
+          refreshing={refreshing}
+          onRefresh={() => {
+            setRefreshing(true);
+            fetchLeaderboard();
+          }}
+          tintColor={COLORS.primary}
+        />
       }
     >
       {/* Apple Large Title Header */}
@@ -88,11 +95,11 @@ export default function LeaderboardScreen() {
         </View>
       </View>
 
-      {/* User's Current Rank Card (Apple Widget) */}
+      {/* User's Current Rank Card */}
       <View style={styles.myRankCard}>
         <View style={styles.myRankLeft}>
           <View style={styles.myRankBadge}>
-            <Trophy size={18} color="#FF9500" />
+            <Trophy size={20} color="#FF9500" strokeWidth={2.4} />
           </View>
           <View>
             <Text style={styles.myRankLabel}>Sizning o'rningiz</Text>
@@ -124,29 +131,37 @@ export default function LeaderboardScreen() {
 
                 <View style={[styles.rankRow, item.isCurrentStudent && styles.rankRowCurrent]}>
                   {/* Rank Badge */}
-                  <View style={[
-                    styles.rankNumberBox,
-                    isTop1 && styles.rankGold,
-                    isTop2 && styles.rankSilver,
-                    isTop3 && styles.rankBronze,
-                  ]}>
-                    <Text style={[
-                      styles.rankNumberText,
-                      (isTop1 || isTop2 || isTop3) && styles.rankTopText,
-                    ]}>
+                  <View
+                    style={[
+                      styles.rankNumberBox,
+                      isTop1 && styles.rankGold,
+                      isTop2 && styles.rankSilver,
+                      isTop3 && styles.rankBronze,
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.rankNumberText,
+                        (isTop1 || isTop2 || isTop3) && styles.rankTopText,
+                      ]}
+                    >
                       {item.rank}
                     </Text>
                   </View>
 
                   {/* Avatar */}
-                  <View style={[
-                    styles.avatar,
-                    isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: '#E5E5EA' }
-                  ]}>
-                    <Text style={[
-                      styles.avatarText,
-                      isTop1 ? { color: '#FFFFFF' } : { color: '#000000' }
-                    ]}>
+                  <View
+                    style={[
+                      styles.avatar,
+                      isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: 'rgba(255, 255, 255, 0.12)' },
+                    ]}
+                  >
+                    <Text
+                      style={[
+                        styles.avatarText,
+                        isTop1 ? { color: '#FFFFFF' } : { color: '#EBEBF5' },
+                      ]}
+                    >
                       {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
                     </Text>
                   </View>
@@ -182,7 +197,7 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000', // Apple OLED True Black
   },
   contentContainer: {
     paddingTop: 8,
@@ -192,7 +207,7 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#F2F2F7',
+    backgroundColor: '#000000',
   },
   loadingText: {
     marginTop: 8,
@@ -213,10 +228,10 @@ const styles = StyleSheet.create({
     marginBottom: 2,
   },
   largeTitle: {
-    fontSize: 32,
-    fontWeight: '700',
-    color: '#000000',
-    letterSpacing: -0.5,
+    fontSize: 34,
+    fontWeight: '800',
+    color: '#FFFFFF',
+    letterSpacing: -0.6,
   },
   segmentedControlContainer: {
     paddingHorizontal: 16,
@@ -224,43 +239,46 @@ const styles = StyleSheet.create({
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#E5E5EA',
-    borderRadius: 10,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 12,
     padding: 3,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
   segmentBtn: {
     flex: 1,
-    paddingVertical: 7,
+    paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 8,
+    borderRadius: 10,
   },
   segmentBtnActive: {
-    backgroundColor: '#FFFFFF',
+    backgroundColor: '#2C2C2E',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.15,
-    shadowRadius: 2,
-    elevation: 2,
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.4,
+    shadowRadius: 3,
+    elevation: 3,
   },
   segmentText: {
     fontSize: 13,
-    fontWeight: '500',
-    color: '#636366',
+    fontWeight: '600',
+    color: '#8E8E93',
   },
   segmentTextActive: {
-    fontWeight: '600',
-    color: '#000000',
+    color: '#FFFFFF',
   },
   myRankCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     marginHorizontal: 16,
-    padding: 16,
-    marginBottom: 24,
+    padding: 18,
+    marginBottom: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   myRankLeft: {
@@ -269,18 +287,18 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myRankBadge: {
-    width: 36,
-    height: 36,
-    borderRadius: 12,
-    backgroundColor: '#FFF4E6',
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(255, 149, 0, 0.16)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 14,
   },
   myRankLabel: {
     fontSize: 15,
-    fontWeight: '600',
-    color: '#000000',
+    fontWeight: '700',
+    color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   myRankSub: {
@@ -289,75 +307,78 @@ const styles = StyleSheet.create({
     marginTop: 2,
   },
   myRankValue: {
-    fontSize: 24,
+    fontSize: 26,
     fontWeight: '800',
     color: '#FF9500',
     letterSpacing: -0.5,
-    marginLeft: 8,
+    marginLeft: 10,
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    marginBottom: 8,
+    marginBottom: 10,
   },
   sectionTitle: {
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '700',
     color: '#8E8E93',
-    letterSpacing: -0.1,
+    letterSpacing: 0.4,
     textTransform: 'uppercase',
   },
   groupedCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 18,
+    backgroundColor: '#1C1C1E',
+    borderRadius: 20,
     marginHorizontal: 16,
     overflow: 'hidden',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   rankRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 12,
+    paddingVertical: 14,
     paddingHorizontal: 16,
   },
   rankRowCurrent: {
-    backgroundColor: '#FFF9F2',
+    backgroundColor: 'rgba(255, 149, 0, 0.12)',
   },
   rankNumberBox: {
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 26,
+    height: 26,
+    borderRadius: 13,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
   rankGold: {
     backgroundColor: '#FFD700',
   },
   rankSilver: {
-    backgroundColor: '#C0C0C0',
+    backgroundColor: '#A0A0A5',
   },
   rankBronze: {
     backgroundColor: '#CD7F32',
   },
   rankNumberText: {
-    fontSize: 13,
-    fontWeight: '700',
+    fontSize: 12,
+    fontWeight: '800',
     color: '#8E8E93',
   },
   rankTopText: {
-    color: '#FFFFFF',
+    color: '#000000',
   },
   avatar: {
-    width: 36,
-    height: 36,
-    borderRadius: 18,
+    width: 38,
+    height: 38,
+    borderRadius: 19,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
   },
   avatarText: {
     fontSize: 13,
-    fontWeight: '700',
+    fontWeight: '800',
   },
   nameCol: {
     flex: 1,
@@ -366,7 +387,7 @@ const styles = StyleSheet.create({
   studentName: {
     fontSize: 14,
     fontWeight: '600',
-    color: '#000000',
+    color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   groupMeta: {
@@ -377,7 +398,7 @@ const styles = StyleSheet.create({
   xpCapsule: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFF4E6',
+    backgroundColor: 'rgba(255, 149, 0, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 4,
     borderRadius: 10,
@@ -390,11 +411,11 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: StyleSheet.hairlineWidth,
-    backgroundColor: '#E5E5EA',
-    marginLeft: 64,
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    marginLeft: 66,
   },
   emptyContainer: {
-    padding: 30,
+    padding: 32,
     alignItems: 'center',
   },
   emptyText: {

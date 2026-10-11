@@ -32,7 +32,7 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
   shopBadge,
 }) => {
   const insets = useSafeAreaInsets();
-  // Ensure bottom padding generously clears Android gestures and iPhone home indicator
+  // Safe margin so icons never collide with gesture pill or navigation bar
   const bottomPadding = insets.bottom > 0 ? insets.bottom + 6 : 22;
 
   return (
@@ -51,9 +51,9 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
             >
-              <View style={styles.iconContainer}>
+              <View style={[styles.iconContainer, isActive && styles.iconContainerActive]}>
                 <IconComponent
-                  size={23}
+                  size={22}
                   color={isActive ? COLORS.primary : '#8E8E93'}
                   strokeWidth={isActive ? 2.4 : 1.8}
                 />
@@ -77,14 +77,14 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: 'rgba(255, 255, 255, 0.98)',
+    backgroundColor: '#121214', // Apple Dark Frosted Surface
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: '#C6C6C8',
+    borderTopColor: 'rgba(255, 255, 255, 0.12)',
     shadowColor: '#000000',
-    shadowOffset: { width: 0, height: -2 },
-    shadowOpacity: 0.04,
-    shadowRadius: 8,
-    elevation: 8,
+    shadowOffset: { width: 0, height: -4 },
+    shadowOpacity: 0.5,
+    shadowRadius: 10,
+    elevation: 10,
   },
   tabBarRow: {
     flexDirection: 'row',
@@ -99,11 +99,15 @@ const styles = StyleSheet.create({
     paddingVertical: 2,
   },
   iconContainer: {
-    width: 32,
-    height: 28,
+    width: 38,
+    height: 30,
+    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
+  },
+  iconContainerActive: {
+    backgroundColor: 'rgba(255, 149, 0, 0.15)', // Glowing subtle orange halo
   },
   label: {
     fontSize: 10,
@@ -114,13 +118,13 @@ const styles = StyleSheet.create({
   },
   labelActive: {
     color: COLORS.primary,
-    fontWeight: '600',
+    fontWeight: '700',
   },
   badge: {
     position: 'absolute',
     top: -2,
-    right: -4,
-    backgroundColor: '#FF3B30',
+    right: 2,
+    backgroundColor: '#FF453A',
     borderRadius: 8,
     minWidth: 16,
     height: 16,
@@ -128,7 +132,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     paddingHorizontal: 4,
     borderWidth: 1.5,
-    borderColor: '#FFFFFF',
+    borderColor: '#121214',
   },
   badgeText: {
     color: '#FFFFFF',
