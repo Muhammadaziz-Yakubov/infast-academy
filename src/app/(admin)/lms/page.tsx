@@ -29,14 +29,17 @@ import {
   ArrowRight,
   RotateCcw,
   Edit3,
+  Upload,
 } from 'lucide-react';
 import LessonMapTab from '@/components/students/LessonMapTab';
 import LessonEditorModal from '@/components/lms/LessonEditorModal';
+import JsonImportModal from '@/components/lms/JsonImportModal';
 
 export default function LmsDashboardPage() {
   const [activeTab, setActiveTab] = useState<'curriculum' | 'students' | 'guide'>('curriculum');
   const [courses, setCourses] = useState<any[]>([]);
   const [selectedCourseId, setSelectedCourseId] = useState<string>('');
+  const [showJsonImportModal, setShowJsonImportModal] = useState(false);
   const [modules, setModules] = useState<any[]>([]);
   const [moduleLessons, setModuleLessons] = useState<Record<string, any[]>>({});
   const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
@@ -384,17 +387,29 @@ export default function LmsDashboardPage() {
                 </select>
               </div>
 
-              <button
-                onClick={() => {
-                  setEditingModuleId(null);
-                  setModuleForm({ title: '', description: '', order: String(modules.length + 1) });
-                  setShowAddModule(true);
-                }}
-                className="px-4 py-2.5 rounded-xl bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs shadow-md shadow-infast-500/20 flex items-center space-x-1.5 transition-all"
-              >
-                <Plus className="w-4 h-4" />
-                <span>Yangi Modul Qo'shish</span>
-              </button>
+              <div className="flex items-center space-x-2">
+                <button
+                  type="button"
+                  onClick={() => setShowJsonImportModal(true)}
+                  className="px-4 py-2.5 rounded-xl bg-purple-50 hover:bg-purple-100 text-purple-700 border border-purple-200 font-bold text-xs flex items-center space-x-1.5 transition-all shadow-xs"
+                >
+                  <Upload className="w-4 h-4 text-purple-600" />
+                  <span>JSON Yuklash</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => {
+                    setEditingModuleId(null);
+                    setModuleForm({ title: '', description: '', order: String(modules.length + 1) });
+                    setShowAddModule(true);
+                  }}
+                  className="px-4 py-2.5 rounded-xl bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs shadow-md shadow-infast-500/20 flex items-center space-x-1.5 transition-all"
+                >
+                  <Plus className="w-4 h-4" />
+                  <span>Yangi Modul Qo'shish</span>
+                </button>
+              </div>
             </div>
 
             {/* Modules and Lessons List */}
@@ -408,8 +423,18 @@ export default function LmsDashboardPage() {
                   <BookOpen className="w-12 h-12 text-slate-300 mx-auto" />
                   <h3 className="font-bold text-slate-700">Ushbu kursda hali modullar yo'q</h3>
                   <p className="text-xs text-slate-400">
-                    O'quv rejasini shakllantirish uchun "+ Yangi Modul Qo'shish" tugmasini bosing.
+                    O'quv rejasini shakllantirish uchun "+ Yangi Modul Qo'shish" yoki "JSON orqali yuklash" tugmasini bosing.
                   </p>
+                  <div className="pt-2 flex items-center justify-center space-x-3">
+                    <button
+                      type="button"
+                      onClick={() => setShowJsonImportModal(true)}
+                      className="px-4 py-2 rounded-xl bg-purple-50 text-purple-700 hover:bg-purple-100 border border-purple-200 text-xs font-bold transition-all flex items-center space-x-1.5"
+                    >
+                      <Upload className="w-4 h-4" />
+                      <span>JSON orqali yuklash</span>
+                    </button>
+                  </div>
                 </div>
               ) : (
                 modules.map((mod) => {
@@ -1053,6 +1078,20 @@ export default function LmsDashboardPage() {
             </div>
           </div>
         </div>
+      )}
+
+      {/* JSON Import Modal */}
+      {showJsonImportModal && (
+        <JsonImportModal
+          isOpen={showJsonImportModal}
+          onClose={() => setShowJsonImportModal(false)}
+          courses={courses}
+          defaultCourseId={selectedCourseId}
+          onSuccess={(cId) => {
+            setSelectedCourseId(cId);
+            fetchModules(cId);
+          }}
+        />
       )}
     </div>
   );
