@@ -79,7 +79,9 @@ function MainAppContent() {
 
         {activeTab === 'shop' && <ShopScreen />}
 
-        {activeTab === 'events' && <EventsScreen />}
+        {activeTab === 'events' && (
+          <EventsScreen onBack={() => setActiveTab('home')} />
+        )}
 
         {activeTab === 'profile' && <ProfileScreen />}
       </View>

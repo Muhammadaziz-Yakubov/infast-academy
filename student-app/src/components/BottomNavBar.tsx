@@ -23,7 +23,6 @@ const TABS: TabItem[] = [
   { id: 'learning', label: "Ta'lim", IconComponent: BookOpen },
   { id: 'leaderboard', label: 'Reyting', IconComponent: Trophy },
   { id: 'shop', label: "Do'kon", IconComponent: ShoppingBag },
-  { id: 'events', label: 'Tadbirlar', IconComponent: Calendar },
   { id: 'profile', label: 'Profil', IconComponent: User },
 ];
 

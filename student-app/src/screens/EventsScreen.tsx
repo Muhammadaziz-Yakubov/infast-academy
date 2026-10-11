@@ -21,9 +21,14 @@ import {
   CheckCircle2,
   Sparkles,
   ArrowRight,
+  ChevronLeft,
 } from 'lucide-react-native';
 
-export default function EventsScreen() {
+interface EventsScreenProps {
+  onBack?: () => void;
+}
+
+export default function EventsScreen({ onBack }: EventsScreenProps) {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -143,6 +148,16 @@ export default function EventsScreen() {
     >
       {/* Apple Large Title Header */}
       <View style={styles.header}>
+        {onBack && (
+          <TouchableOpacity
+            style={styles.backButton}
+            onPress={onBack}
+            activeOpacity={0.7}
+          >
+            <ChevronLeft size={20} color="#0A84FF" strokeWidth={2.4} />
+            <Text style={styles.backButtonText}>Bosh sahifa</Text>
+          </TouchableOpacity>
+        )}
         <Text style={styles.categoryLabel}>HAYOT VA JAMOAT</Text>
         <Text style={styles.largeTitle}>Tadbirlar</Text>
       </View>
@@ -284,6 +299,18 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 12,
     paddingBottom: 16,
+  },
+  backButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
+    marginBottom: 10,
+    alignSelf: 'flex-start',
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#0A84FF',
+    fontWeight: '600',
   },
   categoryLabel: {
     fontSize: 12,

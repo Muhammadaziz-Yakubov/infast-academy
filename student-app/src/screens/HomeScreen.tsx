@@ -235,98 +235,46 @@ export default function HomeScreen({
         </View>
       </TouchableOpacity>
 
-      {/* 2. FEATURELAR (To'rtburchak cardlar, 1 qatorda 2 ta) */}
+      {/* 2. FEATURELAR */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>FEATURELAR</Text>
       </View>
 
-      <View style={styles.featuresGrid}>
-        {/* Feature Card 1: LMS O'quv Xaritasi (To'rtburchak) */}
+      {onNavigateToEvents && (
         <TouchableOpacity
-          style={styles.featureSquareCard}
-          onPress={() => onNavigateToLearning()}
-          activeOpacity={0.8}
+          style={styles.eventFeatureCard}
+          onPress={onNavigateToEvents}
+          activeOpacity={0.82}
         >
-          <View style={styles.featureCardHeader}>
-            <View style={[styles.featureIconBadge, { backgroundColor: 'rgba(255, 149, 0, 0.18)' }]}>
-              <Layers size={22} color="#FF9500" strokeWidth={2.4} />
+          <View style={styles.eventCardHeader}>
+            <View style={styles.eventIconBadge}>
+              <Calendar size={22} color="#0A84FF" strokeWidth={2.4} />
             </View>
-            <View style={styles.featureTagPill}>
-              <Text style={styles.featureTagText}>LMS</Text>
+            <View style={styles.eventBonusBadge}>
+              <Coins size={14} color="#FFD60A" />
+              <Text style={styles.eventBonusText}>+500 / -500 XCoin</Text>
             </View>
           </View>
 
-          <View style={styles.featureCardBody}>
-            <Text style={styles.featureSquareTitle}>O'quv Xaritasi</Text>
-            <Text style={styles.featureSquareSubtitle} numberOfLines={2}>
-              Modullar, testlar va interaktiv topshiriqlar
+          <View style={styles.eventCardBody}>
+            <Text style={styles.eventCardTitle}>Akademiya Tadbirlari</Text>
+            <Text style={styles.eventCardSubtitle}>
+              Master-klasslar, hackathonlar va ochiq darslar. Ishtirok eting va XCoin jamg'aring!
             </Text>
           </View>
 
-          <View style={styles.featureSquareFooter}>
-            <Text style={styles.featureActionLink}>Boshlash</Text>
-            <ChevronRight size={14} color="#FF9500" strokeWidth={2.4} />
+          <View style={styles.eventCardFooter}>
+            <View style={styles.eventActionBtn}>
+              <Text style={styles.eventActionText}>Ro'yxatdan o'tish</Text>
+              <ArrowRight size={14} color="#FFFFFF" strokeWidth={2.5} />
+            </View>
+            <View style={styles.eventStatusIndicator}>
+              <View style={styles.eventPulseDot} />
+              <Text style={styles.eventStatusText}>Faol tadbirlar</Text>
+            </View>
           </View>
         </TouchableOpacity>
-
-        {/* Feature Card 2: Sovg'alar Do'koni (To'rtburchak) */}
-        <TouchableOpacity
-          style={styles.featureSquareCard}
-          onPress={onNavigateToShop}
-          activeOpacity={0.8}
-        >
-          <View style={styles.featureCardHeader}>
-            <View style={[styles.featureIconBadge, { backgroundColor: 'rgba(255, 214, 10, 0.18)' }]}>
-              <Gift size={22} color="#FFD60A" strokeWidth={2.4} />
-            </View>
-            <View style={[styles.featureTagPill, { backgroundColor: 'rgba(255, 214, 10, 0.16)' }]}>
-              <Text style={[styles.featureTagText, { color: '#FFD60A' }]}>SHOP</Text>
-            </View>
-          </View>
-
-          <View style={styles.featureCardBody}>
-            <Text style={styles.featureSquareTitle}>Sovg'alar Do'koni</Text>
-            <Text style={styles.featureSquareSubtitle} numberOfLines={2}>
-              XCoin tangalarini merch va sovg'alarga almashtiring
-            </Text>
-          </View>
-
-          <View style={styles.featureSquareFooter}>
-            <Text style={[styles.featureActionLink, { color: '#FFD60A' }]}>Ochish</Text>
-            <ChevronRight size={14} color="#FFD60A" strokeWidth={2.4} />
-          </View>
-        </TouchableOpacity>
-
-        {/* Feature Card 3: Tadbirlar (+500/-500 XCoin) */}
-        {onNavigateToEvents && (
-          <TouchableOpacity
-            style={styles.featureSquareCard}
-            onPress={onNavigateToEvents}
-            activeOpacity={0.8}
-          >
-            <View style={styles.featureCardHeader}>
-              <View style={[styles.featureIconBadge, { backgroundColor: 'rgba(10, 132, 255, 0.18)' }]}>
-                <Calendar size={22} color="#0A84FF" strokeWidth={2.4} />
-              </View>
-              <View style={[styles.featureTagPill, { backgroundColor: 'rgba(10, 132, 255, 0.16)' }]}>
-                <Text style={[styles.featureTagText, { color: '#0A84FF' }]}>EVENT</Text>
-              </View>
-            </View>
-
-            <View style={styles.featureCardBody}>
-              <Text style={styles.featureSquareTitle}>Tadbirlar</Text>
-              <Text style={styles.featureSquareSubtitle} numberOfLines={2}>
-                Qatnashib +500 XCoin oling, faol bo'ling!
-              </Text>
-            </View>
-
-            <View style={styles.featureSquareFooter}>
-              <Text style={[styles.featureActionLink, { color: '#0A84FF' }]}>Yozilish</Text>
-              <ChevronRight size={14} color="#0A84FF" strokeWidth={2.4} />
-            </View>
-          </TouchableOpacity>
-        )}
-      </View>
+      )}
 
       {/* 3. GURUH VA FILIAL */}
       <View style={styles.sectionHeader}>
@@ -610,81 +558,100 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
 
-  /* Featurelar 2x1 (1 qatorda 2 ta to'rtburchak card) Grid */
-  featuresGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    paddingHorizontal: 16,
-    justifyContent: 'space-between',
-    gap: 12,
-    marginBottom: 24,
-  },
-  featureSquareCard: {
-    width: '48%',
+  /* Feature: Tadbirlar Apple Dark Card */
+  eventFeatureCard: {
     backgroundColor: '#1C1C1E',
     borderRadius: 20,
-    padding: 16,
+    marginHorizontal: 16,
+    padding: 18,
+    marginBottom: 24,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
-    justifyContent: 'space-between',
-    minHeight: 160,
     ...APPLE_SHADOW,
   },
-  featureCardHeader: {
+  eventCardHeader: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     marginBottom: 12,
   },
-  featureIconBadge: {
-    width: 40,
-    height: 40,
-    borderRadius: 13,
+  eventIconBadge: {
+    width: 42,
+    height: 42,
+    borderRadius: 14,
+    backgroundColor: 'rgba(10, 132, 255, 0.18)',
     alignItems: 'center',
     justifyContent: 'center',
   },
-  featureTagPill: {
-    backgroundColor: 'rgba(255, 149, 0, 0.16)',
-    paddingHorizontal: 7,
-    paddingVertical: 3,
-    borderRadius: 6,
+  eventBonusBadge: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 5,
+    backgroundColor: 'rgba(255, 214, 10, 0.16)',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 214, 10, 0.3)',
   },
-  featureTagText: {
-    color: '#FF9500',
-    fontSize: 10,
-    fontWeight: '800',
-    letterSpacing: 0.5,
-  },
-  featureCardBody: {
-    flex: 1,
-    justifyContent: 'center',
-    marginVertical: 4,
-  },
-  featureSquareTitle: {
-    fontSize: 15,
+  eventBonusText: {
+    color: '#FFD60A',
+    fontSize: 12,
     fontWeight: '700',
+  },
+  eventCardBody: {
+    marginBottom: 14,
+  },
+  eventCardTitle: {
     color: '#FFFFFF',
-    letterSpacing: -0.2,
-    marginBottom: 3,
+    fontSize: 18,
+    fontWeight: '700',
+    letterSpacing: -0.3,
+    marginBottom: 4,
   },
-  featureSquareSubtitle: {
-    fontSize: 11,
+  eventCardSubtitle: {
     color: '#8E8E93',
-    lineHeight: 15,
+    fontSize: 13,
+    lineHeight: 18,
+    fontWeight: '400',
   },
-  featureSquareFooter: {
+  eventCardFooter: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingTop: 8,
+    paddingTop: 12,
     borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
+    borderTopColor: 'rgba(255, 255, 255, 0.10)',
   },
-  featureActionLink: {
-    fontSize: 12,
+  eventActionBtn: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#0A84FF',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 12,
+  },
+  eventActionText: {
+    color: '#FFFFFF',
+    fontSize: 13,
     fontWeight: '700',
-    color: '#FF9500',
-    letterSpacing: -0.1,
+  },
+  eventStatusIndicator: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
+  eventPulseDot: {
+    width: 7,
+    height: 7,
+    borderRadius: 3.5,
+    backgroundColor: '#30D158',
+  },
+  eventStatusText: {
+    color: '#8E8E93',
+    fontSize: 12,
+    fontWeight: '500',
   },
 
   /* Inset Grouped Info Card */

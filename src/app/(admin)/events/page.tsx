@@ -54,7 +54,7 @@ interface EventItem {
 }
 
 // Format local date and time reliably for Uzbekistan (UTC+5)
-export function formatUzbekDateTime(isoDateStr: string) {
+function formatUzbekDateTime(isoDateStr: string) {
   try {
     const d = new Date(isoDateStr);
     return d.toLocaleString('uz-UZ', {
