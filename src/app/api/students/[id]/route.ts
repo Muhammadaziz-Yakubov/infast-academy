@@ -87,13 +87,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
-      return NextResponse.json(
-        { error: "Super admin o'quvchi ma'lumotlarini tahrirlay olmaydi. Bu harakat menejerga topshirilgan." },
-        { status: 403 }
-      );
-    }
-
     await connectToDatabase();
     const existingStudent = await Student.findById(params.id);
     if (!existingStudent) {
@@ -145,13 +138,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     const session = getSession();
     if (!session) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
-    }
-
-    if (session.role === 'ADMIN') {
-      return NextResponse.json(
-        { error: "Super admin o'quvchini o'chira olmaydi. Bu harakat menejerga topshirilgan." },
-        { status: 403 }
-      );
     }
 
     await connectToDatabase();

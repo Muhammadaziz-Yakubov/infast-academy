@@ -25,6 +25,7 @@ import {
   ShieldCheck,
   Award,
   Building2,
+  Layers,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -53,6 +54,7 @@ const NAV_ITEMS = [
   { name: "To'lovlar", href: '/payments', icon: CreditCard, key: 'payments' },
   { name: 'Imtihonlar', href: '/exams', icon: GraduationCap, key: 'exams' },
   { name: 'Kurslar', href: '/courses', icon: BookOpen, key: 'courses' },
+  { name: 'LMS Tizimi', href: '/lms', icon: Layers, key: 'lms' },
   { name: 'Hisobotlar', href: '/reports', icon: BarChart3, key: 'reports' },
   { name: 'Xabarnomalar', href: '/notifications', icon: Bell, key: 'notifications' },
   { name: 'Sozlamalar', href: '/settings', icon: Settings, key: 'settings' },

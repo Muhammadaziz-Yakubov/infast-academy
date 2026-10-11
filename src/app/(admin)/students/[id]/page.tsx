@@ -256,15 +256,13 @@ export default function StudentDetailPage() {
           </div>
 
           <div className="flex flex-wrap items-center gap-2">
-            {userSession?.role !== 'ADMIN' && (
-              <button
-                onClick={() => setIsTransferModalOpen(true)}
-                className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
-              >
-                <ArrowRightLeft className="w-3.5 h-3.5" />
-                <span>Filialga ko'chirish</span>
-              </button>
-            )}
+            <button
+              onClick={() => setIsTransferModalOpen(true)}
+              className="px-3.5 py-1.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-bold text-xs shadow-md shadow-blue-500/20 transition-all flex items-center space-x-1.5"
+            >
+              <ArrowRightLeft className="w-3.5 h-3.5" />
+              <span>Filialga ko'chirish</span>
+            </button>
 
             {/* Dynamic Course Month Badge */}
             <div className="px-3.5 py-1.5 rounded-xl bg-sky-50 text-sky-700 font-bold text-xs">
