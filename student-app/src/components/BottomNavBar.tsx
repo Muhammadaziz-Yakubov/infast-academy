@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, TouchableOpacity, StyleSheet, Platform, Pressable } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Home, BookOpen, Trophy, ShoppingBag, User } from 'lucide-react-native';
 import { COLORS } from '../constants/theme';
@@ -47,15 +47,25 @@ export const BottomNavBar: React.FC<BottomNavBarProps> = ({
               key={tab.id}
               style={styles.tabButton}
               onPress={() => onSelectTab(tab.id)}
-              activeOpacity={0.6}
+              activeOpacity={0.7}
+              // Remove gray rectangular hover effect on web and android ripple
               accessibilityRole="button"
               accessibilityState={{ selected: isActive }}
+              {...(Platform.OS === 'web'
+                ? ({
+                    style: [
+                      styles.tabButton,
+                      // @ts-ignore
+                      { outline: 'none', userSelect: 'none', WebkitTapHighlightColor: 'transparent' },
+                    ],
+                  } as any)
+                : {})}
             >
-              <View style={[styles.iconContainer, isActive && styles.iconContainerActive]}>
+              <View style={styles.iconContainer}>
                 <IconComponent
-                  size={22}
+                  size={23}
                   color={isActive ? COLORS.primary : '#8E8E93'}
-                  strokeWidth={isActive ? 2.4 : 1.8}
+                  strokeWidth={isActive ? 2.5 : 1.8}
                 />
                 {tab.id === 'shop' && typeof shopBadge === 'number' && shopBadge > 0 && (
                   <View style={styles.badge}>
@@ -97,17 +107,15 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 2,
+    backgroundColor: 'transparent',
   },
   iconContainer: {
     width: 38,
     height: 30,
-    borderRadius: 15,
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-  },
-  iconContainerActive: {
-    backgroundColor: 'rgba(255, 149, 0, 0.15)', // Glowing subtle orange halo
+    backgroundColor: 'transparent',
   },
   label: {
     fontSize: 10,

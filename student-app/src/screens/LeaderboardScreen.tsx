@@ -7,16 +7,19 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Image,
 } from 'react-native';
 import { apiRequest } from '../services/api';
 import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { Trophy, Flame } from 'lucide-react-native';
+import { Trophy, Flame, Users, Building2, Globe } from 'lucide-react-native';
+
+type LeaderboardScope = 'group' | 'branch' | 'all';
 
 export default function LeaderboardScreen() {
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [scope, setScope] = useState<'course' | 'all'>('course');
+  const [scope, setScope] = useState<LeaderboardScope>('group');
 
   useEffect(() => {
     fetchLeaderboard();
@@ -70,16 +73,28 @@ export default function LeaderboardScreen() {
         <Text style={styles.largeTitle}>Reyting</Text>
       </View>
 
-      {/* Apple iOS Segmented Control */}
+      {/* Apple iOS 3-Segment Control (Guruhim, Filialim, Hamma filiallar) */}
       <View style={styles.segmentedControlContainer}>
         <View style={styles.segmentedControl}>
           <TouchableOpacity
-            style={[styles.segmentBtn, scope === 'course' && styles.segmentBtnActive]}
-            onPress={() => setScope('course')}
+            style={[styles.segmentBtn, scope === 'group' && styles.segmentBtnActive]}
+            onPress={() => setScope('group')}
             activeOpacity={0.8}
           >
-            <Text style={[styles.segmentText, scope === 'course' && styles.segmentTextActive]}>
-              Mening Kursim
+            <Users size={14} color={scope === 'group' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
+            <Text style={[styles.segmentText, scope === 'group' && styles.segmentTextActive]}>
+              Guruhim
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.segmentBtn, scope === 'branch' && styles.segmentBtnActive]}
+            onPress={() => setScope('branch')}
+            activeOpacity={0.8}
+          >
+            <Building2 size={14} color={scope === 'branch' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
+            <Text style={[styles.segmentText, scope === 'branch' && styles.segmentTextActive]}>
+              Filialim
             </Text>
           </TouchableOpacity>
 
@@ -88,8 +103,9 @@ export default function LeaderboardScreen() {
             onPress={() => setScope('all')}
             activeOpacity={0.8}
           >
+            <Globe size={14} color={scope === 'all' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
             <Text style={[styles.segmentText, scope === 'all' && styles.segmentTextActive]}>
-              Barcha Filiallar
+              Hamma filiallar
             </Text>
           </TouchableOpacity>
         </View>
@@ -103,7 +119,9 @@ export default function LeaderboardScreen() {
           </View>
           <View>
             <Text style={styles.myRankLabel}>Sizning o'rningiz</Text>
-            <Text style={styles.myRankSub}>Barcha topshirilgan darslar va testlar asosida</Text>
+            <Text style={styles.myRankSub}>
+              {scope === 'group' ? "Guruhdagi barcha o'quvchilar orasida" : scope === 'branch' ? "Filialdagi o'quvchilar orasida" : "Akademiya bo'yicha jami o'quvchilar orasida"}
+            </Text>
           </View>
         </View>
         <Text style={styles.myRankValue}>#{data?.myRank || 1}</Text>
@@ -111,13 +129,15 @@ export default function LeaderboardScreen() {
 
       {/* Leaderboard Inset Grouped Table */}
       <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>PESHQADAMLAR RO'YXATI</Text>
+        <Text style={styles.sectionTitle}>
+          PESHQADAMLAR RO'YXATI ({leaderboard.length} TA O'QUVCHI)
+        </Text>
       </View>
 
       <View style={styles.groupedCard}>
         {leaderboard.length === 0 ? (
           <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Reyting ma'lumotlari mavjud emas</Text>
+            <Text style={styles.emptyText}>Ushbu bo'limda o'quvchilar topilmadi</Text>
           </View>
         ) : (
           leaderboard.map((item: any, idx: number) => {
@@ -149,21 +169,25 @@ export default function LeaderboardScreen() {
                     </Text>
                   </View>
 
-                  {/* Avatar */}
+                  {/* Avatar (Image or Initial) */}
                   <View
                     style={[
                       styles.avatar,
                       isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: 'rgba(255, 255, 255, 0.12)' },
                     ]}
                   >
-                    <Text
-                      style={[
-                        styles.avatarText,
-                        isTop1 ? { color: '#FFFFFF' } : { color: '#EBEBF5' },
-                      ]}
-                    >
-                      {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
-                    </Text>
+                    {item.avatarUrl ? (
+                      <Image source={{ uri: item.avatarUrl }} style={styles.avatarImage} />
+                    ) : (
+                      <Text
+                        style={[
+                          styles.avatarText,
+                          isTop1 ? { color: '#FFFFFF' } : { color: '#EBEBF5' },
+                        ]}
+                      >
+                        {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
+                      </Text>
+                    )}
                   </View>
 
                   {/* Name and Group */}
@@ -173,7 +197,7 @@ export default function LeaderboardScreen() {
                       {item.isCurrentStudent && " (Siz)"}
                     </Text>
                     <Text style={styles.groupMeta} numberOfLines={1}>
-                      {item.groupName || item.branchName || "InFast Student"}
+                      {scope === 'all' ? `${item.branchName} • ${item.groupName}` : item.groupName || item.branchName}
                     </Text>
                   </View>
 
@@ -247,6 +271,7 @@ const styles = StyleSheet.create({
   },
   segmentBtn: {
     flex: 1,
+    flexDirection: 'row',
     paddingVertical: 8,
     alignItems: 'center',
     justifyContent: 'center',
@@ -261,7 +286,7 @@ const styles = StyleSheet.create({
     elevation: 3,
   },
   segmentText: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '600',
     color: '#8E8E93',
   },
@@ -305,6 +330,7 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#8E8E93',
     marginTop: 2,
+    paddingRight: 6,
   },
   myRankValue: {
     fontSize: 26,
@@ -318,7 +344,7 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: '#8E8E93',
     letterSpacing: 0.4,
@@ -375,6 +401,12 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
+    overflow: 'hidden',
+  },
+  avatarImage: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 19,
   },
   avatarText: {
     fontSize: 13,

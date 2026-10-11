@@ -7,6 +7,7 @@ import {
   TouchableOpacity,
   RefreshControl,
   ActivityIndicator,
+  Image,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../services/api';
@@ -106,10 +107,14 @@ export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: H
           <Text style={styles.largeTitle}>Bosh sahifa</Text>
         </View>
         <View style={styles.avatar}>
-          <Text style={styles.avatarText}>
-            {studentProfile?.firstName?.[0] || 'I'}
-            {studentProfile?.lastName?.[0] || 'N'}
-          </Text>
+          {studentProfile?.avatarUrl ? (
+            <Image source={{ uri: studentProfile.avatarUrl }} style={styles.avatarImg} />
+          ) : (
+            <Text style={styles.avatarText}>
+              {studentProfile?.firstName?.[0] || 'I'}
+              {studentProfile?.lastName?.[0] || 'N'}
+            </Text>
+          )}
         </View>
       </View>
 
@@ -390,6 +395,11 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.4,
     shadowRadius: 6,
     elevation: 4,
+    overflow: 'hidden',
+  },
+  avatarImg: {
+    width: '100%',
+    height: '100%',
   },
   avatarText: {
     color: '#FFFFFF',
