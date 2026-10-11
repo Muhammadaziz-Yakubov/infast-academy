@@ -9,8 +9,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING } from '../constants/theme';
-import { Trophy, Award, Flame, Users } from 'lucide-react-native';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
+import { Trophy, Award, Flame, Sparkles } from 'lucide-react-native';
 
 export default function LeaderboardScreen() {
   const [data, setData] = useState<any | null>(null);
@@ -40,7 +40,7 @@ export default function LeaderboardScreen() {
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="small" color={COLORS.primary} />
         <Text style={styles.loadingText}>Reyting yuklanmoqda...</Text>
       </View>
     );
@@ -52,93 +52,129 @@ export default function LeaderboardScreen() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchLeaderboard(); }} colors={[COLORS.primary]} />
+        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchLeaderboard(); }} tintColor={COLORS.primary} />
       }
     >
-      {/* Header Banner */}
-      <View style={styles.banner}>
-        <View style={styles.trophyIcon}>
-          <Trophy size={36} color="#FFFFFF" />
+      {/* Apple Large Title Header */}
+      <View style={styles.header}>
+        <Text style={styles.categoryLabel}>PESHQADAMLAR</Text>
+        <Text style={styles.largeTitle}>Reyting</Text>
+      </View>
+
+      {/* Apple iOS Segmented Control */}
+      <View style={styles.segmentedControlContainer}>
+        <View style={styles.segmentedControl}>
+          <TouchableOpacity
+            style={[styles.segmentBtn, scope === 'course' && styles.segmentBtnActive]}
+            onPress={() => setScope('course')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.segmentText, scope === 'course' && styles.segmentTextActive]}>
+              Mening Kursim
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={[styles.segmentBtn, scope === 'all' && styles.segmentBtnActive]}
+            onPress={() => setScope('all')}
+            activeOpacity={0.8}
+          >
+            <Text style={[styles.segmentText, scope === 'all' && styles.segmentTextActive]}>
+              Barcha Filiallar
+            </Text>
+          </TouchableOpacity>
         </View>
-        <Text style={styles.bannerTitle}>O'quvchilar Reytingi</Text>
-        <Text style={styles.bannerSubtitle}>
-          Darslar va testlarni a'lo topshirib, eng yuqori o'rinlarni egallang!
-        </Text>
+      </View>
 
-        <View style={styles.myRankCard}>
-          <Text style={styles.myRankLabel}>Sizning O'rningiz:</Text>
-          <Text style={styles.myRankValue}>#{data?.myRank || 1}</Text>
+      {/* User's Current Rank Card (Apple Widget) */}
+      <View style={styles.myRankCard}>
+        <View style={styles.myRankLeft}>
+          <View style={styles.myRankBadge}>
+            <Trophy size={18} color="#FF9500" />
+          </View>
+          <View>
+            <Text style={styles.myRankLabel}>Sizning o'rningiz</Text>
+            <Text style={styles.myRankSub}>Barcha topshirilgan darslar va testlar asosida</Text>
+          </View>
         </View>
+        <Text style={styles.myRankValue}>#{data?.myRank || 1}</Text>
       </View>
 
-      {/* Scope Selector */}
-      <View style={styles.scopeRow}>
-        <TouchableOpacity
-          style={[styles.scopeBtn, scope === 'course' && styles.scopeBtnActive]}
-          onPress={() => setScope('course')}
-        >
-          <Text style={[styles.scopeText, scope === 'course' && styles.scopeTextActive]}>
-            Mening Kursim
-          </Text>
-        </TouchableOpacity>
-
-        <TouchableOpacity
-          style={[styles.scopeBtn, scope === 'all' && styles.scopeBtnActive]}
-          onPress={() => setScope('all')}
-        >
-          <Text style={[styles.scopeText, scope === 'all' && styles.scopeTextActive]}>
-            Barcha Filiallar
-          </Text>
-        </TouchableOpacity>
+      {/* Leaderboard Inset Grouped Table */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>PESHQADAMLAR RO'YXATI</Text>
       </View>
 
-      {/* Leaderboard List */}
-      <View style={styles.listCard}>
-        {leaderboard.map((item: any, idx: number) => {
-          const isTop3 = item.rank <= 3;
+      <View style={styles.groupedCard}>
+        {leaderboard.length === 0 ? (
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyText}>Reyting ma'lumotlari mavjud emas</Text>
+          </View>
+        ) : (
+          leaderboard.map((item: any, idx: number) => {
+            const isTop1 = item.rank === 1;
+            const isTop2 = item.rank === 2;
+            const isTop3 = item.rank === 3;
 
-          return (
-            <View
-              key={item.studentId || idx}
-              style={[
-                styles.itemRow,
-                item.isMe && styles.itemRowMe,
-                idx === leaderboard.length - 1 && { borderBottomWidth: 0 },
-              ]}
-            >
-              <View
-                style={[
-                  styles.rankBadge,
-                  item.rank === 1 && { backgroundColor: '#F59E0B' },
-                  item.rank === 2 && { backgroundColor: '#94A3B8' },
-                  item.rank === 3 && { backgroundColor: '#B45309' },
-                ]}
-              >
-                <Text style={styles.rankBadgeText}>{item.rank}</Text>
-              </View>
+            return (
+              <React.Fragment key={item._id || idx}>
+                {idx > 0 && <View style={styles.separator} />}
 
-              <View style={styles.userAvatar}>
-                <Text style={styles.avatarLetter}>
-                  {item.firstName?.[0] || 'I'}
-                </Text>
-              </View>
+                <View style={[styles.rankRow, item.isCurrentStudent && styles.rankRowCurrent]}>
+                  {/* Rank Badge */}
+                  <View style={[
+                    styles.rankNumberBox,
+                    isTop1 && styles.rankGold,
+                    isTop2 && styles.rankSilver,
+                    isTop3 && styles.rankBronze,
+                  ]}>
+                    <Text style={[
+                      styles.rankNumberText,
+                      (isTop1 || isTop2 || isTop3) && styles.rankTopText,
+                    ]}>
+                      {item.rank}
+                    </Text>
+                  </View>
 
-              <View style={{ flex: 1, marginHorizontal: SPACING.sm }}>
-                <Text style={styles.userName} numberOfLines={1}>
-                  {item.firstName} {item.lastName} {item.isMe ? " (Siz)" : ""}
-                </Text>
-                <Text style={styles.userBranch}>{item.branchName}</Text>
-              </View>
+                  {/* Avatar */}
+                  <View style={[
+                    styles.avatar,
+                    isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: '#E5E5EA' }
+                  ]}>
+                    <Text style={[
+                      styles.avatarText,
+                      isTop1 ? { color: '#FFFFFF' } : { color: '#000000' }
+                    ]}>
+                      {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
+                    </Text>
+                  </View>
 
-              <View style={styles.scoreCol}>
-                <Text style={styles.scoreXp}>{item.xp} XP</Text>
-                <Text style={styles.scoreLevel}>{item.level}-Daraja</Text>
-              </View>
-            </View>
-          );
-        })}
+                  {/* Name and Group */}
+                  <View style={styles.nameCol}>
+                    <Text style={styles.studentName} numberOfLines={1}>
+                      {item.firstName} {item.lastName}
+                      {item.isCurrentStudent && " (Siz)"}
+                    </Text>
+                    <Text style={styles.groupMeta} numberOfLines={1}>
+                      {item.groupName || item.branchName || "InFast Student"}
+                    </Text>
+                  </View>
+
+                  {/* XP Capsule */}
+                  <View style={styles.xpCapsule}>
+                    <Flame size={13} color="#FF9500" />
+                    <Text style={styles.xpText}>{item.xp || 0} XP</Text>
+                  </View>
+                </View>
+              </React.Fragment>
+            );
+          })
+        )}
       </View>
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
@@ -146,166 +182,224 @@ export default function LeaderboardScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   contentContainer: {
-    padding: SPACING.lg,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F2F2F7',
   },
   loadingText: {
-    marginTop: SPACING.md,
-    fontSize: 13,
-    color: COLORS.textMuted,
+    marginTop: 8,
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 14,
+  },
+  categoryLabel: {
+    fontSize: 12,
     fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
-  banner: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 26,
-    padding: SPACING.xl,
-    alignItems: 'center',
-    marginBottom: SPACING.lg,
+  largeTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.5,
   },
-  trophyIcon: {
-    width: 60,
-    height: 60,
-    borderRadius: 20,
-    backgroundColor: 'rgba(255,255,255,0.25)',
+  segmentedControlContainer: {
+    paddingHorizontal: 16,
+    marginBottom: 16,
+  },
+  segmentedControl: {
+    flexDirection: 'row',
+    backgroundColor: '#E5E5EA',
+    borderRadius: 10,
+    padding: 3,
+  },
+  segmentBtn: {
+    flex: 1,
+    paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.sm,
+    borderRadius: 8,
   },
-  bannerTitle: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  bannerSubtitle: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.85)',
-    textAlign: 'center',
-    lineHeight: 18,
-    marginBottom: SPACING.md,
-  },
-  myRankCard: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.18)',
-    paddingHorizontal: SPACING.lg,
-    paddingVertical: SPACING.sm,
-    borderRadius: 14,
-    gap: 6,
-  },
-  myRankLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  myRankValue: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: '#FEF08A',
-  },
-  scopeRow: {
-    flexDirection: 'row',
-    backgroundColor: COLORS.surface,
-    borderRadius: 14,
-    padding: 4,
-    marginBottom: SPACING.md,
-  },
-  scopeBtn: {
-    flex: 1,
-    paddingVertical: 10,
-    alignItems: 'center',
-    borderRadius: 10,
-  },
-  scopeBtnActive: {
+  segmentBtnActive: {
     backgroundColor: '#FFFFFF',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.05,
-    shadowRadius: 4,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.15,
+    shadowRadius: 2,
     elevation: 2,
   },
-  scopeText: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.textMuted,
+  segmentText: {
+    fontSize: 13,
+    fontWeight: '500',
+    color: '#636366',
   },
-  scopeTextActive: {
-    color: COLORS.primaryDark,
+  segmentTextActive: {
+    fontWeight: '600',
+    color: '#000000',
   },
-  listCard: {
+  myRankCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    overflow: 'hidden',
-  },
-  itemRow: {
+    borderRadius: 18,
+    marginHorizontal: 16,
+    padding: 16,
+    marginBottom: 24,
     flexDirection: 'row',
     alignItems: 'center',
-    padding: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
+    justifyContent: 'space-between',
+    ...APPLE_SHADOW,
   },
-  itemRowMe: {
-    backgroundColor: COLORS.primarySoft,
-  },
-  rankBadge: {
-    width: 28,
-    height: 28,
-    borderRadius: 10,
-    backgroundColor: COLORS.surface,
+  myRankLeft: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    flex: 1,
   },
-  rankBadgeText: {
-    color: '#FFFFFF',
-    fontSize: 12,
-    fontWeight: '900',
-  },
-  userAvatar: {
+  myRankBadge: {
     width: 36,
     height: 36,
     borderRadius: 12,
-    backgroundColor: COLORS.secondaryLight,
+    backgroundColor: '#FFF4E6',
     alignItems: 'center',
     justifyContent: 'center',
-    marginLeft: SPACING.sm,
+    marginRight: 12,
   },
-  avatarLetter: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.secondary,
+  myRankLabel: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
   },
-  userName: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  userBranch: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    fontWeight: '500',
+  myRankSub: {
+    fontSize: 11,
+    color: '#8E8E93',
     marginTop: 2,
   },
-  scoreCol: {
-    alignItems: 'flex-end',
+  myRankValue: {
+    fontSize: 24,
+    fontWeight: '800',
+    color: '#FF9500',
+    letterSpacing: -0.5,
+    marginLeft: 8,
   },
-  scoreXp: {
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
+  },
+  sectionTitle: {
     fontSize: 13,
-    fontWeight: '900',
-    color: COLORS.primaryDark,
-  },
-  scoreLevel: {
-    fontSize: 10,
-    color: COLORS.textMuted,
     fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: -0.1,
+    textTransform: 'uppercase',
+  },
+  groupedCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    marginHorizontal: 16,
+    overflow: 'hidden',
+    ...APPLE_SHADOW,
+  },
+  rankRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+  },
+  rankRowCurrent: {
+    backgroundColor: '#FFF9F2',
+  },
+  rankNumberBox: {
+    width: 24,
+    height: 24,
+    borderRadius: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  rankGold: {
+    backgroundColor: '#FFD700',
+  },
+  rankSilver: {
+    backgroundColor: '#C0C0C0',
+  },
+  rankBronze: {
+    backgroundColor: '#CD7F32',
+  },
+  rankNumberText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#8E8E93',
+  },
+  rankTopText: {
+    color: '#FFFFFF',
+  },
+  avatar: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  avatarText: {
+    fontSize: 13,
+    fontWeight: '700',
+  },
+  nameCol: {
+    flex: 1,
+    marginRight: 8,
+  },
+  studentName: {
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
+  },
+  groupMeta: {
+    fontSize: 12,
+    color: '#8E8E93',
+    marginTop: 2,
+  },
+  xpCapsule: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#FFF4E6',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 10,
+    gap: 4,
+  },
+  xpText: {
+    fontSize: 12,
+    fontWeight: '700',
+    color: '#FF9500',
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 64,
+  },
+  emptyContainer: {
+    padding: 30,
+    alignItems: 'center',
+  },
+  emptyText: {
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
   },
 });

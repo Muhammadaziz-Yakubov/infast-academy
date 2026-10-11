@@ -10,8 +10,8 @@ import {
   RefreshControl,
 } from 'react-native';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING } from '../constants/theme';
-import { ShoppingBag, Coins, Sparkles, Check, PackageCheck } from 'lucide-react-native';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
+import { ShoppingBag, Coins, Sparkles, Check, PackageCheck, Gift } from 'lucide-react-native';
 
 export default function ShopScreen() {
   const [data, setData] = useState<any | null>(null);
@@ -41,8 +41,8 @@ export default function ShopScreen() {
   const handleBuy = (product: any) => {
     if ((data?.balanceXCoin || 0) < product.priceXCoin) {
       Alert.alert(
-        'Mablag‘ yetarli emas',
-        `Sizda ${data?.balanceXCoin || 0} XCoin bor. Ushbu mahsulot narxi esa ${product.priceXCoin} XCoin. Darslar va testlarni bajarib ko‘proq tanga yig‘ing!`
+        'Tangalar yetarli emas',
+        `Sizda ${data?.balanceXCoin || 0} XCoin bor. Ushbu sovg'a narxi esa ${product.priceXCoin} XCoin. Darslar va testlarni topshirib ko'proq tanga to'plang!`
       );
       return;
     }
@@ -53,7 +53,7 @@ export default function ShopScreen() {
       [
         { text: 'Bekor qilish', style: 'cancel' },
         {
-          text: 'Ha, sotib olish',
+          text: 'Sotib olish',
           onPress: async () => {
             try {
               setPurchasingId(product._id);
@@ -62,7 +62,7 @@ export default function ShopScreen() {
                 body: { productId: product._id },
               });
               if (res.success) {
-                Alert.alert('🎉 Xarid muvaffaqiyatli!', res.message);
+                Alert.alert('🎉 Xarid amalga oshirildi!', res.message);
                 fetchShop();
               }
             } catch (err: any) {
@@ -79,7 +79,7 @@ export default function ShopScreen() {
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="small" color={COLORS.primary} />
         <Text style={styles.loadingText}>Do'kon yuklanmoqda...</Text>
       </View>
     );
@@ -93,64 +93,72 @@ export default function ShopScreen() {
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchShop(); }} colors={[COLORS.primary]} />
+        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchShop(); }} tintColor={COLORS.primary} />
       }
     >
-      {/* Balance Top Card */}
-      <View style={styles.balanceCard}>
-        <View style={styles.balanceRow}>
-          <View>
-            <Text style={styles.balanceLabel}>Mavjud Balans</Text>
-            <Text style={styles.balanceValue}>{balance} XCoin</Text>
-          </View>
-          <View style={styles.coinIconCircle}>
-            <Coins size={28} color="#FFFFFF" />
-          </View>
-        </View>
-        <Text style={styles.balanceSubtitle}>
-          Tangalaringizni esdalik sovg'alar va texnik mahsulotlarga almashtiring!
-        </Text>
+      {/* Apple Large Title Header */}
+      <View style={styles.header}>
+        <Text style={styles.categoryLabel}>SOVG'ALAR VA AKSESSUARLAR</Text>
+        <Text style={styles.largeTitle}>Do'kon</Text>
       </View>
 
-      {/* Product Catalog Grid */}
-      <Text style={styles.sectionTitle}>Sovg'alar Katalogi</Text>
+      {/* Apple Wallet Style Balance Card */}
+      <View style={styles.balanceCard}>
+        <View style={styles.balanceLeft}>
+          <View style={styles.coinIconCircle}>
+            <Coins size={22} color="#E5A100" />
+          </View>
+          <View>
+            <Text style={styles.balanceLabel}>XCoin Balansingiz</Text>
+            <Text style={styles.balanceValue}>{balance} XCoin</Text>
+          </View>
+        </View>
+        <View style={styles.balanceTag}>
+          <Sparkles size={13} color="#FF9500" />
+          <Text style={styles.balanceTagText}>Jonli hisob</Text>
+        </View>
+      </View>
 
-      <View style={styles.productsGrid}>
-        {products.map((item: any) => {
-          const isBuying = purchasingId === item._id;
-          const canAfford = balance >= item.priceXCoin;
+      {/* Product Catalog */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>MAVSUMIY SOVG'ALAR</Text>
+      </View>
+
+      <View style={styles.productsContainer}>
+        {products.map((product: any) => {
+          const canAfford = balance >= product.priceXCoin;
+          const isBuying = purchasingId === product._id;
 
           return (
-            <View key={item._id} style={styles.productCard}>
-              <View style={styles.productBadge}>
-                <Text style={styles.productBadgeText}>{item.category}</Text>
+            <View key={product._id} style={styles.productCard}>
+              <View style={styles.productIconBox}>
+                <Gift size={28} color="#FF9500" />
               </View>
 
-              <Text style={styles.productTitle}>{item.title}</Text>
-              <Text style={styles.productDesc} numberOfLines={2}>
-                {item.description}
-              </Text>
-
-              <View style={styles.priceRow}>
-                <Coins size={16} color="#D97706" />
-                <Text style={styles.priceText}>{item.priceXCoin} XCoin</Text>
+              <View style={styles.productInfoCol}>
+                <Text style={styles.productTitle}>{product.title}</Text>
+                <Text style={styles.productDescription} numberOfLines={2}>
+                  {product.description || "InFast IT-Academy dasturchilar uchun original mahsuloti"}
+                </Text>
+                <Text style={styles.stockText}>Qoldiq: {product.stock || 10} dona</Text>
               </View>
 
               <TouchableOpacity
                 style={[
-                  styles.buyBtn,
-                  !canAfford && styles.buyBtnDisabled,
+                  styles.buyPillButton,
+                  !canAfford && styles.buyPillButtonDisabled,
                 ]}
-                disabled={isBuying || item.stock <= 0}
-                onPress={() => handleBuy(item)}
-                activeOpacity={0.8}
+                disabled={isBuying || !canAfford}
+                onPress={() => handleBuy(product)}
+                activeOpacity={0.7}
               >
                 {isBuying ? (
-                  <ActivityIndicator size="small" color="#FFFFFF" />
+                  <ActivityIndicator size="small" color="#FF9500" />
                 ) : (
-                  <Text style={styles.buyBtnText}>
-                    {item.stock <= 0 ? "Qolmagan" : "Sotib olish"}
+                  <Text style={[styles.buyPillText, !canAfford && styles.buyPillTextDisabled]}>
+                    {product.priceXCoin} 🪙
                   </Text>
                 )}
               </TouchableOpacity>
@@ -159,26 +167,49 @@ export default function ShopScreen() {
         })}
       </View>
 
-      {/* Orders History */}
+      {/* Orders Inset Grouped Card */}
       {orders.length > 0 && (
-        <View style={styles.ordersSection}>
-          <Text style={styles.sectionTitle}>Mening Buyurtmalarim</Text>
-          {orders.map((ord: any) => (
-            <View key={ord._id} style={styles.orderCard}>
-              <PackageCheck size={20} color={COLORS.primary} />
-              <View style={{ flex: 1, marginLeft: SPACING.sm }}>
-                <Text style={styles.orderTitle}>{ord.productId?.title || "Mahsulot"}</Text>
-                <Text style={styles.orderMeta}>
-                  {ord.priceXCoin} XCoin &bull; {new Date(ord.createdAt).toLocaleDateString('uz-UZ')}
-                </Text>
-              </View>
-              <View style={styles.orderStatusBadge}>
-                <Text style={styles.orderStatusText}>{ord.status}</Text>
-              </View>
-            </View>
-          ))}
-        </View>
+        <>
+          <View style={styles.sectionHeader}>
+            <Text style={styles.sectionTitle}>XARIDLAR TARIXI</Text>
+          </View>
+
+          <View style={styles.groupedCard}>
+            {orders.map((order: any, idx: number) => {
+              const isFulfilled = order.status === 'FULFILLED';
+
+              return (
+                <React.Fragment key={order._id || idx}>
+                  {idx > 0 && <View style={styles.separator} />}
+
+                  <View style={styles.orderRow}>
+                    <View style={styles.orderInfo}>
+                      <Text style={styles.orderTitle}>{order.productTitle || "Mahsulot"}</Text>
+                      <Text style={styles.orderDate}>
+                        {new Date(order.createdAt).toLocaleDateString('uz-UZ')} • {order.priceXCoin} XCoin
+                      </Text>
+                    </View>
+
+                    <View style={[
+                      styles.orderBadge,
+                      isFulfilled ? styles.orderBadgeSuccess : styles.orderBadgePending,
+                    ]}>
+                      <Text style={[
+                        styles.orderBadgeText,
+                        isFulfilled ? styles.orderBadgeTextSuccess : styles.orderBadgeTextPending,
+                      ]}>
+                        {isFulfilled ? "Yetkazildi" : "Kutilmoqda"}
+                      </Text>
+                    </View>
+                  </View>
+                </React.Fragment>
+              );
+            })}
+          </View>
+        </>
       )}
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
@@ -186,161 +217,217 @@ export default function ShopScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   contentContainer: {
-    padding: SPACING.lg,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
+    backgroundColor: '#F2F2F7',
   },
   loadingText: {
-    marginTop: SPACING.md,
-    fontSize: 13,
-    color: COLORS.textMuted,
+    marginTop: 8,
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+  },
+  categoryLabel: {
+    fontSize: 12,
     fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  largeTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.5,
   },
   balanceCard: {
-    backgroundColor: '#D97706',
-    borderRadius: 24,
-    padding: SPACING.xl,
-    marginBottom: SPACING.xl,
-  },
-  balanceRow: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginHorizontal: 16,
+    padding: 18,
+    marginBottom: 24,
     flexDirection: 'row',
-    justifyContent: 'space-between',
     alignItems: 'center',
+    justifyContent: 'space-between',
+    ...APPLE_SHADOW,
+  },
+  balanceLeft: {
+    flexDirection: 'row',
+    alignItems: 'center',
+  },
+  coinIconCircle: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
+    backgroundColor: '#FFFBE6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
   },
   balanceLabel: {
     fontSize: 12,
-    color: '#FEF3C7',
-    fontWeight: '700',
+    color: '#8E8E93',
+    fontWeight: '500',
   },
   balanceValue: {
-    fontSize: 26,
-    fontWeight: '900',
-    color: '#FFFFFF',
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#000000',
+    letterSpacing: -0.4,
     marginTop: 2,
   },
-  coinIconCircle: {
-    width: 48,
-    height: 48,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255,255,255,0.2)',
+  balanceTag: {
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    backgroundColor: '#FFF4E6',
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 12,
+    gap: 4,
   },
-  balanceSubtitle: {
+  balanceTagText: {
     fontSize: 11,
-    color: 'rgba(255,255,255,0.85)',
-    marginTop: SPACING.md,
-    lineHeight: 16,
+    fontWeight: '700',
+    color: '#FF9500',
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: -0.1,
+    textTransform: 'uppercase',
   },
-  productsGrid: {
-    flexDirection: 'row',
-    flexWrap: 'wrap',
-    gap: SPACING.md,
+  productsContainer: {
+    paddingHorizontal: 16,
+    gap: 12,
+    marginBottom: 24,
   },
   productCard: {
-    width: '47%',
     backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    justifyContent: 'space-between',
+    borderRadius: 18,
+    padding: 16,
+    flexDirection: 'row',
+    alignItems: 'center',
+    ...APPLE_SHADOW,
   },
-  productBadge: {
-    alignSelf: 'flex-start',
-    backgroundColor: COLORS.surface,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-    marginBottom: SPACING.sm,
+  productIconBox: {
+    width: 48,
+    height: 48,
+    borderRadius: 14,
+    backgroundColor: '#FFF4E6',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 14,
   },
-  productBadgeText: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: COLORS.textMuted,
+  productInfoCol: {
+    flex: 1,
+    marginRight: 10,
   },
   productTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
   },
-  productDesc: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    lineHeight: 15,
-    marginBottom: SPACING.md,
-  },
-  priceRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 4,
-    marginBottom: SPACING.md,
-  },
-  priceText: {
-    fontSize: 14,
-    fontWeight: '900',
-    color: '#B45309',
-  },
-  buyBtn: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 12,
-    paddingVertical: 10,
-    alignItems: 'center',
-  },
-  buyBtnDisabled: {
-    backgroundColor: COLORS.surface,
-  },
-  buyBtnText: {
+  productDescription: {
     fontSize: 12,
-    fontWeight: '800',
-    color: '#FFFFFF',
+    color: '#8E8E93',
+    marginTop: 2,
+    lineHeight: 16,
   },
-  ordersSection: {
-    marginTop: SPACING.xl,
+  stockText: {
+    fontSize: 11,
+    color: '#C7C7CC',
+    marginTop: 4,
+    fontWeight: '500',
   },
-  orderCard: {
+  buyPillButton: {
+    backgroundColor: '#F2F2F7',
+    paddingHorizontal: 14,
+    paddingVertical: 8,
+    borderRadius: 16,
+    minWidth: 70,
+    alignItems: 'center',
+  },
+  buyPillButtonDisabled: {
+    opacity: 0.45,
+  },
+  buyPillText: {
+    fontSize: 13,
+    fontWeight: '700',
+    color: '#FF9500',
+  },
+  buyPillTextDisabled: {
+    color: '#8E8E93',
+  },
+  groupedCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    marginHorizontal: 16,
+    overflow: 'hidden',
+    ...APPLE_SHADOW,
+  },
+  orderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#FFFFFF',
-    padding: SPACING.md,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    marginBottom: SPACING.sm,
+    justifyContent: 'space-between',
+    padding: 16,
+  },
+  orderInfo: {
+    flex: 1,
   },
   orderTitle: {
-    fontSize: 13,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
   },
-  orderMeta: {
-    fontSize: 10,
-    color: COLORS.textMuted,
+  orderDate: {
+    fontSize: 12,
+    color: '#8E8E93',
     marginTop: 2,
   },
-  orderStatusBadge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: 8,
+  orderBadge: {
+    paddingHorizontal: 10,
     paddingVertical: 4,
     borderRadius: 8,
   },
-  orderStatusText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: COLORS.primaryDark,
+  orderBadgeSuccess: {
+    backgroundColor: '#EAF8EE',
+  },
+  orderBadgePending: {
+    backgroundColor: '#FFF4E6',
+  },
+  orderBadgeText: {
+    fontSize: 12,
+    fontWeight: '600',
+  },
+  orderBadgeTextSuccess: {
+    color: '#34C759',
+  },
+  orderBadgeTextPending: {
+    color: '#FF9500',
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 16,
   },
 });

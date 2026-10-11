@@ -10,19 +10,18 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import {
-  User,
-  Phone,
   Building2,
   Users,
-  Layers,
-  Award,
-  Coins,
-  LogOut,
+  BookOpen,
   Calendar,
   CreditCard,
+  LogOut,
+  ChevronRight,
   ShieldCheck,
+  Phone,
+  Sparkles,
 } from 'lucide-react-native';
 
 export default function ProfileScreen() {
@@ -49,7 +48,7 @@ export default function ProfileScreen() {
   };
 
   const handleLogout = () => {
-    Alert.alert('Chiqish', 'Akkauntdan chiqishni tasdiqlaysizmi?', [
+    Alert.alert('Chiqish', 'Haqiqatan ham akkauntdan chiqmoqchimisiz?', [
       { text: 'Bekor qilish', style: 'cancel' },
       { text: 'Chiqish', style: 'destructive', onPress: logout },
     ]);
@@ -59,92 +58,134 @@ export default function ProfileScreen() {
   const progress = data?.progress || { xp: 0, xcoin: 0, level: 1 };
 
   return (
-    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer}>
-      {/* Profile Header Card */}
-      <View style={styles.headerCard}>
+    <ScrollView
+      style={styles.container}
+      contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
+    >
+      {/* Apple Large Title */}
+      <View style={styles.header}>
+        <Text style={styles.categoryLabel}>HISOBLAR</Text>
+        <Text style={styles.largeTitle}>Profil</Text>
+      </View>
+
+      {/* Apple Profile Header Card */}
+      <View style={styles.profileHeaderCard}>
         <View style={styles.avatarLarge}>
           <Text style={styles.avatarLargeText}>
-            {profile?.firstName?.[0] || 'I'}
-            {profile?.lastName?.[0] || 'N'}
+            {profile?.firstName?.[0] || 'I'}{profile?.lastName?.[0] || 'N'}
           </Text>
         </View>
 
-        <Text style={styles.fullName}>
-          {profile?.firstName} {profile?.lastName}
-        </Text>
-        <Text style={styles.studentCodeText}>
-          Talaba ID: {profile?.studentCode || 'INF-STD'}
-        </Text>
+        <Text style={styles.fullName}>{profile?.firstName} {profile?.lastName}</Text>
+        <Text style={styles.studentCodeText}>Talaba ID: {profile?.studentCode || 'INF-STD'}</Text>
 
         <View style={styles.statusPill}>
-          <ShieldCheck size={12} color="#16A34A" />
-          <Text style={styles.statusPillText}>Faol Talaba</Text>
+          <ShieldCheck size={12} color="#34C759" />
+          <Text style={styles.statusPillText}>Faol talaba</Text>
         </View>
       </View>
 
-      {/* Gamification Stats Banner */}
-      <View style={styles.statsRow}>
-        <View style={styles.statBox}>
-          <Award size={20} color={COLORS.primary} />
-          <Text style={styles.statBoxVal}>{progress.xp} XP</Text>
-          <Text style={styles.statBoxSub}>{progress.level}-Daraja</Text>
-        </View>
-
-        <View style={styles.statBox}>
-          <Coins size={20} color="#D97706" />
-          <Text style={[styles.statBoxVal, { color: '#B45309' }]}>{progress.xcoin}</Text>
-          <Text style={styles.statBoxSub}>XCoin Balansi</Text>
-        </View>
+      {/* Apple Inset Group: O'quv Ma'lumotlari */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>O'QUV MA'LUMOTLARI</Text>
       </View>
 
-      {/* Details List */}
-      <View style={styles.detailsCard}>
-        <View style={styles.detailRow}>
-          <Phone size={18} color={COLORS.textMuted} />
-          <View style={styles.detailTextCol}>
-            <Text style={styles.detailLabel}>Telefon</Text>
-            <Text style={styles.detailVal}>{profile?.phone}</Text>
+      <View style={styles.groupedCard}>
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#EBF5FF' }]}>
+            <Building2 size={18} color="#007AFF" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Filial</Text>
+            <Text style={styles.rowValue}>{profile?.branch?.name || "Asosiy Filial"}</Text>
           </View>
         </View>
 
-        <View style={styles.detailRow}>
-          <Building2 size={18} color={COLORS.textMuted} />
-          <View style={styles.detailTextCol}>
-            <Text style={styles.detailLabel}>Filial</Text>
-            <Text style={styles.detailVal}>{profile?.branch?.name || 'InFast Asosiy'}</Text>
+        <View style={styles.separator} />
+
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#FFF4E6' }]}>
+            <BookOpen size={18} color="#FF9500" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Kurs</Text>
+            <Text style={styles.rowValue}>{profile?.course?.name || "Frontend & Web"}</Text>
           </View>
         </View>
 
-        <View style={styles.detailRow}>
-          <Users size={18} color={COLORS.textMuted} />
-          <View style={styles.detailTextCol}>
-            <Text style={styles.detailLabel}>Guruh</Text>
-            <Text style={styles.detailVal}>{profile?.group?.name || 'Guruh biriktirilgan'}</Text>
+        <View style={styles.separator} />
+
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#F0EEFF' }]}>
+            <Users size={18} color="#5856D6" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Guruh</Text>
+            <Text style={styles.rowValue}>{profile?.group?.name || "FS-Guruh"}</Text>
           </View>
         </View>
 
-        <View style={styles.detailRow}>
-          <Layers size={18} color={COLORS.textMuted} />
-          <View style={styles.detailTextCol}>
-            <Text style={styles.detailLabel}>Kurs</Text>
-            <Text style={styles.detailVal}>{profile?.course?.name || 'Dasturlash'}</Text>
-          </View>
-        </View>
+        <View style={styles.separator} />
 
-        <View style={[styles.detailRow, { borderBottomWidth: 0 }]}>
-          <CreditCard size={18} color={COLORS.textMuted} />
-          <View style={styles.detailTextCol}>
-            <Text style={styles.detailLabel}>Oylik to'lov muddati</Text>
-            <Text style={styles.detailVal}>Har oyning {profile?.paymentDueDay || 5}-sanasigacha</Text>
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#EAF8EE' }]}>
+            <Phone size={18} color="#34C759" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Telefon raqam</Text>
+            <Text style={styles.rowValue}>{profile?.phone || "+998 90 123 45 67"}</Text>
           </View>
         </View>
       </View>
 
-      {/* Logout Action */}
-      <TouchableOpacity style={styles.logoutBtn} onPress={handleLogout} activeOpacity={0.8}>
-        <LogOut size={18} color={COLORS.accentRed} />
-        <Text style={styles.logoutBtnText}>Tizimdan chiqish</Text>
-      </TouchableOpacity>
+      {/* Apple Inset Group: Statistika va Yutuqlar */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>YUTUQLAR VA BALLAR</Text>
+      </View>
+
+      <View style={styles.groupedCard}>
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#FFF4E6' }]}>
+            <Sparkles size={18} color="#FF9500" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Tajriba (XP)</Text>
+            <Text style={styles.rowValue}>{progress.xp || 0} XP (Lv. {progress.level || 1})</Text>
+          </View>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.row}>
+          <View style={[styles.iconBox, { backgroundColor: '#FFFBE6' }]}>
+            <Sparkles size={18} color="#E5A100" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>XCoin Balansi</Text>
+            <Text style={styles.rowValue}>{progress.xcoin || 0} tanga</Text>
+          </View>
+        </View>
+      </View>
+
+      {/* Apple Inset Group: Chiqish */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>AKKAUNT</Text>
+      </View>
+
+      <View style={styles.groupedCard}>
+        <TouchableOpacity style={styles.rowAction} onPress={handleLogout} activeOpacity={0.6}>
+          <View style={[styles.iconBox, { backgroundColor: '#FEE2E2' }]}>
+            <LogOut size={18} color="#EF4444" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={[styles.rowValue, { color: '#FF3B30' }]}>Akkauntdan chiqish</Text>
+          </View>
+          <ChevronRight size={18} color="#C7C7CC" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
@@ -152,131 +193,139 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   contentContainer: {
-    padding: SPACING.lg,
+    paddingTop: 8,
     paddingBottom: 40,
   },
-  headerCard: {
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+  },
+  categoryLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  largeTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.5,
+  },
+  profileHeaderCard: {
     backgroundColor: '#FFFFFF',
-    borderRadius: 26,
-    padding: SPACING.xl,
+    borderRadius: 20,
+    marginHorizontal: 16,
+    padding: 20,
     alignItems: 'center',
-    marginBottom: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    marginBottom: 24,
+    ...APPLE_SHADOW,
   },
   avatarLarge: {
-    width: 76,
-    height: 76,
-    borderRadius: 26,
+    width: 72,
+    height: 72,
+    borderRadius: 36,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
+    marginBottom: 12,
+    shadowColor: COLORS.primary,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.25,
+    shadowRadius: 8,
+    elevation: 4,
   },
   avatarLargeText: {
-    color: '#FFFFFF',
     fontSize: 26,
-    fontWeight: '900',
+    fontWeight: '700',
+    color: '#FFFFFF',
   },
   fullName: {
     fontSize: 20,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.4,
   },
   studentCodeText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    fontWeight: '600',
+    fontSize: 13,
+    color: '#8E8E93',
     marginTop: 2,
+    fontWeight: '500',
   },
   statusPill: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#DCFCE7',
+    backgroundColor: '#EAF8EE',
     paddingHorizontal: 10,
     paddingVertical: 4,
-    borderRadius: 8,
-    marginTop: SPACING.md,
+    borderRadius: 10,
+    marginTop: 10,
     gap: 4,
   },
   statusPillText: {
     fontSize: 11,
-    fontWeight: '800',
-    color: '#16A34A',
+    fontWeight: '700',
+    color: '#34C759',
   },
-  statsRow: {
-    flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
   },
-  statBox: {
-    flex: 1,
-    backgroundColor: '#FFFFFF',
-    borderRadius: 20,
-    padding: SPACING.lg,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  statBoxVal: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-    marginVertical: 4,
-  },
-  statBoxSub: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '600',
-  },
-  detailsCard: {
-    backgroundColor: '#FFFFFF',
-    borderRadius: 22,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    padding: SPACING.md,
-    marginBottom: SPACING.xl,
-  },
-  detailRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: SPACING.md,
-    borderBottomWidth: 1,
-    borderBottomColor: COLORS.borderLight,
-    paddingHorizontal: SPACING.sm,
-  },
-  detailTextCol: {
-    marginLeft: SPACING.md,
-    flex: 1,
-  },
-  detailLabel: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '600',
-  },
-  detailVal: {
+  sectionTitle: {
     fontSize: 13,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    marginTop: 2,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: -0.1,
+    textTransform: 'uppercase',
   },
-  logoutBtn: {
+  groupedCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    marginHorizontal: 16,
+    overflow: 'hidden',
+    marginBottom: 20,
+    ...APPLE_SHADOW,
+  },
+  row: {
     flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+  },
+  rowAction: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
+  },
+  iconBox: {
+    width: 36,
+    height: 36,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.accentRedLight,
-    borderRadius: 16,
-    paddingVertical: 14,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: '#FCA5A5',
+    marginRight: 14,
   },
-  logoutBtnText: {
-    color: COLORS.accentRed,
-    fontSize: 14,
-    fontWeight: '800',
+  rowContent: {
+    flex: 1,
+  },
+  rowLabel: {
+    fontSize: 12,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  rowValue: {
+    fontSize: 15,
+    color: '#000000',
+    fontWeight: '600',
+    marginTop: 1,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 64,
   },
 });

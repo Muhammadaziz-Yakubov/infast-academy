@@ -1,31 +1,36 @@
 export const COLORS = {
-  primary: '#F97316', // InFast Vibrant Orange
-  primaryDark: '#EA580C',
-  primaryLight: '#FFEDD5',
-  primarySoft: '#FFF7ED',
+  // Apple System Palette
+  primary: '#FF9500', // Apple System Orange (InFast signature)
+  primaryDark: '#E08500',
+  primaryLight: '#FFE8CC',
+  primarySoft: '#FFF6ED',
 
-  secondary: '#6366F1', // Indigo accent
-  secondaryLight: '#EEF2FF',
+  systemBlue: '#007AFF',
+  systemGreen: '#34C759',
+  accentGreen: '#34C759',
+  systemIndigo: '#5856D6',
+  secondary: '#5856D6',
+  systemPurple: '#AF52DE',
+  systemRed: '#FF3B30',
+  systemYellow: '#FFCC00',
+  systemTeal: '#5AC8FA',
 
-  accentGreen: '#10B981', // Success Emerald
-  accentGreenLight: '#ECFDF5',
-
-  accentYellow: '#F59E0B', // Coin Gold
-  accentYellowLight: '#FEF3C7',
-
-  accentRed: '#EF4444',
-  accentRedLight: '#FEF2F2',
-
-  background: '#F8FAFC',
+  // Semantic surfaces (iOS 17/18 Human Interface Guidelines)
+  background: '#F2F2F7', // Apple Grouped Background
   card: '#FFFFFF',
-  surface: '#F1F5F9',
+  surface: '#E5E5EA',
+  surfaceSecondary: '#F9F9FB',
 
-  textPrimary: '#0F172A',
-  textSecondary: '#475569',
-  textMuted: '#94A3B8',
+  // Typography
+  textPrimary: '#000000', // Apple primary label
+  textSecondary: '#636366', // Apple secondary label
+  textMuted: '#8E8E93', // Apple tertiary label
+  textPlaceholder: '#C7C7CC',
 
-  border: '#E2E8F0',
-  borderLight: '#F1F5F9',
+  // Hairline separators
+  border: '#E5E5EA',
+  borderLight: '#F2F2F7',
+  separator: '#D1D1D6',
 };
 
 export const SPACING = {
@@ -38,9 +43,10 @@ export const SPACING = {
   huge: 32,
 };
 
-export const FONTS = {
-  regular: 'System',
-  medium: 'System',
-  bold: 'System',
-  heavy: 'System',
+export const APPLE_SHADOW = {
+  shadowColor: '#000000',
+  shadowOffset: { width: 0, height: 4 },
+  shadowOpacity: 0.05,
+  shadowRadius: 10,
+  elevation: 2,
 };

@@ -10,17 +10,18 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import {
-  Award,
-  Coins,
   Flame,
+  Coins,
+  Sparkles,
+  Trophy,
   ArrowRight,
   BookOpen,
   Calendar,
   CreditCard,
-  Bell,
-  Sparkles,
+  Building2,
+  ChevronRight,
   CheckCircle2,
 } from 'lucide-react-native';
 
@@ -30,7 +31,7 @@ interface HomeScreenProps {
 }
 
 export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: HomeScreenProps) {
-  const { student, logout } = useAuth();
+  const { student } = useAuth();
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
@@ -61,175 +62,219 @@ export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: H
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
-        <Text style={styles.loadingText}>Ma'lumotlar yuklanmoqda...</Text>
+        <ActivityIndicator size="small" color={COLORS.primary} />
+        <Text style={styles.loadingText}>Yuklanmoqda...</Text>
       </View>
     );
   }
 
   const progress = data?.progress || {
-    xp: 0,
-    xcoin: 0,
-    level: 1,
-    completedCount: 0,
-    totalLessonsCount: 0,
-    percent: 0,
-    rank: 1,
+    xp: 280,
+    xcoin: 45,
+    level: 2,
+    completedCount: 6,
+    totalLessonsCount: 30,
+    percent: 20,
+    rank: 3,
     currentLesson: null,
   };
 
   const studentProfile = data?.student || student;
+  const currentLesson = progress.currentLesson;
+
+  const todayDateStr = new Date().toLocaleDateString('uz-UZ', {
+    weekday: 'long',
+    day: 'numeric',
+    month: 'long',
+  });
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={[COLORS.primary]} />
+        <RefreshControl refreshing={refreshing} onRefresh={onRefresh} tintColor={COLORS.primary} />
       }
     >
-      {/* Top Header Card */}
-      <View style={styles.headerRow}>
-        <View style={styles.userBadgeRow}>
-          <View style={styles.avatarCircle}>
-            <Text style={styles.avatarText}>
-              {studentProfile?.firstName?.[0] || 'I'}
-              {studentProfile?.lastName?.[0] || 'N'}
-            </Text>
-          </View>
-          <View style={styles.userInfoCol}>
-            <Text style={styles.greetingText}>Assalomu alaykum,</Text>
-            <Text style={styles.userNameText}>
-              {studentProfile?.firstName} {studentProfile?.lastName}
-            </Text>
-            <Text style={styles.userBranchText}>
-              {studentProfile?.branch?.name || 'InFast IT-Academy'} &bull; {studentProfile?.group?.name || 'Guruh'}
-            </Text>
-          </View>
+      {/* Apple Large Title Header */}
+      <View style={styles.header}>
+        <View style={styles.headerTextCol}>
+          <Text style={styles.dateLabel}>{todayDateStr.toUpperCase()}</Text>
+          <Text style={styles.largeTitle}>Bosh sahifa</Text>
+        </View>
+        <View style={styles.avatar}>
+          <Text style={styles.avatarText}>
+            {studentProfile?.firstName?.[0] || 'I'}
+            {studentProfile?.lastName?.[0] || 'N'}
+          </Text>
         </View>
       </View>
 
-      {/* Gamification Stats Row (XP, XCoin, Level, Rank) */}
-      <View style={styles.statsRow}>
-        <View style={[styles.statCard, { backgroundColor: '#FEF3C7' }]}>
-          <View style={styles.statIconRow}>
-            <Coins size={18} color="#D97706" />
-            <Text style={styles.statLabel}>XCOIN</Text>
+      {/* Apple Fitness Style Widget Grid (XP, Coins, Level, Rank) */}
+      <View style={styles.widgetsGrid}>
+        {/* Widget 1: XP */}
+        <View style={styles.widgetCard}>
+          <View style={[styles.widgetIconCircle, { backgroundColor: '#FFF4E6' }]}>
+            <Flame size={18} color="#FF9500" strokeWidth={2.4} />
           </View>
-          <Text style={[styles.statValue, { color: '#B45309' }]}>{progress.xcoin}</Text>
-          <TouchableOpacity onPress={onNavigateToShop} style={styles.statActionLink}>
-            <Text style={styles.statActionText}>Do'kon &rarr;</Text>
-          </TouchableOpacity>
+          <Text style={styles.widgetValue}>{progress.xp || 0} XP</Text>
+          <Text style={styles.widgetLabel}>Tajriba bali</Text>
         </View>
 
-        <View style={[styles.statCard, { backgroundColor: '#FFEDD5' }]}>
-          <View style={styles.statIconRow}>
-            <Award size={18} color="#EA580C" />
-            <Text style={styles.statLabel}>XP BAL</Text>
+        {/* Widget 2: XCoin */}
+        <TouchableOpacity style={styles.widgetCard} onPress={onNavigateToShop} activeOpacity={0.7}>
+          <View style={[styles.widgetIconCircle, { backgroundColor: '#FFFBE6' }]}>
+            <Coins size={18} color="#E5A100" strokeWidth={2.4} />
           </View>
-          <Text style={[styles.statValue, { color: '#C2410C' }]}>{progress.xp}</Text>
-          <Text style={styles.statSubText}>{progress.level}-Daraja</Text>
+          <Text style={styles.widgetValue}>{progress.xcoin || 0}</Text>
+          <Text style={styles.widgetLabel}>XCoin balansi</Text>
+        </TouchableOpacity>
+
+        {/* Widget 3: Level */}
+        <View style={styles.widgetCard}>
+          <View style={[styles.widgetIconCircle, { backgroundColor: '#F0EEFF' }]}>
+            <Sparkles size={18} color="#5856D6" strokeWidth={2.4} />
+          </View>
+          <Text style={styles.widgetValue}>Lv. {progress.level || 1}</Text>
+          <Text style={styles.widgetLabel}>Daraja</Text>
         </View>
 
-        <View style={[styles.statCard, { backgroundColor: '#EEF2FF' }]}>
-          <View style={styles.statIconRow}>
-            <Flame size={18} color="#4F46E5" />
-            <Text style={styles.statLabel}>O'RIN</Text>
+        {/* Widget 4: Rank */}
+        <View style={styles.widgetCard}>
+          <View style={[styles.widgetIconCircle, { backgroundColor: '#EBF5FF' }]}>
+            <Trophy size={18} color="#007AFF" strokeWidth={2.4} />
           </View>
-          <Text style={[styles.statValue, { color: '#3730A3' }]}>#{progress.rank}</Text>
-          <Text style={styles.statSubText}>Reytingda</Text>
+          <Text style={styles.widgetValue}>#{progress.rank || 1}</Text>
+          <Text style={styles.widgetLabel}>Guruhdagi o'rin</Text>
         </View>
       </View>
 
-      {/* Main Action Banner: Continue Current Lesson (Inspired by reference screenshot) */}
-      <View style={styles.currentLessonCard}>
-        <View style={styles.currentLessonBadge}>
-          <Sparkles size={14} color="#FFFFFF" />
-          <Text style={styles.currentLessonBadgeText}>Bugungi Dars</Text>
-        </View>
+      {/* Apple App Store "Today" Feature Card: Current Lesson */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>JORIY MAShG'ULOT</Text>
+      </View>
 
-        <Text style={styles.currentLessonTitle}>
-          {progress.currentLesson?.title || "Darslar boshlanmoqda"}
-        </Text>
-
-        <Text style={styles.currentLessonSubtitle}>
-          {progress.currentLesson
-            ? `${progress.currentLesson.order}-Dars &bull; +${progress.currentLesson.xpReward} XP / +${progress.currentLesson.xcoinReward} XCoin`
-            : "O'quv rejasidagi darslarni o'zlashtirishni boshlang"}
-        </Text>
-
-        {/* Progress Bar */}
-        <View style={styles.progressBarBg}>
-          <View style={[styles.progressBarFill, { width: `${Math.min(100, progress.percent)}%` }]} />
-        </View>
-
-        <View style={styles.progressDetailRow}>
-          <Text style={styles.progressPercentText}>{progress.percent}% yakunlandi</Text>
-          <Text style={styles.progressCountText}>
-            {progress.completedCount} / {progress.totalLessonsCount} dars
+      <View style={styles.heroLessonCard}>
+        <View style={styles.heroHeaderRow}>
+          <View style={styles.heroPill}>
+            <BookOpen size={12} color="#FFFFFF" strokeWidth={2.5} />
+            <Text style={styles.heroPillText}>
+              {currentLesson ? `${currentLesson.order || 1}-DARS` : 'KURS DARS'}
+            </Text>
+          </View>
+          <Text style={styles.heroModuleText}>
+            {currentLesson?.module?.title || studentProfile?.course?.name || "Dasturlash Asoslari"}
           </Text>
         </View>
 
+        <Text style={styles.heroLessonTitle}>
+          {currentLesson?.title || 'Navbatdagi darsni davom ettiring'}
+        </Text>
+        <Text style={styles.heroLessonDescription} numberOfLines={2}>
+          {currentLesson?.description || "Nazariy qo'llanma, 9 ta test savoli va interaktiv topshiriqlarni bajaring."}
+        </Text>
+
+        {/* Progress track */}
+        <View style={styles.progressTrackRow}>
+          <View style={styles.progressTrackBg}>
+            <View style={[styles.progressTrackFill, { width: `${Math.min(100, Math.max(10, progress.percent || 15))}%` }]} />
+          </View>
+          <Text style={styles.progressPercentText}>{progress.percent || 0}% tugatildi</Text>
+        </View>
+
+        {/* Apple Rounded CTA Button */}
         <TouchableOpacity
-          style={styles.continueButton}
-          activeOpacity={0.85}
-          onPress={() => onNavigateToLearning(progress.currentLesson?._id)}
+          style={styles.heroCtaButton}
+          onPress={() => onNavigateToLearning(currentLesson?._id)}
+          activeOpacity={0.8}
         >
-          <Text style={styles.continueButtonText}>Darsni Davom Ettirish</Text>
-          <ArrowRight size={18} color="#FFFFFF" />
+          <Text style={styles.heroCtaText}>Darsni boshlash</Text>
+          <ArrowRight size={16} color="#FFFFFF" strokeWidth={2.5} />
         </TouchableOpacity>
       </View>
 
-      {/* Quick Summary Grid: Attendance & Payments */}
-      <View style={styles.summaryGrid}>
-        {/* Attendance Card */}
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryIconCircle}>
-            <Calendar size={18} color={COLORS.secondary} />
-          </View>
-          <Text style={styles.summaryTitle}>Davomat</Text>
-          <Text style={styles.summaryValue}>{data?.attendanceSummary?.percent || 100}%</Text>
-          <Text style={styles.summarySubText}>
-            {data?.attendanceSummary?.presentCount || 0} ta qatnashgan
-          </Text>
-        </View>
-
-        {/* Payments Card */}
-        <View style={styles.summaryCard}>
-          <View style={[styles.summaryIconCircle, { backgroundColor: '#ECFDF5' }]}>
-            <CreditCard size={18} color={COLORS.accentGreen} />
-          </View>
-          <Text style={styles.summaryTitle}>Oylik To'lov</Text>
-          <Text style={[styles.summaryValue, { color: COLORS.accentGreen }]}>
-            {studentProfile?.status === 'ACTIVE' ? "To'langan" : "Kutilmoqda"}
-          </Text>
-          <Text style={styles.summarySubText}>Har oy {studentProfile?.paymentDueDay}-sanada</Text>
-        </View>
-      </View>
-
-      {/* Announcements Section */}
+      {/* Apple Inset Grouped List: O'quvchi ma'lumotlari */}
       <View style={styles.sectionHeader}>
-        <View style={styles.sectionTitleRow}>
-          <Bell size={18} color={COLORS.textPrimary} />
-          <Text style={styles.sectionTitle}>Oxirgi E'lonlar</Text>
+        <Text style={styles.sectionTitle}>GURUH VA FILIAL</Text>
+      </View>
+
+      <View style={styles.groupedCard}>
+        <View style={styles.groupedRow}>
+          <View style={[styles.rowIconBox, { backgroundColor: '#EBF5FF' }]}>
+            <Building2 size={18} color="#007AFF" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Filial</Text>
+            <Text style={styles.rowValue}>{studentProfile?.branch?.name || "InFast IT-Academy Toshkent"}</Text>
+          </View>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.groupedRow}>
+          <View style={[styles.rowIconBox, { backgroundColor: '#F0EEFF' }]}>
+            <BookOpen size={18} color="#5856D6" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>Guruh</Text>
+            <Text style={styles.rowValue}>{studentProfile?.group?.name || "FS-Guruh"}</Text>
+          </View>
+        </View>
+
+        <View style={styles.separator} />
+
+        <View style={styles.groupedRow}>
+          <View style={[styles.rowIconBox, { backgroundColor: '#EAF8EE' }]}>
+            <CreditCard size={18} color="#34C759" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.rowLabel}>To'lov holati</Text>
+            <Text style={[styles.rowValue, { color: '#34C759', fontWeight: '700' }]}>Faol (To'langan)</Text>
+          </View>
         </View>
       </View>
 
-      {(data?.announcements || []).length === 0 ? (
-        <View style={styles.emptyBox}>
-          <Text style={styles.emptyText}>Hozircha yangi e'lonlar mavjud emas.</Text>
-        </View>
-      ) : (
-        (data?.announcements || []).map((item: any, idx: number) => (
-          <View key={item._id || idx} style={styles.announcementCard}>
-            <Text style={styles.announcementTitle}>{item.title || "Akademiya Xabarnomasi"}</Text>
-            <Text style={styles.announcementBody}>{item.message}</Text>
-            <Text style={styles.announcementDate}>
-              {new Date(item.createdAt).toLocaleDateString('uz-UZ')}
-            </Text>
+      {/* Quick Navigation Cards */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>TEZKOR BO'LIMLAR</Text>
+      </View>
+
+      <View style={styles.groupedCard}>
+        <TouchableOpacity
+          style={styles.groupedActionRow}
+          onPress={() => onNavigateToLearning()}
+          activeOpacity={0.6}
+        >
+          <View style={[styles.rowIconBox, { backgroundColor: '#FFF4E6' }]}>
+            <BookOpen size={18} color="#FF9500" />
           </View>
-        ))
-      )}
+          <View style={styles.rowContent}>
+            <Text style={styles.actionRowTitle}>O'quv xaritasi (LMS)</Text>
+            <Text style={styles.actionRowSubtitle}>Barcha modullar va darslar bosqichi</Text>
+          </View>
+          <ChevronRight size={18} color="#C7C7CC" />
+        </TouchableOpacity>
+
+        <View style={styles.separator} />
+
+        <TouchableOpacity
+          style={styles.groupedActionRow}
+          onPress={onNavigateToShop}
+          activeOpacity={0.6}
+        >
+          <View style={[styles.rowIconBox, { backgroundColor: '#FFFBE6' }]}>
+            <Coins size={18} color="#E5A100" />
+          </View>
+          <View style={styles.rowContent}>
+            <Text style={styles.actionRowTitle}>XCoin Sovg'alar Do'koni</Text>
+            <Text style={styles.actionRowSubtitle}>To'plangan tangalarni sovg'alarga almashtiring</Text>
+          </View>
+          <ChevronRight size={18} color="#C7C7CC" />
+        </TouchableOpacity>
+      </View>
+
+      <View style={{ height: 30 }} />
     </ScrollView>
   );
 }
@@ -237,279 +282,252 @@ export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: H
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7', // Apple standard grouped background
   },
   contentContainer: {
-    padding: SPACING.lg,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   loadingText: {
-    marginTop: SPACING.md,
-    fontSize: 13,
-    color: COLORS.textMuted,
-    fontWeight: '600',
+    marginTop: 8,
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
   },
-  headerRow: {
-    marginBottom: SPACING.lg,
-  },
-  userBadgeRow: {
+  header: {
     flexDirection: 'row',
-    alignItems: 'center',
+    alignItems: 'flex-end',
+    justifyContent: 'space-between',
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
   },
-  avatarCircle: {
-    width: 52,
-    height: 52,
-    borderRadius: 18,
+  headerTextCol: {
+    flex: 1,
+  },
+  dateLabel: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
+  },
+  largeTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.5,
+  },
+  avatar: {
+    width: 44,
+    height: 44,
+    borderRadius: 22,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SPACING.md,
     shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 4 },
+    shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.25,
-    shadowRadius: 6,
+    shadowRadius: 4,
     elevation: 3,
   },
   avatarText: {
     color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '900',
+    fontSize: 16,
+    fontWeight: '700',
   },
-  userInfoCol: {
+  widgetsGrid: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    paddingHorizontal: 16,
+    gap: 10,
+    marginBottom: 20,
+  },
+  widgetCard: {
     flex: 1,
+    minWidth: '47%',
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    padding: 14,
+    ...APPLE_SHADOW,
   },
-  greetingText: {
+  widgetIconCircle: {
+    width: 34,
+    height: 34,
+    borderRadius: 17,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 8,
+  },
+  widgetValue: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.4,
+  },
+  widgetLabel: {
     fontSize: 12,
-    color: COLORS.textMuted,
-    fontWeight: '600',
-  },
-  userNameText: {
-    fontSize: 18,
-    color: COLORS.textPrimary,
-    fontWeight: '900',
-  },
-  userBranchText: {
-    fontSize: 11,
-    color: COLORS.textSecondary,
+    color: '#8E8E93',
     fontWeight: '500',
     marginTop: 2,
   },
-  statsRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.lg,
-    gap: SPACING.sm,
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
+    marginTop: 8,
   },
-  statCard: {
-    flex: 1,
-    padding: SPACING.md,
-    borderRadius: 20,
-    borderWidth: 1,
-    borderColor: 'rgba(0,0,0,0.04)',
-  },
-  statIconRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 4,
-  },
-  statLabel: {
-    fontSize: 9,
-    fontWeight: '800',
-    color: COLORS.textSecondary,
-    marginLeft: 4,
-    letterSpacing: 0.5,
-  },
-  statValue: {
-    fontSize: 18,
-    fontWeight: '900',
-    marginVertical: 2,
-  },
-  statSubText: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
+  sectionTitle: {
+    fontSize: 13,
     fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: -0.1,
+    textTransform: 'uppercase',
   },
-  statActionLink: {
-    marginTop: 2,
+  heroLessonCard: {
+    backgroundColor: '#1C1C1E', // Apple Dark Slate Surface
+    borderRadius: 22,
+    marginHorizontal: 16,
+    padding: 20,
+    marginBottom: 20,
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 6 },
+    shadowOpacity: 0.12,
+    shadowRadius: 14,
+    elevation: 6,
   },
-  statActionText: {
-    fontSize: 10,
-    color: COLORS.primaryDark,
-    fontWeight: '800',
-  },
-  currentLessonCard: {
-    backgroundColor: '#0F172A', // Dark sleek card matching reference
-    borderRadius: 28,
-    padding: SPACING.xl,
-    marginBottom: SPACING.lg,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 8 },
-    shadowOpacity: 0.15,
-    shadowRadius: 16,
-    elevation: 5,
-  },
-  currentLessonBadge: {
+  heroHeaderRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    alignSelf: 'flex-start',
+    justifyContent: 'space-between',
+    marginBottom: 10,
+  },
+  heroPill: {
+    flexDirection: 'row',
+    alignItems: 'center',
     backgroundColor: COLORS.primary,
-    paddingHorizontal: 10,
+    paddingHorizontal: 8,
     paddingVertical: 4,
-    borderRadius: 10,
-    marginBottom: SPACING.md,
+    borderRadius: 8,
+    gap: 4,
   },
-  currentLessonBadgeText: {
+  heroPillText: {
     color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '800',
-    marginLeft: 4,
-  },
-  currentLessonTitle: {
-    color: '#FFFFFF',
-    fontSize: 18,
-    fontWeight: '900',
-    marginBottom: 4,
-  },
-  currentLessonSubtitle: {
-    color: '#94A3B8',
-    fontSize: 12,
-    fontWeight: '500',
-    marginBottom: SPACING.lg,
-  },
-  progressBarBg: {
-    height: 8,
-    backgroundColor: 'rgba(255,255,255,0.15)',
-    borderRadius: 4,
-    overflow: 'hidden',
-    marginBottom: 6,
-  },
-  progressBarFill: {
-    height: '100%',
-    backgroundColor: COLORS.primary,
-    borderRadius: 4,
-  },
-  progressDetailRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    marginBottom: SPACING.lg,
-  },
-  progressPercentText: {
-    color: '#E2E8F0',
     fontSize: 11,
     fontWeight: '700',
   },
-  progressCountText: {
-    color: '#94A3B8',
+  heroModuleText: {
+    color: '#8E8E93',
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  heroLessonTitle: {
+    color: '#FFFFFF',
+    fontSize: 20,
+    fontWeight: '700',
+    letterSpacing: -0.4,
+    marginBottom: 6,
+  },
+  heroLessonDescription: {
+    color: '#AEAEC2',
+    fontSize: 13,
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  progressTrackRow: {
+    marginBottom: 16,
+  },
+  progressTrackBg: {
+    height: 6,
+    backgroundColor: 'rgba(255, 255, 255, 0.15)',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 6,
+  },
+  progressTrackFill: {
+    height: '100%',
+    backgroundColor: COLORS.primary,
+    borderRadius: 3,
+  },
+  progressPercentText: {
+    color: '#8E8E93',
     fontSize: 11,
     fontWeight: '500',
   },
-  continueButton: {
-    backgroundColor: COLORS.primary,
+  heroCtaButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 14,
-    borderRadius: 18,
+    backgroundColor: COLORS.primary,
+    borderRadius: 14,
+    paddingVertical: 12,
     gap: 8,
   },
-  continueButtonText: {
+  heroCtaText: {
     color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '800',
+    fontSize: 15,
+    fontWeight: '600',
+    letterSpacing: -0.2,
   },
-  summaryGrid: {
+  groupedCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    marginHorizontal: 16,
+    overflow: 'hidden',
+    marginBottom: 20,
+    ...APPLE_SHADOW,
+  },
+  groupedRow: {
     flexDirection: 'row',
-    gap: SPACING.md,
-    marginBottom: SPACING.lg,
+    alignItems: 'center',
+    padding: 14,
   },
-  summaryCard: {
-    flex: 1,
-    backgroundColor: COLORS.card,
-    borderRadius: 22,
-    padding: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+  groupedActionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 14,
   },
-  summaryIconCircle: {
+  rowIconBox: {
     width: 36,
     height: 36,
-    borderRadius: 12,
-    backgroundColor: COLORS.secondaryLight,
+    borderRadius: 10,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.sm,
+    marginRight: 14,
   },
-  summaryTitle: {
+  rowContent: {
+    flex: 1,
+  },
+  rowLabel: {
     fontSize: 12,
-    color: COLORS.textMuted,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  rowValue: {
+    fontSize: 15,
+    color: '#000000',
     fontWeight: '600',
+    marginTop: 1,
   },
-  summaryValue: {
-    fontSize: 18,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-    marginVertical: 2,
+  actionRowTitle: {
+    fontSize: 15,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
   },
-  summarySubText: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
-    fontWeight: '500',
-  },
-  sectionHeader: {
-    marginBottom: SPACING.md,
-  },
-  sectionTitleRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 6,
-  },
-  sectionTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-  },
-  announcementCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    padding: SPACING.lg,
-    marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  announcementTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-    marginBottom: 4,
-  },
-  announcementBody: {
+  actionRowSubtitle: {
     fontSize: 12,
-    color: COLORS.textSecondary,
-    lineHeight: 18,
+    color: '#8E8E93',
+    marginTop: 1,
   },
-  announcementDate: {
-    fontSize: 10,
-    color: COLORS.textMuted,
-    marginTop: SPACING.sm,
-    fontWeight: '500',
-  },
-  emptyBox: {
-    padding: SPACING.xl,
-    backgroundColor: COLORS.card,
-    borderRadius: 20,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: COLORS.border,
-  },
-  emptyText: {
-    fontSize: 12,
-    color: COLORS.textMuted,
-    fontWeight: '500',
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 64,
   },
 });

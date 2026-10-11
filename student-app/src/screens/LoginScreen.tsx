@@ -11,7 +11,7 @@ import {
   ScrollView,
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import { Lock, Phone, Eye, EyeOff, Sparkles, BookOpen } from 'lucide-react-native';
 
 export default function LoginScreen() {
@@ -48,116 +48,110 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent}>
-        {/* Top Header & Branding */}
+      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
+        {/* Apple Branding Header */}
         <View style={styles.header}>
           <View style={styles.logoBadge}>
-            <BookOpen size={36} color="#FFFFFF" strokeWidth={2.5} />
+            <BookOpen size={36} color="#FFFFFF" strokeWidth={2.4} />
           </View>
-          <Text style={styles.brandTitle}>INFAST ACADEMY</Text>
-          <Text style={styles.brandSubtitle}>Student Mobile Portal</Text>
+          <Text style={styles.brandTitle}>InFast Academy</Text>
+          <Text style={styles.brandSubtitle}>O'quvchi shaxsiy portali</Text>
         </View>
 
-        {/* Card Form */}
-        <View style={styles.card}>
-          <Text style={styles.formTitle}>Xush kelibsiz! 👋</Text>
-          <Text style={styles.formSubtitle}>
-            Administrator tomonidan berilgan ma'lumotlar bilan tizimga kiring
-          </Text>
+        {/* Error Notification */}
+        {errorMessage && (
+          <View style={styles.errorBanner}>
+            <Text style={styles.errorText}>{errorMessage}</Text>
+          </View>
+        )}
 
-          {errorMessage && (
-            <View style={styles.errorBanner}>
-              <Text style={styles.errorText}>{errorMessage}</Text>
+        {/* Apple Inset Grouped Inputs */}
+        <View style={styles.inputGroupCard}>
+          <View style={styles.inputRow}>
+            <View style={styles.iconCircle}>
+              <Phone size={16} color="#8E8E93" />
             </View>
+            <TextInput
+              style={styles.textInput}
+              placeholder="Telefon raqam (+998 90 123 45 67)"
+              placeholderTextColor="#8E8E93"
+              keyboardType="phone-pad"
+              autoCapitalize="none"
+              value={phone}
+              onChangeText={(val) => {
+                setPhone(val);
+                setErrorMessage(null);
+              }}
+            />
+          </View>
+
+          <View style={styles.separator} />
+
+          <View style={styles.inputRow}>
+            <View style={styles.iconCircle}>
+              <Lock size={16} color="#8E8E93" />
+            </View>
+            <TextInput
+              style={[styles.textInput, { flex: 1 }]}
+              placeholder="Parol"
+              placeholderTextColor="#8E8E93"
+              secureTextEntry={!showPassword}
+              value={password}
+              onChangeText={(val) => {
+                setPassword(val);
+                setErrorMessage(null);
+              }}
+            />
+            <TouchableOpacity
+              onPress={() => setShowPassword(!showPassword)}
+              style={styles.eyeButton}
+              activeOpacity={0.6}
+            >
+              {showPassword ? (
+                <EyeOff size={18} color="#8E8E93" />
+              ) : (
+                <Eye size={18} color="#8E8E93" />
+              )}
+            </TouchableOpacity>
+          </View>
+        </View>
+
+        {/* Apple Solid CTA Button */}
+        <TouchableOpacity
+          style={[styles.primaryButton, loading && styles.buttonDisabled]}
+          onPress={handleLogin}
+          disabled={loading}
+          activeOpacity={0.8}
+        >
+          {loading ? (
+            <ActivityIndicator color="#FFFFFF" />
+          ) : (
+            <Text style={styles.primaryButtonText}>Kirish</Text>
           )}
+        </TouchableOpacity>
 
-          {/* Phone Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Telefon raqami</Text>
-            <View style={styles.inputContainer}>
-              <Phone size={18} color={COLORS.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={styles.textInput}
-                placeholder="+998 90 123 45 67"
-                placeholderTextColor={COLORS.textMuted}
-                keyboardType="phone-pad"
-                autoCapitalize="none"
-                value={phone}
-                onChangeText={(val) => {
-                  setPhone(val);
-                  setErrorMessage(null);
-                }}
-              />
-            </View>
-          </View>
+        {/* Apple Secondary Demo Button */}
+        <TouchableOpacity
+          style={styles.demoButton}
+          onPress={async () => {
+            try {
+              setLoading(true);
+              await loginDemo();
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          activeOpacity={0.7}
+        >
+          <Sparkles size={16} color={COLORS.primary} />
+          <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo rejim)</Text>
+        </TouchableOpacity>
 
-          {/* Password Input */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.inputLabel}>Parol</Text>
-            <View style={styles.inputContainer}>
-              <Lock size={18} color={COLORS.textMuted} style={styles.inputIcon} />
-              <TextInput
-                style={[styles.textInput, { flex: 1 }]}
-                placeholder="Parolingiz..."
-                placeholderTextColor={COLORS.textMuted}
-                secureTextEntry={!showPassword}
-                value={password}
-                onChangeText={(val) => {
-                  setPassword(val);
-                  setErrorMessage(null);
-                }}
-              />
-              <TouchableOpacity
-                onPress={() => setShowPassword(!showPassword)}
-                style={styles.eyeButton}
-              >
-                {showPassword ? (
-                  <EyeOff size={18} color={COLORS.textMuted} />
-                ) : (
-                  <Eye size={18} color={COLORS.textMuted} />
-                )}
-              </TouchableOpacity>
-            </View>
-          </View>
-
-          {/* Login Button */}
-          <TouchableOpacity
-            style={[styles.submitButton, loading && styles.submitButtonDisabled]}
-            onPress={handleLogin}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            {loading ? (
-              <ActivityIndicator color="#FFFFFF" />
-            ) : (
-              <Text style={styles.submitButtonText}>Kirish</Text>
-            )}
-          </TouchableOpacity>
-
-          {/* Demo Mode Button */}
-          <TouchableOpacity
-            style={styles.demoButton}
-            onPress={async () => {
-              try {
-                setLoading(true);
-                await loginDemo();
-              } finally {
-                setLoading(false);
-              }
-            }}
-            disabled={loading}
-            activeOpacity={0.8}
-          >
-            <Sparkles size={16} color={COLORS.primary} />
-            <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo o'quvchi)</Text>
-          </TouchableOpacity>
-
-          <View style={styles.infoBox}>
-            <Sparkles size={16} color={COLORS.primary} />
-            <Text style={styles.infoText}>
-              Boshlang'ich parol sifatida talaba ID kodi yoki telefoningizning oxirgi 6 raqami o'rnatilgan.
-            </Text>
-          </View>
+        <View style={styles.footerNote}>
+          <Text style={styles.footerNoteText}>
+            Parolingiz yo'qmi? Administratoringizdan parolni so'rang yoki demo rejim orqali barcha sahifalarni sinab ko'ring.
+          </Text>
         </View>
       </ScrollView>
     </KeyboardAvoidingView>
@@ -167,165 +161,130 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    padding: SPACING.xl,
+    paddingHorizontal: 20,
+    paddingVertical: 30,
   },
   header: {
     alignItems: 'center',
-    marginBottom: SPACING.xxl,
+    marginBottom: 32,
   },
   logoBadge: {
-    width: 72,
-    height: 72,
-    borderRadius: 24,
+    width: 68,
+    height: 68,
+    borderRadius: 20,
     backgroundColor: COLORS.primary,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: SPACING.md,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 10,
-    elevation: 6,
-  },
-  brandTitle: {
-    fontSize: 22,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-    letterSpacing: 0.5,
-  },
-  brandSubtitle: {
-    fontSize: 13,
-    color: COLORS.textMuted,
-    fontWeight: '600',
-    marginTop: 2,
-  },
-  card: {
-    backgroundColor: COLORS.card,
-    borderRadius: 28,
-    padding: SPACING.xxl,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.05,
-    shadowRadius: 12,
-    elevation: 3,
-  },
-  formTitle: {
-    fontSize: 20,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
-  },
-  formSubtitle: {
-    fontSize: 12,
-    color: COLORS.textSecondary,
-    marginTop: 4,
-    marginBottom: SPACING.lg,
-    lineHeight: 18,
-  },
-  errorBanner: {
-    backgroundColor: COLORS.accentRedLight,
-    padding: SPACING.md,
-    borderRadius: 14,
-    borderWidth: 1,
-    borderColor: '#FECACA',
-    marginBottom: SPACING.md,
-  },
-  errorText: {
-    color: COLORS.accentRed,
-    fontSize: 12,
-    fontWeight: '600',
-  },
-  inputGroup: {
-    marginBottom: SPACING.md,
-  },
-  inputLabel: {
-    fontSize: 12,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
-    marginBottom: 6,
-  },
-  inputContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: COLORS.surface,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    borderRadius: 16,
-    paddingHorizontal: SPACING.md,
-    height: 48,
-  },
-  inputIcon: {
-    marginRight: SPACING.sm,
-  },
-  textInput: {
-    flex: 1,
-    fontSize: 14,
-    color: COLORS.textPrimary,
-    fontWeight: '600',
-  },
-  eyeButton: {
-    padding: 6,
-  },
-  submitButton: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 16,
-    height: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginTop: SPACING.sm,
+    marginBottom: 14,
     shadowColor: COLORS.primary,
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.25,
     shadowRadius: 8,
     elevation: 4,
   },
-  submitButtonDisabled: {
-    opacity: 0.6,
+  brandTitle: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.4,
   },
-  submitButtonText: {
-    color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '800',
+  brandSubtitle: {
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
+    marginTop: 3,
   },
-  infoBox: {
+  errorBanner: {
+    backgroundColor: '#FFEBEE',
+    borderRadius: 14,
+    padding: 12,
+    marginBottom: 16,
+  },
+  errorText: {
+    color: '#D32F2F',
+    fontSize: 13,
+    fontWeight: '600',
+    textAlign: 'center',
+  },
+  inputGroupCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    overflow: 'hidden',
+    marginBottom: 18,
+    ...APPLE_SHADOW,
+  },
+  inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: COLORS.primarySoft,
-    padding: SPACING.md,
-    borderRadius: 14,
-    marginTop: SPACING.lg,
-    borderWidth: 1,
-    borderColor: COLORS.primaryLight,
+    paddingHorizontal: 16,
+    paddingVertical: 13,
   },
-  infoText: {
+  iconCircle: {
+    marginRight: 12,
+  },
+  textInput: {
     flex: 1,
-    marginLeft: SPACING.sm,
-    fontSize: 11,
-    color: COLORS.primaryDark,
-    lineHeight: 16,
-    fontWeight: '500',
+    fontSize: 15,
+    color: '#000000',
+    paddingVertical: 0,
+  },
+  eyeButton: {
+    padding: 4,
+  },
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 44,
+  },
+  primaryButton: {
+    backgroundColor: '#000000', // Apple Black CTA
+    borderRadius: 14,
+    height: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginBottom: 12,
+    ...APPLE_SHADOW,
+  },
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  primaryButtonText: {
+    color: '#FFFFFF',
+    fontSize: 16,
+    fontWeight: '600',
+    letterSpacing: -0.2,
   },
   demoButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FFF7ED',
-    borderWidth: 1.5,
-    borderColor: '#FFEDD5',
-    borderRadius: 16,
+    backgroundColor: '#FFFFFF',
+    borderWidth: 1,
+    borderColor: '#E5E5EA',
+    borderRadius: 14,
     height: 48,
-    marginTop: 10,
     gap: 8,
+    marginBottom: 20,
+    ...APPLE_SHADOW,
   },
   demoButtonText: {
-    color: COLORS.primaryDark,
-    fontSize: 13,
-    fontWeight: '800',
+    color: COLORS.primary,
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  footerNote: {
+    paddingHorizontal: 10,
+    alignItems: 'center',
+  },
+  footerNoteText: {
+    fontSize: 12,
+    color: '#8E8E93',
+    textAlign: 'center',
+    lineHeight: 18,
   },
 });

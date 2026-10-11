@@ -9,17 +9,16 @@ import {
   RefreshControl,
 } from 'react-native';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING } from '../constants/theme';
+import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import {
-  BookOpen,
-  Lock,
   CheckCircle2,
+  Lock,
   PlayCircle,
-  Award,
   ChevronDown,
+  ChevronUp,
   ChevronRight,
-  Flame,
-  Layers,
+  BookOpen,
+  Sparkles,
 } from 'lucide-react-native';
 
 interface CurriculumScreenProps {
@@ -41,7 +40,6 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
       const res = await apiRequest('/api/student/curriculum');
       if (res.success) {
         setData(res);
-        // Expand all modules by default
         const exp: Record<string, boolean> = {};
         (res.modules || []).forEach((m: any) => {
           exp[m._id] = true;
@@ -63,7 +61,7 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="large" color={COLORS.primary} />
+        <ActivityIndicator size="small" color={COLORS.primary} />
         <Text style={styles.loadingText}>O'quv rejasi yuklanmoqda...</Text>
       </View>
     );
@@ -71,127 +69,130 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
 
   const modules = data?.modules || [];
   const progress = data?.progress || { completedLessonCount: 0, totalLessonCount: 0 };
+  const percent = progress.totalLessonCount > 0
+    ? Math.round((progress.completedLessonCount / progress.totalLessonCount) * 100)
+    : 0;
 
   return (
     <ScrollView
       style={styles.container}
       contentContainerStyle={styles.contentContainer}
+      showsVerticalScrollIndicator={false}
       refreshControl={
-        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchCurriculum(); }} colors={[COLORS.primary]} />
+        <RefreshControl refreshing={refreshing} onRefresh={() => { setRefreshing(true); fetchCurriculum(); }} tintColor={COLORS.primary} />
       }
     >
-      {/* Course Banner */}
-      <View style={styles.courseHeaderCard}>
-        <View style={styles.badgeRow}>
-          <View style={styles.badge}>
-            <Layers size={12} color="#FFFFFF" />
-            <Text style={styles.badgeText}>Mening Kursim</Text>
+      {/* Apple Large Title Navigation Header */}
+      <View style={styles.header}>
+        <Text style={styles.categoryLabel}>O'QUV DASTURI</Text>
+        <Text style={styles.largeTitle}>Ta'lim</Text>
+      </View>
+
+      {/* Course Overview Card (Apple Style) */}
+      <View style={styles.courseCard}>
+        <View style={styles.courseBadgeRow}>
+          <View style={styles.coursePill}>
+            <Text style={styles.coursePillText}>Asosiy Kurs</Text>
           </View>
+          <Text style={styles.progressPercentText}>{percent}% tamomlandi</Text>
         </View>
 
-        <Text style={styles.courseName}>{data?.course?.name || "Dasturlash Asoslari"}</Text>
-        <Text style={styles.courseDescription}>
-          {data?.course?.description || "InFast IT-Academy amaliy darslar va interaktiv vazifalar"}
+        <Text style={styles.courseTitle}>{data?.course?.name || "Frontend & Web Dasturlash"}</Text>
+        <Text style={styles.courseSubtitle}>
+          {data?.course?.description || "Zamonaviy IT ta'limi bo'yicha amaliy darslar va topshiriqlar"}
         </Text>
 
-        <View style={styles.summaryRow}>
-          <Text style={styles.summaryText}>
-            Tugatildi: {progress.completedLessonCount} / {progress.totalLessonCount} dars
-          </Text>
-          <Text style={styles.summaryPercent}>
-            {progress.totalLessonCount > 0
-              ? Math.round((progress.completedLessonCount / progress.totalLessonCount) * 100)
-              : 0}%
+        {/* Minimal Apple Progress Bar */}
+        <View style={styles.progressBarTrack}>
+          <View style={[styles.progressBarFill, { width: `${Math.max(5, percent)}%` }]} />
+        </View>
+
+        <View style={styles.progressFooter}>
+          <Text style={styles.progressCountText}>
+            {progress.completedLessonCount} / {progress.totalLessonCount} dars yakunlangan
           </Text>
         </View>
       </View>
 
-      {/* Modules and Interactive Lessons Map */}
-      <Text style={styles.sectionTitle}>Modullar va Darslar Xaritasi</Text>
+      {/* Modules List */}
+      <View style={styles.sectionHeader}>
+        <Text style={styles.sectionTitle}>MODULLAR VA DARSLAR</Text>
+      </View>
 
-      {modules.map((mod: any, mIdx: number) => {
-        const isExpanded = expandedModules[mod._id];
+      {modules.map((module: any, mIdx: number) => {
+        const isExpanded = expandedModules[module._id] !== false;
+        const lessons = module.lessons || [];
+        const completedInModule = lessons.filter((l: any) => l.isCompleted).length;
 
         return (
-          <View key={mod._id} style={styles.moduleCard}>
+          <View key={module._id} style={styles.moduleCard}>
             {/* Module Accordion Header */}
             <TouchableOpacity
               style={styles.moduleHeader}
-              onPress={() => toggleModule(mod._id)}
+              onPress={() => toggleModule(module._id)}
               activeOpacity={0.7}
             >
-              <View style={styles.moduleHeaderLeft}>
-                <View style={styles.moduleNumberBadge}>
-                  <Text style={styles.moduleNumberText}>{mIdx + 1}</Text>
-                </View>
-                <View style={{ flex: 1 }}>
-                  <Text style={styles.moduleTitle}>{mod.title}</Text>
-                  <Text style={styles.moduleSub}>
-                    {mod.completedCount} / {mod.totalCount} dars bajarildi ({mod.completionPercent}%)
-                  </Text>
-                </View>
+              <View style={styles.moduleNumberBadge}>
+                <Text style={styles.moduleNumberText}>{mIdx + 1}</Text>
+              </View>
+
+              <View style={styles.moduleHeaderInfo}>
+                <Text style={styles.moduleTitle}>{module.title}</Text>
+                <Text style={styles.moduleMeta}>
+                  {completedInModule}/{lessons.length} dars tugatildi
+                </Text>
               </View>
 
               {isExpanded ? (
-                <ChevronDown size={20} color={COLORS.textMuted} />
+                <ChevronUp size={20} color="#8E8E93" />
               ) : (
-                <ChevronRight size={20} color={COLORS.textMuted} />
+                <ChevronDown size={20} color="#8E8E93" />
               )}
             </TouchableOpacity>
 
-            {/* Lesson Items */}
+            {/* Lessons Inset Group */}
             {isExpanded && (
               <View style={styles.lessonsContainer}>
-                {mod.lessons.map((les: any) => {
-                  const isCompleted = les.status === 'COMPLETED';
-                  const isUnlocked = les.status === 'UNLOCKED' || les.status === 'IN_PROGRESS';
-                  const isLocked = les.status === 'LOCKED';
+                {lessons.map((lesson: any, lIdx: number) => {
+                  const isLocked = !lesson.isUnlocked;
+                  const isCompleted = lesson.isCompleted;
 
                   return (
-                    <TouchableOpacity
-                      key={les._id}
-                      style={[
-                        styles.lessonRow,
-                        isCompleted && styles.lessonRowCompleted,
-                        isUnlocked && styles.lessonRowUnlocked,
-                        isLocked && styles.lessonRowLocked,
-                      ]}
-                      disabled={isLocked}
-                      onPress={() => onSelectLesson(les._id)}
-                      activeOpacity={0.8}
-                    >
-                      <View style={styles.lessonStatusIcon}>
-                        {isCompleted ? (
-                          <CheckCircle2 size={22} color={COLORS.accentGreen} />
-                        ) : isUnlocked ? (
-                          <PlayCircle size={22} color={COLORS.primary} />
-                        ) : (
-                          <Lock size={20} color={COLORS.textMuted} />
+                    <React.Fragment key={lesson._id}>
+                      {lIdx > 0 && <View style={styles.separator} />}
+
+                      <TouchableOpacity
+                        style={[styles.lessonRow, isLocked && styles.lessonRowLocked]}
+                        disabled={isLocked}
+                        onPress={() => onSelectLesson(lesson._id)}
+                        activeOpacity={0.6}
+                      >
+                        {/* Status Icon */}
+                        <View style={styles.statusIconBox}>
+                          {isCompleted ? (
+                            <CheckCircle2 size={22} color="#34C759" />
+                          ) : isLocked ? (
+                            <Lock size={18} color="#C7C7CC" />
+                          ) : (
+                            <PlayCircle size={22} color="#FF9500" />
+                          )}
+                        </View>
+
+                        {/* Lesson Info */}
+                        <View style={styles.lessonTextCol}>
+                          <Text style={[styles.lessonTitle, isLocked && styles.lessonTitleLocked]}>
+                            {lesson.order || lIdx + 1}. {lesson.title}
+                          </Text>
+                          <Text style={styles.lessonSub}>
+                            {lesson.xpReward || 30} XP • {isCompleted ? "Yakunlangan" : isLocked ? "Qulflangan" : "Boshlashga tayyor"}
+                          </Text>
+                        </View>
+
+                        {!isLocked && (
+                          <ChevronRight size={18} color="#C7C7CC" />
                         )}
-                      </View>
-
-                      <View style={{ flex: 1 }}>
-                        <Text
-                          style={[
-                            styles.lessonTitle,
-                            isLocked && styles.lessonTitleLocked,
-                          ]}
-                        >
-                          {les.order}. {les.title}
-                        </Text>
-                        <Text style={styles.lessonMeta}>
-                          {isCompleted
-                            ? "✅ To'liq yakunlangan"
-                            : isUnlocked
-                            ? "⏳ Dars ochilgan, bajarish mumkin"
-                            : "🔒 Qulflangan (Administrator ochadi)"}
-                        </Text>
-                      </View>
-
-                      <View style={styles.lessonRewardBadge}>
-                        <Text style={styles.lessonRewardText}>+{les.xpReward} XP</Text>
-                      </View>
-                    </TouchableOpacity>
+                      </TouchableOpacity>
+                    </React.Fragment>
                   );
                 })}
               </View>
@@ -199,6 +200,8 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
           </View>
         );
       })}
+
+      <View style={{ height: 40 }} />
     </ScrollView>
   );
 }
@@ -206,188 +209,197 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   contentContainer: {
-    padding: SPACING.lg,
+    paddingTop: 8,
     paddingBottom: 40,
   },
   centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: COLORS.background,
+    backgroundColor: '#F2F2F7',
   },
   loadingText: {
-    marginTop: SPACING.md,
-    fontSize: 13,
-    color: COLORS.textMuted,
+    marginTop: 8,
+    fontSize: 14,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  header: {
+    paddingHorizontal: 20,
+    paddingTop: 12,
+    paddingBottom: 16,
+  },
+  categoryLabel: {
+    fontSize: 12,
     fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
-  courseHeaderCard: {
-    backgroundColor: COLORS.primary,
-    borderRadius: 26,
-    padding: SPACING.xl,
-    marginBottom: SPACING.xl,
-    shadowColor: COLORS.primary,
-    shadowOffset: { width: 0, height: 6 },
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    elevation: 4,
+  largeTitle: {
+    fontSize: 32,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.5,
   },
-  badgeRow: {
-    flexDirection: 'row',
-    marginBottom: SPACING.sm,
+  courseCard: {
+    backgroundColor: '#FFFFFF',
+    borderRadius: 20,
+    marginHorizontal: 16,
+    padding: 18,
+    marginBottom: 24,
+    ...APPLE_SHADOW,
   },
-  badge: {
+  courseBadgeRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.25)',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    gap: 4,
-  },
-  badgeText: {
-    color: '#FFFFFF',
-    fontSize: 10,
-    fontWeight: '800',
-  },
-  courseName: {
-    fontSize: 20,
-    fontWeight: '900',
-    color: '#FFFFFF',
-    marginBottom: 4,
-  },
-  courseDescription: {
-    fontSize: 12,
-    color: 'rgba(255,255,255,0.85)',
-    marginBottom: SPACING.lg,
-    lineHeight: 18,
-  },
-  summaryRow: {
-    flexDirection: 'row',
     justifyContent: 'space-between',
-    alignItems: 'center',
-    backgroundColor: 'rgba(0,0,0,0.15)',
-    padding: SPACING.md,
-    borderRadius: 14,
+    marginBottom: 10,
   },
-  summaryText: {
-    color: '#FFFFFF',
-    fontSize: 12,
+  coursePill: {
+    backgroundColor: '#FFF4E6',
+    paddingHorizontal: 8,
+    paddingVertical: 3,
+    borderRadius: 8,
+  },
+  coursePillText: {
+    color: '#FF9500',
+    fontSize: 11,
     fontWeight: '700',
   },
-  summaryPercent: {
-    color: '#FFFFFF',
-    fontSize: 14,
-    fontWeight: '900',
+  progressPercentText: {
+    fontSize: 12,
+    fontWeight: '600',
+    color: '#8E8E93',
+  },
+  courseTitle: {
+    fontSize: 20,
+    fontWeight: '700',
+    color: '#000000',
+    letterSpacing: -0.4,
+    marginBottom: 4,
+  },
+  courseSubtitle: {
+    fontSize: 13,
+    color: '#636366',
+    lineHeight: 18,
+    marginBottom: 16,
+  },
+  progressBarTrack: {
+    height: 6,
+    backgroundColor: '#E5E5EA',
+    borderRadius: 3,
+    overflow: 'hidden',
+    marginBottom: 8,
+  },
+  progressBarFill: {
+    height: '100%',
+    backgroundColor: '#FF9500',
+    borderRadius: 3,
+  },
+  progressFooter: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+  },
+  progressCountText: {
+    fontSize: 12,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  sectionHeader: {
+    paddingHorizontal: 20,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 16,
-    fontWeight: '900',
-    color: COLORS.textPrimary,
-    marginBottom: SPACING.md,
+    fontSize: 13,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: -0.1,
+    textTransform: 'uppercase',
   },
   moduleCard: {
-    backgroundColor: COLORS.card,
-    borderRadius: 22,
-    marginBottom: SPACING.md,
-    borderWidth: 1,
-    borderColor: COLORS.border,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 18,
+    marginHorizontal: 16,
+    marginBottom: 14,
     overflow: 'hidden',
+    ...APPLE_SHADOW,
   },
   moduleHeader: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    padding: SPACING.lg,
-    backgroundColor: COLORS.surface,
-  },
-  moduleHeaderLeft: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    flex: 1,
-    marginRight: SPACING.sm,
+    padding: 16,
   },
   moduleNumberBadge: {
     width: 32,
     height: 32,
-    borderRadius: 10,
-    backgroundColor: COLORS.primary,
+    borderRadius: 16,
+    backgroundColor: '#F2F2F7',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: SPACING.md,
+    marginRight: 12,
   },
   moduleNumberText: {
-    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '900',
+    fontWeight: '700',
+    color: '#000000',
+  },
+  moduleHeaderInfo: {
+    flex: 1,
   },
   moduleTitle: {
-    fontSize: 14,
-    fontWeight: '800',
-    color: COLORS.textPrimary,
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.3,
   },
-  moduleSub: {
-    fontSize: 11,
-    color: COLORS.textMuted,
-    fontWeight: '500',
+  moduleMeta: {
+    fontSize: 12,
+    color: '#8E8E93',
     marginTop: 2,
   },
   lessonsContainer: {
-    padding: SPACING.md,
-    gap: SPACING.sm,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: '#E5E5EA',
   },
   lessonRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    padding: SPACING.md,
-    borderRadius: 16,
-    borderWidth: 1,
-    borderColor: COLORS.border,
-    backgroundColor: '#FFFFFF',
-  },
-  lessonRowCompleted: {
-    backgroundColor: '#F0FDF4',
-    borderColor: '#BBF7D0',
-  },
-  lessonRowUnlocked: {
-    backgroundColor: '#FFF7ED',
-    borderColor: '#FFEDD5',
+    paddingVertical: 13,
+    paddingHorizontal: 16,
   },
   lessonRowLocked: {
-    backgroundColor: COLORS.surface,
-    borderColor: COLORS.border,
-    opacity: 0.65,
+    opacity: 0.5,
   },
-  lessonStatusIcon: {
-    marginRight: SPACING.md,
+  statusIconBox: {
+    width: 32,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 10,
+  },
+  lessonTextCol: {
+    flex: 1,
   },
   lessonTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: COLORS.textPrimary,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#000000',
+    letterSpacing: -0.2,
   },
   lessonTitleLocked: {
-    color: COLORS.textMuted,
+    color: '#8E8E93',
   },
-  lessonMeta: {
-    fontSize: 10,
-    color: COLORS.textSecondary,
+  lessonSub: {
+    fontSize: 12,
+    color: '#8E8E93',
     marginTop: 2,
-    fontWeight: '500',
   },
-  lessonRewardBadge: {
-    backgroundColor: COLORS.primaryLight,
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    marginLeft: SPACING.sm,
-  },
-  lessonRewardText: {
-    fontSize: 10,
-    fontWeight: '800',
-    color: COLORS.primaryDark,
+  separator: {
+    height: StyleSheet.hairlineWidth,
+    backgroundColor: '#E5E5EA',
+    marginLeft: 58,
   },
 });
