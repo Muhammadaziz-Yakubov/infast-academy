@@ -57,25 +57,6 @@ export async function GET(request: Request) {
       .populate('branchId', 'name code')
       .sort({ createdAt: 1 });
 
-    // Auto-ensure distinct unique studentCodes across all students
-    const usedCodes = new Set<string>();
-    let nextNum = 1001;
-
-    for (const s of rawStudents) {
-      if (!s.studentCode || usedCodes.has(s.studentCode)) {
-        while (usedCodes.has(`INF-${nextNum}`)) {
-          nextNum++;
-        }
-        const generated = `INF-${nextNum}`;
-        s.studentCode = generated;
-        usedCodes.add(generated);
-        Student.updateOne({ _id: s._id }, { $set: { studentCode: generated } }).exec();
-        nextNum++;
-      } else {
-        usedCodes.add(s.studentCode);
-      }
-    }
-
     const studentIds = rawStudents.map((s) => s._id);
     const payments = await Payment.find({ studentId: { $in: studentIds } });
 
@@ -177,11 +158,31 @@ export async function POST(request: Request) {
       }
     }
 
+    if (!targetBranchId) {
+      return NextResponse.json({ error: "Talaba biriktiriladigan filial aniqlanmadi" }, { status: 400 });
+    }
+
     // Check MANAGER permission
     if (session.role === 'MANAGER' && session.branchId) {
       if (targetBranchId && targetBranchId.toString() !== session.branchId.toString()) {
         return NextResponse.json({ error: "Siz faqat o'z filialingizga talaba qo'sha olasiz" }, { status: 403 });
       }
+    }
+
+    const cleanPhone = phone.trim().replace(/\s+/g, '');
+    const existingStudentByPhone = await Student.findOne({
+      phone: cleanPhone,
+      branchId: targetBranchId,
+      status: 'ACTIVE',
+    });
+
+    if (existingStudentByPhone) {
+      return NextResponse.json(
+        {
+          error: `Ushbu telefon raqami bilan "${existingStudentByPhone.firstName} ${existingStudentByPhone.lastName}" nomli faol talaba allaqachon ushbu filialda mavjud`,
+        },
+        { status: 400 }
+      );
     }
 
     function parseDateSafely(val: any): Date | undefined {

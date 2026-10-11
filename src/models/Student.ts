@@ -17,7 +17,7 @@ export interface IStudent extends Document {
   birthDate?: Date;
   courseId: mongoose.Types.ObjectId;
   groupId: mongoose.Types.ObjectId;
-  branchId?: mongoose.Types.ObjectId;
+  branchId: mongoose.Types.ObjectId;
   joinedDate: Date;
   monthlyFee?: number;
   paymentDueDay: number;
@@ -68,7 +68,7 @@ const StudentSchema: Schema<IStudent> = new Schema(
     birthDate: { type: Date },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
     groupId: { type: Schema.Types.ObjectId, ref: "Group", required: true, index: true },
-    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", required: true, index: true },
     joinedDate: { type: Date, required: true, default: Date.now },
     monthlyFee: { type: Number },
     paymentDueDay: { type: Number, required: true, default: 5 },

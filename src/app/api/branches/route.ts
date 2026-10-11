@@ -116,8 +116,9 @@ export async function POST(request: Request) {
       status: status || 'active',
     });
 
-    // If manager was assigned, update manager's branchId
+    // If manager was assigned, clear old branch associations and update manager's branchId
     if (parsedManagerId) {
+      await Branch.updateMany({ managerId: parsedManagerId, _id: { $ne: newBranch._id } }, { $unset: { managerId: 1 } });
       await User.updateOne({ _id: parsedManagerId }, { $set: { branchId: newBranch._id } });
     }
 

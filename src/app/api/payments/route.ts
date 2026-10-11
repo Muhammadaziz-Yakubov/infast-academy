@@ -54,6 +54,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin to'lov qabul qila olmaydi. To'lov qabul qilish menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -68,21 +75,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Talaba topilmadi" }, { status: 404 });
     }
 
-    // Determine branchId for payment: body.branchId || student.branchId || session.branchId
-    let paymentBranchId = branchId || student.branchId;
-    if (!paymentBranchId) {
-      if (session.branchId) {
-        paymentBranchId = session.branchId;
-      } else {
-        const defaultBranch = await Branch.findOne({ status: 'active' });
-        paymentBranchId = defaultBranch?._id;
+    // Determine branchId for payment: student.branchId || body.branchId || session.branchId
+    let paymentBranchId = student.branchId || branchId || session.branchId;
+
+    if (session.role === 'MANAGER') {
+      if (!session.branchId || !student.branchId || student.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasi uchun to'lov kiritishingiz mumkin" }, { status: 403 });
       }
     }
 
-    if (session.role === 'MANAGER' && session.branchId) {
-      if (paymentBranchId && paymentBranchId.toString() !== session.branchId.toString()) {
-        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasi uchun to'lov kiritishingiz mumkin" }, { status: 403 });
-      }
+    if (!paymentBranchId) {
+      return NextResponse.json({ error: "To'lov biriktiriladigan filial aniqlanmadi" }, { status: 400 });
     }
 
     const payment = await Payment.create({

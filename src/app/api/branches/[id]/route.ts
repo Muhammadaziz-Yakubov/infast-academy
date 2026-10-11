@@ -88,14 +88,27 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     if (status && ['active', 'inactive'].includes(status)) branch.status = status;
 
     if (managerId !== undefined) {
+      const oldManagerId = branch.managerId;
       if (managerId && managerId !== 'NONE' && managerId !== '') {
         const manager = await User.findById(managerId);
         if (!manager) {
           return NextResponse.json({ error: 'Tanlangan menejer topilmadi' }, { status: 400 });
         }
+
+        // If this branch previously had another manager, clear their branchId
+        if (oldManagerId && oldManagerId.toString() !== manager._id.toString()) {
+          await User.updateOne({ _id: oldManagerId }, { $unset: { branchId: 1 } });
+        }
+
+        // If the new manager was assigned to another branch, clear that branch's managerId
+        await Branch.updateMany({ managerId: manager._id, _id: { $ne: branch._id } }, { $unset: { managerId: 1 } });
+
         branch.managerId = manager._id;
         await User.updateOne({ _id: manager._id }, { $set: { branchId: branch._id } });
       } else {
+        if (oldManagerId) {
+          await User.updateOne({ _id: oldManagerId }, { $unset: { branchId: 1 } });
+        }
         branch.managerId = undefined;
       }
     }

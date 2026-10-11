@@ -5,6 +5,8 @@ import { useParams, useRouter } from 'next/navigation';
 import { Header } from '@/components/layout/Header';
 import { formatMoneyUz, formatDateUz } from '@/lib/utils';
 import TransferModal from '@/components/students/TransferModal';
+import LessonMapTab from '@/components/students/LessonMapTab';
+import ActivityHistoryTab from '@/components/students/ActivityHistoryTab';
 import {
   User,
   Phone,
@@ -21,6 +23,9 @@ import {
   Percent,
   Building2,
   ArrowRightLeft,
+  Sparkles,
+  Award,
+  Coins,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -34,7 +39,8 @@ export default function StudentDetailPage() {
   const [loading, setLoading] = useState(true);
   const [userSession, setUserSession] = useState<{ role?: string } | null>(null);
   const [isTransferModalOpen, setIsTransferModalOpen] = useState(false);
-  const [activeTab, setActiveTab] = useState<'overview' | 'payments' | 'attendance' | 'exams' | 'portfolio'>('overview');
+  const [activeTab, setActiveTab] = useState<'overview' | 'lesson_map' | 'activities' | 'payments' | 'attendance' | 'exams' | 'portfolio'>('overview');
+  const [lmsStats, setLmsStats] = useState<{ xp: number; xcoin: number; level: number } | null>(null);
 
   // Portfolio tab state
   const [portfolioForm, setPortfolioForm] = useState({
@@ -85,6 +91,18 @@ export default function StudentDetailPage() {
       if (transferRes.ok) {
         const tJson = await transferRes.json();
         setTransfers(tJson.transfers || []);
+      }
+
+      const lmsRes = await fetch(`/api/students/${studentId}/progress`);
+      if (lmsRes.ok) {
+        const lmsJson = await lmsRes.json();
+        if (lmsJson.progress) {
+          setLmsStats({
+            xp: lmsJson.progress.xp || 0,
+            xcoin: lmsJson.progress.xcoin || 0,
+            level: lmsJson.progress.level || 1,
+          });
+        }
       }
     } catch (e) {
       console.error(e);
@@ -253,6 +271,24 @@ export default function StudentDetailPage() {
               Joriy bosqich: {student.currentCourseMonth}
             </div>
 
+            {/* Gamification Badges */}
+            {lmsStats && (
+              <div className="flex items-center gap-1.5">
+                <span className="px-2.5 py-1 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-600 font-extrabold text-xs flex items-center gap-1">
+                  <Award className="w-3.5 h-3.5 text-amber-500" />
+                  {lmsStats.xp} XP
+                </span>
+                <span className="px-2.5 py-1 rounded-xl bg-orange-500/10 border border-orange-500/20 text-orange-600 font-extrabold text-xs flex items-center gap-1">
+                  <Coins className="w-3.5 h-3.5 text-orange-500" />
+                  {lmsStats.xcoin}
+                </span>
+                <span className="px-2.5 py-1 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-700 font-black text-xs flex items-center gap-1">
+                  <Sparkles className="w-3.5 h-3.5 text-indigo-600" />
+                  Lv.{lmsStats.level}
+                </span>
+              </div>
+            )}
+
             <span className={`px-3 py-1 rounded-xl text-xs font-bold ${
               student.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-800' : 'bg-slate-100 text-slate-700'
             }`}>
@@ -262,9 +298,11 @@ export default function StudentDetailPage() {
         </div>
 
         {/* Tabs Bar */}
-        <div className="flex border-b border-slate-200 space-x-6 text-sm font-semibold">
+        <div className="flex border-b border-slate-200 space-x-6 text-sm font-semibold overflow-x-auto">
           {[
             { id: 'overview', label: 'Umumiy Ma\'lumot' },
+            { id: 'lesson_map', label: 'O\'quv Xaritasi (LMS)' },
+            { id: 'activities', label: 'Faoliyat Tarixi' },
             { id: 'payments', label: 'To\'lovlar Tarixi' },
             { id: 'attendance', label: 'Davomat Tarixi' },
             { id: 'exams', label: 'Imtihonlar' },
@@ -273,7 +311,7 @@ export default function StudentDetailPage() {
             <button
               key={tab.id}
               onClick={() => setActiveTab(tab.id as any)}
-              className={`pb-3 relative transition-colors ${
+              className={`pb-3 relative transition-colors whitespace-nowrap ${
                 activeTab === tab.id ? 'text-infast-600 font-bold' : 'text-slate-500 hover:text-slate-800'
               }`}
             >
@@ -333,6 +371,24 @@ export default function StudentDetailPage() {
                 </div>
               )}
             </div>
+          </div>
+        )}
+
+        {/* Tab: Lesson Map (LMS) */}
+        {activeTab === 'lesson_map' && (
+          <div className="animate-in fade-in duration-200">
+            <LessonMapTab
+              studentId={studentId}
+              courseName={student.courseId?.name}
+              onRefreshStudent={fetchStudentDetail}
+            />
+          </div>
+        )}
+
+        {/* Tab: Activities History */}
+        {activeTab === 'activities' && (
+          <div className="animate-in fade-in duration-200">
+            <ActivityHistoryTab studentId={studentId} />
           </div>
         )}
 

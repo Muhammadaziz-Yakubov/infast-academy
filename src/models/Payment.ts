@@ -2,7 +2,7 @@ import mongoose, { Schema, Document, Model } from "mongoose";
 
 export interface IPayment extends Document {
   studentId: mongoose.Types.ObjectId;
-  branchId?: mongoose.Types.ObjectId;
+  branchId: mongoose.Types.ObjectId;
   amount: number;
   paymentDate: Date;
   periodStartDate: Date;
@@ -16,7 +16,7 @@ export interface IPayment extends Document {
 const PaymentSchema: Schema<IPayment> = new Schema(
   {
     studentId: { type: Schema.Types.ObjectId, ref: "Student", required: true, index: true },
-    branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
+    branchId: { type: Schema.Types.ObjectId, ref: "Branch", required: true, index: true },
     amount: { type: Number, required: true },
     paymentDate: { type: Date, required: true, default: Date.now },
     periodStartDate: { type: Date, required: true },

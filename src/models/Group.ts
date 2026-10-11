@@ -29,7 +29,7 @@ const GroupScheduleSchema = new Schema<IGroupSchedule>(
 
 const GroupSchema: Schema<IGroup> = new Schema(
   {
-    name: { type: String, required: true, unique: true, index: true },
+    name: { type: String, required: true, index: true },
     courseId: { type: Schema.Types.ObjectId, ref: "Course", required: true, index: true },
     branchId: { type: Schema.Types.ObjectId, ref: "Branch", index: true },
     room: { type: String, required: true },
@@ -39,5 +39,7 @@ const GroupSchema: Schema<IGroup> = new Schema(
   },
   { timestamps: true }
 );
+
+GroupSchema.index({ branchId: 1, name: 1 }, { unique: true, sparse: true });
 
 export const Group: Model<IGroup> = mongoose.models.Group || mongoose.model<IGroup>("Group", GroupSchema);

@@ -15,6 +15,20 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
+    if (session.role === 'ADMIN') {
+      return NextResponse.json(
+        { error: "Super admin to'lov qabul qila olmaydi. To'lov qabul qilish menejerga topshirilgan." },
+        { status: 403 }
+      );
+    }
+
+    if (session.role === 'MANAGER' && !session.branchId) {
+      return NextResponse.json(
+        { error: "Sizga filial biriktirilmagan. To'lov qabul qila olmaysiz." },
+        { status: 403 }
+      );
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -29,6 +43,25 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Tanlangan talabalar topilmadi" }, { status: 404 });
     }
 
+    if (students.length !== studentIds.length) {
+      return NextResponse.json({ error: "Ayrim talabalar bazadan topilmadi" }, { status: 400 });
+    }
+
+    // Verify all students belong to the authorized manager branch
+    if (session.role === 'MANAGER' && session.branchId) {
+      const foreignStudent = students.find(
+        (s) => !s.branchId || s.branchId.toString() !== session.branchId!.toString()
+      );
+      if (foreignStudent) {
+        return NextResponse.json(
+          {
+            error: `Siz faqat o'z filialingiz talabalari uchun to'lov qabul qila olasiz. "${foreignStudent.firstName} ${foreignStudent.lastName}" boshqa filialga tegishli.`,
+          },
+          { status: 403 }
+        );
+      }
+    }
+
     const today = new Date();
     const pDate = paymentDate ? new Date(paymentDate) : today;
     const periodStart = new Date(today.getFullYear(), today.getMonth(), 1);
@@ -39,9 +72,11 @@ export async function POST(request: Request) {
 
     for (const student of students) {
       const fee = customAmount ? Number(customAmount) : (student.monthlyFee || (student.courseId as any)?.price || 0);
+      const studentBranchId = student.branchId || session.branchId;
 
       paymentsToCreate.push({
         studentId: student._id,
+        branchId: studentBranchId,
         amount: fee,
         paymentDate: pDate,
         periodStartDate: periodStart,
@@ -60,6 +95,7 @@ export async function POST(request: Request) {
       title: "🟢 Ommaviy to'lov qabul qilindi",
       message: `${students.length} ta talaba uchun jami ${formatMoneyUz(totalBatchAmount)} to'lov qabul qilindi.`,
       type: "SUCCESS",
+      branchId: session.branchId,
     });
 
     return NextResponse.json({

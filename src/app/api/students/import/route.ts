@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
+import { Group } from '@/models/Group';
+import { Branch } from '@/models/Branch';
+import { generateNextStudentCode } from '@/lib/studentCode';
 import { validateExcelRows, ExcelRowData, generateSampleExcelBuffer } from '@/lib/excel';
 
 import { getSession } from '@/lib/auth';
@@ -71,8 +74,25 @@ export async function POST(request: Request) {
         return isNaN(d.getTime()) ? undefined : d;
       }
 
+      let defaultBranchId: any = session.branchId;
+      if (!defaultBranchId) {
+        const defaultBranch = await Branch.findOne({ status: 'active' });
+        defaultBranchId = defaultBranch?._id;
+      }
+
       for (const row of validRowsToImport) {
+        let studentBranchId = defaultBranchId;
+        if (row.groupId) {
+          const group = await Group.findById(row.groupId);
+          if (group?.branchId) {
+            studentBranchId = group.branchId;
+          }
+        }
+
+        const studentCode = await generateNextStudentCode();
+
         const newStudent = await Student.create({
+          studentCode,
           firstName: row.data.firstName,
           lastName: row.data.lastName,
           phone: row.data.phone,
@@ -80,6 +100,7 @@ export async function POST(request: Request) {
           birthDate: parseDateSafely(row.data.birthDate),
           courseId: row.courseId,
           groupId: row.groupId,
+          branchId: studentBranchId,
           joinedDate: parseDateSafely(row.data.joinedDate) || new Date(),
           monthlyFee: row.data.monthlyFee ? Number(row.data.monthlyFee) : undefined,
           paymentDueDay: row.data.paymentDueDay ? Number(row.data.paymentDueDay) : 5,

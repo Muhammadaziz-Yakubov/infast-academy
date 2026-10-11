@@ -19,10 +19,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
     await connectToDatabase();
     const student = await Student.findById(params.id)
       .populate('courseId', 'name price durationMonths')
-      .populate('groupId', 'name room schedules');
+      .populate('groupId', 'name room schedules')
+      .populate('branchId', 'name code');
 
     if (!student) {
       return NextResponse.json({ error: "Talaba topilmadi" }, { status: 404 });
+    }
+
+    // MANAGER can only view students from their own branch
+    if (session.role === 'MANAGER') {
+      if (!session.branchId || !student.branchId || (student.branchId as any)._id?.toString() !== session.branchId.toString() && student.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasi ma'lumotlarini ko'ra olasiz" }, { status: 403 });
+      }
     }
 
     const payments = await Payment.find({ studentId: params.id }).sort({ paymentDate: -1 });
@@ -87,6 +95,18 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     await connectToDatabase();
+    const existingStudent = await Student.findById(params.id);
+    if (!existingStudent) {
+      return NextResponse.json({ error: "Talaba topilmadi" }, { status: 404 });
+    }
+
+    // MANAGER can only edit students from their own branch
+    if (session.role === 'MANAGER') {
+      if (!session.branchId || !existingStudent.branchId || existingStudent.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasini tahrirlashingiz mumkin" }, { status: 403 });
+      }
+    }
+
     const body = await request.json();
 
     function parseDateSafely(val: any): Date | undefined {
@@ -97,6 +117,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     }
 
     const updateData: any = { ...body };
+    // Branch transfers must only be done through the transfer API
+    delete updateData.branchId;
+
     if ('birthDate' in body) {
       updateData.birthDate = parseDateSafely(body.birthDate);
     }
@@ -110,10 +133,6 @@ export async function PUT(request: Request, { params }: { params: { id: string }
       updateData,
       { new: true }
     );
-
-    if (!updatedStudent) {
-      return NextResponse.json({ error: "Talaba topilmadi" }, { status: 404 });
-    }
 
     return NextResponse.json({ success: true, student: updatedStudent });
   } catch (error: any) {
@@ -136,6 +155,18 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     }
 
     await connectToDatabase();
+    const existingStudent = await Student.findById(params.id);
+    if (!existingStudent) {
+      return NextResponse.json({ error: "Talaba topilmadi" }, { status: 404 });
+    }
+
+    // MANAGER can only delete students from their own branch
+    if (session.role === 'MANAGER') {
+      if (!session.branchId || !existingStudent.branchId || existingStudent.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasini o'chira olasiz" }, { status: 403 });
+      }
+    }
+
     await Student.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Talaba o'chirildi" });
   } catch (error: any) {

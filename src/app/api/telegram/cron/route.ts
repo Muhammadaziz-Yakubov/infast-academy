@@ -3,14 +3,54 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Group, Course } from '@/models';
 import { isGroupScheduledOnDate, getUzbekDayNameForDate } from '@/lib/calculations';
 import { sendTelegramMessage } from '@/lib/telegram';
+import { getSession } from '@/lib/auth';
+
+function verifyCronAuth(request: Request): boolean {
+  // 1. Check if user is logged in as an ADMIN
+  const session = getSession();
+  if (session && session.role === 'ADMIN') {
+    return true;
+  }
+
+  // 2. Check secret token
+  const expectedSecret = process.env.CRON_SECRET;
+  const { searchParams } = new URL(request.url);
+  const querySecret = searchParams.get('secret');
+  const headerSecret = request.headers.get('x-cron-secret');
+  const authHeader = request.headers.get('authorization');
+  const bearerSecret = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+
+  const providedSecret = querySecret || headerSecret || bearerSecret;
+
+  if (expectedSecret && providedSecret && providedSecret === expectedSecret) {
+    return true;
+  }
+
+  // If CRON_SECRET is not set in env yet, require ADMIN session
+  return false;
+}
 
 export async function GET(request: Request) {
+  if (!verifyCronAuth(request)) {
+    return NextResponse.json(
+      { error: "Ruxsat berilmadi. Maxfiy cron kaliti yoki admin autentifikatsiyasi talab qilinadi." },
+      { status: 401 }
+    );
+  }
+
   const { searchParams } = new URL(request.url);
   const force = searchParams.get('force') === 'true';
   return handleCronNotification(force);
 }
 
 export async function POST(request: Request) {
+  if (!verifyCronAuth(request)) {
+    return NextResponse.json(
+      { error: "Ruxsat berilmadi. Maxfiy cron kaliti yoki admin autentifikatsiyasi talab qilinadi." },
+      { status: 401 }
+    );
+  }
+
   let force = false;
   try {
     const body = await request.json().catch(() => ({}));

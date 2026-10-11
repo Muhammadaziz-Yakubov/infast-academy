@@ -107,7 +107,19 @@ export function getBranchFilter(
 }
 
 /**
- * Helper to require authenticated session with optional permission check
+ * Checks if a session has a given permission
+ */
+export function hasPermission(session: AdminUserSession, permission?: string): boolean {
+  if (session.role === 'ADMIN') return true;
+  if (!permission) return false;
+  if (session.permissions?.includes('*')) return true;
+  return session.permissions?.includes(permission) || false;
+}
+
+/**
+ * Helper to require authenticated session with strict permission check.
+ * If requiredPermission is provided, checks if user has that permission (or is ADMIN with '*').
+ * If requiredPermission is not provided, strictly requires ADMIN role.
  */
 export function requireAdminSession(requiredPermission?: string): { session: AdminUserSession | null; errorResponse: NextResponse | null } {
   const session = getSession();
@@ -115,8 +127,26 @@ export function requireAdminSession(requiredPermission?: string): { session: Adm
     return { session: null, errorResponse: NextResponse.json({ error: 'Unauthorized' }, { status: 401 }) };
   }
   
-  if (session.role !== 'ADMIN') {
-    return { session: null, errorResponse: NextResponse.json({ error: 'Faqat Super Admin (Bosh Administrator) kirishi mumkin' }, { status: 403 }) };
+  if (requiredPermission) {
+    if (!hasPermission(session, requiredPermission)) {
+      return {
+        session: null,
+        errorResponse: NextResponse.json(
+          { error: `Ushbu amalni bajarish uchun "${requiredPermission}" ruxsati talab qilinadi` },
+          { status: 403 }
+        ),
+      };
+    }
+  } else {
+    if (session.role !== 'ADMIN') {
+      return {
+        session: null,
+        errorResponse: NextResponse.json(
+          { error: 'Faqat Super Admin (Bosh Administrator) kirishi mumkin' },
+          { status: 403 }
+        ),
+      };
+    }
   }
   
   return { session, errorResponse: null };

@@ -81,29 +81,41 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     const fromGroupId = student.groupId;
 
-    // Perform atomic update & log creation
-    let transferredByUserId: mongoose.Types.ObjectId | undefined = undefined;
-    if (session.id && mongoose.Types.ObjectId.isValid(session.id)) {
-      transferredByUserId = new mongoose.Types.ObjectId(session.id);
-    }
+    const prevBranchId = student.branchId;
+    const prevGroupId = student.groupId;
 
-    const transferLog = await StudentTransfer.create({
-      studentId: student._id,
-      fromBranchId: fromBranchId || targetBranch._id,
-      toBranchId: targetBranch._id,
-      fromGroupId,
-      toGroupId: verifiedToGroupId,
-      transferredAt: new Date(),
-      transferredBy: transferredByUserId,
-      reason: reason ? reason.trim() : 'Filiallar o\'rtasida ko\'chirish',
-    });
-
-    // Update Student's branch and group
+    // 1. Update Student first
     student.branchId = targetBranch._id;
     if (verifiedToGroupId) {
       student.groupId = verifiedToGroupId;
     }
     await student.save();
+
+    // 2. Create transfer log with rollback guarantee
+    let transferLog;
+    try {
+      let transferredByUserId: mongoose.Types.ObjectId | undefined = undefined;
+      if (session.id && mongoose.Types.ObjectId.isValid(session.id)) {
+        transferredByUserId = new mongoose.Types.ObjectId(session.id);
+      }
+
+      transferLog = await StudentTransfer.create({
+        studentId: student._id,
+        fromBranchId: fromBranchId || targetBranch._id,
+        toBranchId: targetBranch._id,
+        fromGroupId,
+        toGroupId: verifiedToGroupId,
+        transferredAt: new Date(),
+        transferredBy: transferredByUserId,
+        reason: reason ? reason.trim() : 'Filiallar o\'rtasida ko\'chirish',
+      });
+    } catch (logError: any) {
+      // Rollback student update if logging fails
+      student.branchId = prevBranchId;
+      student.groupId = prevGroupId;
+      await student.save();
+      throw new Error(`Ko'chirish jurnalini yaratishda xatolik: ${logError.message}`);
+    }
 
     return NextResponse.json({
       success: true,
@@ -124,6 +136,18 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     await connectToDatabase();
+    const student = await Student.findById(params.id);
+    if (!student) {
+      return NextResponse.json({ error: 'O\'quvchi topilmadi' }, { status: 404 });
+    }
+
+    // MANAGER can only view transfer history if they belong to student's current branch
+    if (session.role === 'MANAGER') {
+      if (!session.branchId || !student.branchId || student.branchId.toString() !== session.branchId.toString()) {
+        return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasi ko'chirish tarixini ko'ra olasiz" }, { status: 403 });
+      }
+    }
+
     const transfers = await StudentTransfer.find({ studentId: params.id })
       .populate('fromBranchId', 'name code')
       .populate('toBranchId', 'name code')

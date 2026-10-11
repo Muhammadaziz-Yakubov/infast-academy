@@ -22,6 +22,10 @@ import './SmsLog';
 import './Graduate';
 import './Branch';
 import './StudentTransfer';
+import './Module';
+import './Lesson';
+import './StudentProgress';
+import './StudentActivity';
 
 export { Course } from './Course';
 export { Group } from './Group';
@@ -47,4 +51,8 @@ export { SmsLog } from './SmsLog';
 export { Graduate } from './Graduate';
 export { Branch } from './Branch';
 export { StudentTransfer } from './StudentTransfer';
+export { Module } from './Module';
+export { Lesson } from './Lesson';
+export { StudentProgress } from './StudentProgress';
+export { StudentActivity } from './StudentActivity';
 

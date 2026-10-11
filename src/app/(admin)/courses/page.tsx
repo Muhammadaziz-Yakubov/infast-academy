@@ -3,7 +3,8 @@
 import React, { useState, useEffect } from 'react';
 import { Header } from '@/components/layout/Header';
 import { formatMoneyUz } from '@/lib/utils';
-import { BookOpen, Plus, Users, Folder, Trash2, Edit, X } from 'lucide-react';
+import { BookOpen, Plus, Users, Folder, Trash2, Edit, X, Layers } from 'lucide-react';
+import CourseCurriculumModal from '@/components/courses/CourseCurriculumModal';
 
 export default function CoursesPage() {
   const [courses, setCourses] = useState<any[]>([]);
@@ -11,6 +12,7 @@ export default function CoursesPage() {
   const [showAddModal, setShowAddModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [editingCourse, setEditingCourse] = useState<any>(null);
+  const [selectedCurriculumCourse, setSelectedCurriculumCourse] = useState<any>(null);
 
   const [editFormData, setEditFormData] = useState({
     name: '',
@@ -160,21 +162,31 @@ export default function CoursesPage() {
                   </div>
                 </div>
 
-                <div className="pt-4 border-t border-slate-100 flex items-center justify-end space-x-1">
+                <div className="pt-4 border-t border-slate-100 flex items-center justify-between">
                   <button
-                    onClick={() => handleOpenEditModal(c)}
-                    className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
-                    title="Tahrirlash"
+                    onClick={() => setSelectedCurriculumCourse(c)}
+                    className="px-3 py-1.5 rounded-xl bg-infast-50 hover:bg-infast-100 text-infast-700 font-extrabold text-xs flex items-center space-x-1.5 transition-all border border-infast-100"
                   >
-                    <Edit className="w-4 h-4" />
+                    <Layers className="w-3.5 h-3.5 text-infast-500" />
+                    <span>O'quv Dasturi (LMS)</span>
                   </button>
-                  <button
-                    onClick={() => handleDelete(c._id)}
-                    className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors"
-                    title="O'chirish"
-                  >
-                    <Trash2 className="w-4 h-4" />
-                  </button>
+
+                  <div className="flex items-center space-x-1">
+                    <button
+                      onClick={() => handleOpenEditModal(c)}
+                      className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
+                      title="Tahrirlash"
+                    >
+                      <Edit className="w-4 h-4" />
+                    </button>
+                    <button
+                      onClick={() => handleDelete(c._id)}
+                      className="p-1.5 text-slate-400 hover:text-rose-600 rounded-lg transition-colors"
+                      title="O'chirish"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
               </div>
             ))
@@ -347,6 +359,17 @@ export default function CoursesPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Curriculum LMS Modal */}
+      {selectedCurriculumCourse && (
+        <CourseCurriculumModal
+          course={selectedCurriculumCourse}
+          onClose={() => {
+            setSelectedCurriculumCourse(null);
+            fetchCourses();
+          }}
+        />
       )}
     </div>
   );
