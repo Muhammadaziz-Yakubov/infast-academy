@@ -24,6 +24,7 @@ import {
   GraduationCap,
   Award,
   Layers,
+  Play,
 } from 'lucide-react-native';
 
 interface HomeScreenProps {
@@ -175,49 +176,53 @@ export default function HomeScreen({ onNavigateToLearning, onNavigateToShop }: H
         </View>
       </View>
 
-      {/* 1. JORIY MASHG'ULOT (Featurelardan tepada) */}
+      {/* 1. JORIY MASHG'ULOT (Ixcham & Chiroyli Apple "Now Playing" Widget) */}
       <View style={styles.sectionHeader}>
         <Text style={styles.sectionTitle}>JORIY MAShG'ULOT</Text>
       </View>
 
-      <View style={styles.heroLessonCard}>
-        <View style={styles.heroHeaderRow}>
-          <View style={styles.heroPill}>
-            <BookOpen size={12} color="#FFFFFF" strokeWidth={2.5} />
-            <Text style={styles.heroPillText}>
-              {currentLesson ? `${currentLesson.order || 1}-DARS` : 'KURS DARS'}
+      <TouchableOpacity
+        style={styles.heroLessonCard}
+        onPress={() => onNavigateToLearning(currentLesson?._id)}
+        activeOpacity={0.82}
+      >
+        <View style={styles.lessonCardLeft}>
+          <View style={styles.lessonPlayBadge}>
+            <Play size={18} color="#FFFFFF" fill="#FFFFFF" />
+          </View>
+        </View>
+
+        <View style={styles.lessonCardMid}>
+          <View style={styles.lessonMetaRow}>
+            <View style={styles.lessonOrderPill}>
+              <Text style={styles.lessonOrderPillText}>
+                {currentLesson ? `${currentLesson.order || 1}-DARS` : 'KURS DARS'}
+              </Text>
+            </View>
+            <Text style={styles.lessonModuleTitle} numberOfLines={1}>
+              {currentLesson?.module?.title || studentProfile?.course?.name || "Dasturlash"}
             </Text>
           </View>
-          <Text style={styles.heroModuleText}>
-            {currentLesson?.module?.title || studentProfile?.course?.name || "Dasturlash Asoslari"}
+
+          <Text style={styles.lessonTitleText} numberOfLines={1}>
+            {currentLesson?.title || "Navbatdagi darsni boshlash"}
           </Text>
-        </View>
 
-        <Text style={styles.heroLessonTitle}>
-          {currentLesson?.title || 'Navbatdagi darsni davom ettiring'}
-        </Text>
-        <Text style={styles.heroLessonDescription} numberOfLines={2}>
-          {currentLesson?.description || "Nazariy qo'llanma, 9 ta test savoli va interaktiv topshiriqlarni bajaring."}
-        </Text>
-
-        {/* Progress track */}
-        <View style={styles.progressTrackRow}>
-          <View style={styles.progressTrackBg}>
-            <View style={[styles.progressTrackFill, { width: `${Math.min(100, Math.max(10, progress.percent || 15))}%` }]} />
+          {/* Slim Apple Progress Bar */}
+          <View style={styles.progressRow}>
+            <View style={styles.progressTrackBg}>
+              <View style={[styles.progressTrackFill, { width: `${Math.min(100, Math.max(10, progress.percent || 15))}%` }]} />
+            </View>
+            <Text style={styles.progressPercentText}>{progress.percent || 0}%</Text>
           </View>
-          <Text style={styles.progressPercentText}>{progress.percent || 0}% tugatildi</Text>
         </View>
 
-        {/* Apple Rounded CTA Button */}
-        <TouchableOpacity
-          style={styles.heroCtaButton}
-          onPress={() => onNavigateToLearning(currentLesson?._id)}
-          activeOpacity={0.8}
-        >
-          <Text style={styles.heroCtaText}>Darsni boshlash</Text>
-          <ArrowRight size={16} color="#FFFFFF" strokeWidth={2.5} />
-        </TouchableOpacity>
-      </View>
+        <View style={styles.lessonCardRight}>
+          <View style={styles.lessonStartCircle}>
+            <ArrowRight size={16} color="#FF9500" strokeWidth={2.6} />
+          </View>
+        </View>
+      </TouchableOpacity>
 
       {/* 2. FEATURELAR (To'rtburchak cardlar, 1 qatorda 2 ta) */}
       <View style={styles.sectionHeader}>
@@ -461,89 +466,102 @@ const styles = StyleSheet.create({
     textTransform: 'uppercase',
   },
 
-  /* Current Lesson Card (Placed above Features) */
+  /* Current Lesson Card: Compact & Sleek Apple "Now Playing" Card */
   heroLessonCard: {
     backgroundColor: '#1C1C1E',
-    borderRadius: 22,
+    borderRadius: 20,
     marginHorizontal: 16,
-    padding: 20,
+    padding: 14,
     marginBottom: 24,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
+    flexDirection: 'row',
+    alignItems: 'center',
     ...APPLE_SHADOW,
   },
-  heroHeaderRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+  lessonCardLeft: {
+    marginRight: 12,
   },
-  heroPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
+  lessonPlayBadge: {
+    width: 46,
+    height: 46,
+    borderRadius: 14,
     backgroundColor: '#FF9500',
-    paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 8,
-    gap: 4,
-  },
-  heroPillText: {
-    color: '#FFFFFF',
-    fontSize: 11,
-    fontWeight: '700',
-  },
-  heroModuleText: {
-    color: '#8E8E93',
-    fontSize: 12,
-    fontWeight: '500',
-  },
-  heroLessonTitle: {
-    color: '#FFFFFF',
-    fontSize: 20,
-    fontWeight: '700',
-    letterSpacing: -0.4,
-    marginBottom: 6,
-  },
-  heroLessonDescription: {
-    color: '#8E8E93',
-    fontSize: 13,
-    lineHeight: 18,
-    marginBottom: 16,
-  },
-  progressTrackRow: {
-    marginBottom: 16,
-  },
-  progressTrackBg: {
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 3,
-    overflow: 'hidden',
-    marginBottom: 6,
-  },
-  progressTrackFill: {
-    height: '100%',
-    backgroundColor: '#FF9500',
-    borderRadius: 3,
-  },
-  progressPercentText: {
-    color: '#8E8E93',
-    fontSize: 11,
-    fontWeight: '500',
-  },
-  heroCtaButton: {
-    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#FF9500',
-    borderRadius: 14,
-    paddingVertical: 13,
-    gap: 8,
+    shadowColor: '#FF9500',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.35,
+    shadowRadius: 5,
+    elevation: 3,
   },
-  heroCtaText: {
+  lessonCardMid: {
+    flex: 1,
+    marginRight: 10,
+  },
+  lessonMetaRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    marginBottom: 3,
+  },
+  lessonOrderPill: {
+    backgroundColor: 'rgba(255, 149, 0, 0.16)',
+    paddingHorizontal: 6,
+    paddingVertical: 2,
+    borderRadius: 5,
+  },
+  lessonOrderPillText: {
+    color: '#FF9500',
+    fontSize: 10,
+    fontWeight: '800',
+  },
+  lessonModuleTitle: {
+    color: '#8E8E93',
+    fontSize: 11,
+    fontWeight: '600',
+    flex: 1,
+  },
+  lessonTitleText: {
     color: '#FFFFFF',
     fontSize: 15,
     fontWeight: '700',
     letterSpacing: -0.2,
+    marginBottom: 6,
+  },
+  progressRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  progressTrackBg: {
+    flex: 1,
+    height: 4,
+    backgroundColor: 'rgba(255, 255, 255, 0.10)',
+    borderRadius: 2,
+    overflow: 'hidden',
+  },
+  progressTrackFill: {
+    height: '100%',
+    backgroundColor: '#FF9500',
+    borderRadius: 2,
+  },
+  progressPercentText: {
+    color: '#8E8E93',
+    fontSize: 11,
+    fontWeight: '700',
+  },
+  lessonCardRight: {
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  lessonStartCircle: {
+    width: 32,
+    height: 32,
+    borderRadius: 16,
+    backgroundColor: 'rgba(255, 149, 0, 0.14)',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
 
   /* Featurelar 2x1 (1 qatorda 2 ta to'rtburchak card) Grid */
