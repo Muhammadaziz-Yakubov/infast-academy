@@ -38,7 +38,98 @@ export default function PublicReceiptPage() {
   };
 
   const handlePrint = () => {
-    window.print();
+    const el = document.getElementById('receipt-print-area');
+    if (!el) {
+      window.print();
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=380,height=600');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Chek</title>
+          <style>
+            @page {
+              size: 58mm auto;
+              margin: 0mm;
+            }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            html, body {
+              width: 58mm;
+              margin: 0 auto;
+              padding: 2mm 1mm;
+              background: #ffffff;
+              color: #000000;
+              font-family: monospace;
+              font-size: 10px;
+              line-height: 1.25;
+            }
+            .receipt-box {
+              width: 100% !important;
+              max-width: 56mm !important;
+              margin: 0 auto !important;
+              padding: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: bold; }
+            .font-extrabold { font-weight: 800; }
+            .font-black { font-weight: 900; }
+            .uppercase { text-transform: uppercase; }
+            .flex { display: flex; }
+            .justify-between { justify-content: space-between; }
+            .items-start { align-items: flex-start; }
+            .items-center { align-items: center; }
+            .border-b { border-bottom: 1px dashed #000; }
+            .border-b-2 { border-bottom: 2px solid #000; }
+            .border-t { border-top: 1px dashed #999; }
+            .py-1 { padding-top: 3px; padding-bottom: 3px; }
+            .py-1\\.5 { padding-top: 4px; padding-bottom: 4px; }
+            .pb-1\\.5 { padding-bottom: 4px; }
+            .pt-1\\.5 { padding-top: 4px; }
+            .my-0\\.5 { margin-top: 2px; margin-bottom: 2px; }
+            .mt-1\\.5 { margin-top: 4px; }
+            .space-y-1 > * + * { margin-top: 3px; }
+            .space-y-0\\.5 > * + * { margin-top: 1px; }
+            .text-black { color: #000; }
+            .text-neutral-800, .text-neutral-700, .text-neutral-600 { color: #222; }
+            .text-\\[13px\\] { font-size: 13px; }
+            .text-\\[10px\\] { font-size: 10px; }
+            .text-\\[9px\\] { font-size: 9px; }
+            .text-\\[8px\\] { font-size: 8px; }
+            .text-\\[7\\.5px\\] { font-size: 7.5px; }
+            .text-\\[17px\\] { font-size: 17px; }
+            img { max-width: 100%; height: auto; }
+            .w-11 { width: 44px; }
+            .h-11 { height: 44px; }
+          </style>
+        </head>
+        <body>
+          ${el.outerHTML}
+          <script>
+            window.onload = function() {
+              window.focus();
+              window.print();
+              setTimeout(function() { window.close(); }, 800);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
   };
 
   if (loading) {
@@ -86,8 +177,15 @@ export default function PublicReceiptPage() {
       <style jsx global>{`
         @media print {
           @page {
-            size: 80mm auto;
-            margin: 0;
+            size: 58mm auto;
+            margin: 0mm;
+          }
+          html, body {
+            width: 58mm !important;
+            margin: 0 !important;
+            padding: 0 !important;
+            background: #ffffff !important;
+            color: #000000 !important;
           }
           body * {
             visibility: hidden !important;
@@ -99,12 +197,14 @@ export default function PublicReceiptPage() {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 76mm !important;
-            max-width: 76mm !important;
+            width: 54mm !important;
+            max-width: 54mm !important;
             margin: 0 auto !important;
-            padding: 8px !important;
+            padding: 2mm !important;
             box-shadow: none !important;
             border: none !important;
+            background: #ffffff !important;
+            color: #000000 !important;
           }
           .no-print {
             display: none !important;

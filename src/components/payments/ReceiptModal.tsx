@@ -22,12 +22,107 @@ export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptMod
   const [sendingTelegram, setSendingTelegram] = useState(false);
   const [telegramStatus, setTelegramStatus] = useState<'idle' | 'success' | 'error'>('idle');
 
-  // Avtomatik chop etish (print dialogini darhol chiqarish)
+  // To'g'ridan-to'g'ri iframe orqali yoki toza bosib chiqarish
+  const printReceiptDirectly = () => {
+    const el = document.getElementById('receipt-print-area');
+    if (!el) {
+      window.print();
+      return;
+    }
+
+    const printWindow = window.open('', '_blank', 'width=380,height=600');
+    if (!printWindow) {
+      window.print();
+      return;
+    }
+
+    printWindow.document.write(`
+      <!DOCTYPE html>
+      <html>
+        <head>
+          <meta charset="utf-8" />
+          <title>Chek</title>
+          <style>
+            @page {
+              size: 58mm auto;
+              margin: 0mm;
+            }
+            * {
+              box-sizing: border-box;
+              margin: 0;
+              padding: 0;
+            }
+            html, body {
+              width: 58mm;
+              margin: 0 auto;
+              padding: 2mm 1mm;
+              background: #ffffff;
+              color: #000000;
+              font-family: monospace;
+              font-size: 10px;
+              line-height: 1.25;
+            }
+            .receipt-box {
+              width: 100% !important;
+              max-width: 56mm !important;
+              margin: 0 auto !important;
+              padding: 0 !important;
+              border: none !important;
+              box-shadow: none !important;
+            }
+            .text-center { text-align: center; }
+            .font-bold { font-weight: bold; }
+            .font-extrabold { font-weight: 800; }
+            .font-black { font-weight: 900; }
+            .uppercase { text-transform: uppercase; }
+            .flex { display: flex; }
+            .justify-between { justify-content: space-between; }
+            .items-start { align-items: flex-start; }
+            .items-center { align-items: center; }
+            .border-b { border-bottom: 1px dashed #000; }
+            .border-b-2 { border-bottom: 2px solid #000; }
+            .border-t { border-top: 1px dashed #999; }
+            .py-1 { padding-top: 3px; padding-bottom: 3px; }
+            .py-1\\.5 { padding-top: 4px; padding-bottom: 4px; }
+            .pb-1\\.5 { padding-bottom: 4px; }
+            .pt-1\\.5 { padding-top: 4px; }
+            .my-0\\.5 { margin-top: 2px; margin-bottom: 2px; }
+            .mt-1\\.5 { margin-top: 4px; }
+            .space-y-1 > * + * { margin-top: 3px; }
+            .space-y-0\\.5 > * + * { margin-top: 1px; }
+            .text-black { color: #000; }
+            .text-neutral-800, .text-neutral-700, .text-neutral-600 { color: #222; }
+            .text-\\[13px\\] { font-size: 13px; }
+            .text-\\[10px\\] { font-size: 10px; }
+            .text-\\[9px\\] { font-size: 9px; }
+            .text-\\[8px\\] { font-size: 8px; }
+            .text-\\[7\\.5px\\] { font-size: 7.5px; }
+            .text-\\[17px\\] { font-size: 17px; }
+            img { max-width: 100%; height: auto; }
+            .w-11 { width: 44px; }
+            .h-11 { height: 44px; }
+          </style>
+        </head>
+        <body>
+          ${el.outerHTML}
+          <script>
+            window.onload = function() {
+              window.focus();
+              window.print();
+              setTimeout(function() { window.close(); }, 800);
+            };
+          </script>
+        </body>
+      </html>
+    `);
+    printWindow.document.close();
+  };
+
   useEffect(() => {
     if (payment && autoPrint) {
       const timer = setTimeout(() => {
-        window.print();
-      }, 350);
+        printReceiptDirectly();
+      }, 400);
       return () => clearTimeout(timer);
     }
   }, [payment, autoPrint]);
@@ -49,10 +144,6 @@ export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptMod
   const courseName = student.courseId?.name || payment.courseName || '-';
   const periodStart = formatDateUz(payment.periodStartDate);
   const periodEnd = formatDateUz(payment.periodEndDate);
-
-  const handlePrint = () => {
-    window.print();
-  };
 
   const handleSendTelegram = async () => {
     setSendingTelegram(true);
@@ -87,46 +178,17 @@ export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptMod
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/75 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static">
-      <style jsx global>{`
-        @media print {
-          @page {
-            size: 80mm auto;
-            margin: 0;
-          }
-          body * {
-            visibility: hidden !important;
-          }
-          #receipt-print-area, #receipt-print-area * {
-            visibility: visible !important;
-          }
-          #receipt-print-area {
-            position: absolute !important;
-            left: 0 !important;
-            top: 0 !important;
-            width: 76mm !important;
-            max-width: 76mm !important;
-            margin: 0 auto !important;
-            padding: 8px !important;
-            box-shadow: none !important;
-            border: none !important;
-          }
-          .no-print {
-            display: none !important;
-          }
-        }
-      `}</style>
-
-      <div className="bg-slate-900 w-full max-w-sm rounded-2xl p-4 shadow-2xl border border-slate-800 text-slate-100 relative print:bg-white print:p-0 print:border-none print:shadow-none">
-        {/* Header Actions (hidden in print) */}
-        <div className="flex items-center justify-between pb-3 border-b border-slate-800 no-print">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/75 backdrop-blur-sm overflow-y-auto print:hidden">
+      <div className="bg-slate-900 w-full max-w-sm rounded-2xl p-4 shadow-2xl border border-slate-800 text-slate-100 relative">
+        {/* Header Actions */}
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800">
           <div className="flex items-center space-x-2">
             <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
               <FileCheck className="w-3.5 h-3.5" />
             </div>
             <div>
               <h3 className="font-bold text-xs text-white">To'lov Cheki</h3>
-              <p className="text-[10px] text-slate-400">Standart 80mm kvitansiya</p>
+              <p className="text-[10px] text-slate-400">Standart 58mm thermal chek</p>
             </div>
           </div>
           <button
@@ -142,8 +204,8 @@ export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptMod
           <ReceiptCard payment={payment} receiptId={paymentId} />
         </div>
 
-        {/* Action Buttons Footer (hidden in print) */}
-        <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 no-print font-sans">
+        {/* Action Buttons Footer */}
+        <div className="pt-3 border-t border-slate-800 flex items-center justify-between gap-2 font-sans">
           <div className="flex items-center space-x-2">
             <button
               onClick={handleSendTelegram}
@@ -175,7 +237,7 @@ export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptMod
               Yopish
             </button>
             <button
-              onClick={handlePrint}
+              onClick={printReceiptDirectly}
               className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-md flex items-center space-x-1.5 transition-colors"
             >
               <Printer className="w-3.5 h-3.5" />
