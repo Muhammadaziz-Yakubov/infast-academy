@@ -7,19 +7,24 @@ import {
   TouchableOpacity,
   ActivityIndicator,
   RefreshControl,
+  Dimensions,
 } from 'react-native';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
+import { COLORS, SPACING } from '../constants/theme';
 import {
-  CheckCircle2,
+  Check,
   Lock,
-  PlayCircle,
-  ChevronDown,
-  ChevronUp,
-  ChevronRight,
-  BookOpen,
+  Play,
+  Star,
+  Zap,
+  Flame,
+  Award,
+  Crown,
   Sparkles,
+  BookOpen,
 } from 'lucide-react-native';
+
+const { width } = Dimensions.get('window');
 
 interface CurriculumScreenProps {
   onSelectLesson: (lessonId: string) => void;
@@ -29,7 +34,6 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
   const [data, setData] = useState<any | null>(null);
   const [loading, setLoading] = useState(true);
   const [refreshing, setRefreshing] = useState(false);
-  const [expandedModules, setExpandedModules] = useState<Record<string, boolean>>({});
 
   useEffect(() => {
     fetchCurriculum();
@@ -40,11 +44,6 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
       const res = await apiRequest('/api/student/curriculum');
       if (res.success) {
         setData(res);
-        const exp: Record<string, boolean> = {};
-        (res.modules || []).forEach((m: any) => {
-          exp[m._id] = true;
-        });
-        setExpandedModules(exp);
       }
     } catch (e) {
       console.warn('Curriculum fetch error:', e);
@@ -54,32 +53,38 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
     }
   };
 
-  const toggleModule = (id: string) => {
-    setExpandedModules((prev) => ({ ...prev, [id]: !prev[id] }));
-  };
-
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
-        <Text style={styles.loadingText}>O'quv dasturi yuklanmoqda...</Text>
+        <ActivityIndicator size="large" color="#FF9500" />
+        <Text style={styles.loadingText}>O'quv xaritasi yuklanmoqda...</Text>
       </View>
     );
   }
 
   const course = data?.course || {
     name: 'Frontend Development',
-    description: "Zamonaviy veb va mobil ilovalar yaratish bo'yicha to'liq kurs.",
+    description: "Zamonaviy veb dasturlash",
   };
 
   const modules = data?.modules || [];
   const totalLessons = modules.reduce((acc: number, m: any) => acc + (m.lessons?.length || 0), 0);
   const completedLessons = modules.reduce(
     (acc: number, m: any) =>
-      acc + (m.lessons?.filter((l: any) => l.isCompleted)?.length || 0),
+      acc + (m.lessons?.filter((l: any) => l.status === 'COMPLETED' || l.isCompleted)?.length || 0),
     0
   );
   const percent = totalLessons > 0 ? Math.round((completedLessons / totalLessons) * 100) : 0;
+  const progressInfo = data?.progress || { xp: 0, xcoin: 0, level: 1 };
+
+  // Calculate zigzag X offset for Duolingo path
+  const getZigzagOffset = (index: number) => {
+    const cycle = index % 4;
+    if (cycle === 0) return 0;
+    if (cycle === 1) return 46;
+    if (cycle === 2) return 0;
+    return -46;
+  };
 
   return (
     <ScrollView
@@ -93,131 +98,140 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
             setRefreshing(true);
             fetchCurriculum();
           }}
-          tintColor={COLORS.primary}
+          tintColor="#FF9500"
         />
       }
     >
-      {/* Apple Large Title Header */}
-      <View style={styles.header}>
-        <Text style={styles.categoryLabel}>O'QUV DASTURI</Text>
-        <Text style={styles.largeTitle}>LMS Xaritasi</Text>
-      </View>
-
-      {/* Course Overview Card */}
-      <View style={styles.courseCard}>
-        <View style={styles.courseBadgeRow}>
-          <View style={styles.coursePill}>
-            <Text style={styles.coursePillText}>ASOSIY KURS</Text>
-          </View>
-          <Text style={styles.progressPercentText}>{percent}% O'zlashtirildi</Text>
+      {/* Duolingo Sticky Top Gamified Stats Bar */}
+      <View style={styles.topStatsBar}>
+        <View style={styles.statChip}>
+          <Flame size={16} color="#FF9500" fill="#FF9500" />
+          <Text style={styles.statChipText}>{progressInfo.xp || 0} XP</Text>
         </View>
 
-        <Text style={styles.courseTitle}>{course.name}</Text>
-        <Text style={styles.courseSubtitle}>{course.description}</Text>
+        <View style={styles.statChip}>
+          <Zap size={16} color="#FFD60A" fill="#FFD60A" />
+          <Text style={styles.statChipText}>{progressInfo.xcoin || 0} Tangalar</Text>
+        </View>
 
-        {/* Progress Bar */}
+        <View style={styles.statChip}>
+          <Crown size={16} color="#5E5CE6" fill="#5E5CE6" />
+          <Text style={styles.statChipText}>Lv. {progressInfo.level || 1}</Text>
+        </View>
+      </View>
+
+      {/* Course Header Banner */}
+      <View style={styles.courseHeaderBanner}>
+        <View style={styles.bannerBadge}>
+          <Text style={styles.bannerBadgeText}>KURS XARITASI</Text>
+        </View>
+        <Text style={styles.courseHeaderTitle}>{course.name}</Text>
+        <Text style={styles.courseHeaderSub}>
+          {completedLessons} / {totalLessons} dars tugatildi ({percent}%)
+        </Text>
+
+        {/* Progress line */}
         <View style={styles.progressBarTrack}>
           <View style={[styles.progressBarFill, { width: `${Math.max(5, percent)}%` }]} />
         </View>
-
-        <View style={styles.progressFooter}>
-          <Text style={styles.progressCountText}>
-            {completedLessons} / {totalLessons} dars yakunlangan
-          </Text>
-          <Text style={styles.progressCountText}>
-            {modules.length} ta modul
-          </Text>
-        </View>
       </View>
 
-      {/* Modules List */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>MODULLAR VA DARSLAR</Text>
-      </View>
-
+      {/* Modules and Duolingo Stepping Path */}
       {modules.map((module: any, mIdx: number) => {
-        const isExpanded = !!expandedModules[module._id];
         const lessons = module.lessons || [];
-        const modCompleted = lessons.filter((l: any) => l.isCompleted).length;
 
         return (
-          <View key={module._id} style={styles.moduleCard}>
-            {/* Module Accordion Header */}
-            <TouchableOpacity
-              style={styles.moduleHeader}
-              onPress={() => toggleModule(module._id)}
-              activeOpacity={0.7}
-            >
-              <View style={styles.moduleNumberBadge}>
-                <Text style={styles.moduleNumberText}>{mIdx + 1}</Text>
+          <View key={module._id} style={styles.moduleSection}>
+            {/* Duolingo Unit Banner Header */}
+            <View style={styles.unitBanner}>
+              <View style={styles.unitBannerLeft}>
+                <Text style={styles.unitBannerSub}>BOB {mIdx + 1}</Text>
+                <Text style={styles.unitBannerTitle}>{module.title}</Text>
               </View>
-
-              <View style={styles.moduleHeaderInfo}>
-                <Text style={styles.moduleTitle}>{module.title}</Text>
-                <Text style={styles.moduleMeta}>
-                  {lessons.length} ta dars • {modCompleted}/{lessons.length} yakunlandi
-                </Text>
+              <View style={styles.unitCrownBadge}>
+                <BookOpen size={18} color="#FFFFFF" />
               </View>
+            </View>
 
-              {isExpanded ? (
-                <ChevronUp size={20} color="#8E8E93" />
-              ) : (
-                <ChevronDown size={20} color="#8E8E93" />
-              )}
-            </TouchableOpacity>
+            {/* Stepping Path Node List (Duolingo Zigzag) */}
+            <View style={styles.pathNodesWrapper}>
+              {lessons.map((lesson: any, lIdx: number) => {
+                const isCompleted = lesson.status === 'COMPLETED' || lesson.isCompleted;
+                const isLocked = lesson.status === 'LOCKED' || (!lesson.isUnlocked && lesson.status === undefined);
+                const isCurrent = !isLocked && !isCompleted;
+                const offsetX = getZigzagOffset(lIdx);
 
-            {/* Lessons Inset Group */}
-            {isExpanded && (
-              <View style={styles.lessonsContainer}>
-                {lessons.map((lesson: any, lIdx: number) => {
-                  const isLocked = !lesson.isUnlocked;
-                  const isCompleted = lesson.isCompleted;
+                return (
+                  <View key={lesson._id} style={[styles.nodeRow, { transform: [{ translateX: offsetX }] }]}>
+                    {/* Node Connecting Line */}
+                    {lIdx > 0 && <View style={[styles.connectingLine, isCompleted && styles.connectingLineActive]} />}
 
-                  return (
-                    <React.Fragment key={lesson._id}>
-                      {lIdx > 0 && <View style={styles.separator} />}
-
-                      <TouchableOpacity
-                        style={[styles.lessonRow, isLocked && styles.lessonRowLocked]}
-                        disabled={isLocked}
-                        onPress={() => onSelectLesson(lesson._id)}
-                        activeOpacity={0.6}
+                    {/* Stepping Round Button */}
+                    <TouchableOpacity
+                      disabled={isLocked}
+                      onPress={() => onSelectLesson(lesson._id)}
+                      activeOpacity={0.8}
+                      style={[
+                        styles.nodeCircleBase,
+                        isCompleted
+                          ? styles.nodeCircleCompleted
+                          : isCurrent
+                          ? styles.nodeCircleCurrent
+                          : styles.nodeCircleLocked,
+                      ]}
+                    >
+                      {/* Inner 3D Layer */}
+                      <View
+                        style={[
+                          styles.nodeInnerCircle,
+                          isCompleted
+                            ? styles.nodeInnerCompleted
+                            : isCurrent
+                            ? styles.nodeInnerCurrent
+                            : styles.nodeInnerLocked,
+                        ]}
                       >
-                        {/* Status Icon */}
-                        <View style={styles.statusIconBox}>
-                          {isCompleted ? (
-                            <CheckCircle2 size={22} color="#30D158" />
-                          ) : isLocked ? (
-                            <Lock size={18} color="#636366" />
-                          ) : (
-                            <PlayCircle size={22} color="#FF9500" />
-                          )}
-                        </View>
-
-                        {/* Lesson Info */}
-                        <View style={styles.lessonTextCol}>
-                          <Text style={[styles.lessonTitle, isLocked && styles.lessonTitleLocked]}>
-                            {lesson.order || lIdx + 1}. {lesson.title}
-                          </Text>
-                          <Text style={styles.lessonSub}>
-                            {lesson.xpReward || 30} XP • {isCompleted ? "Yakunlangan" : isLocked ? "Qulflangan" : "Boshlashga tayyor"}
-                          </Text>
-                        </View>
-
-                        {!isLocked && (
-                          <ChevronRight size={18} color="#636366" />
+                        {isCompleted ? (
+                          <Check size={26} color="#FFFFFF" strokeWidth={3.5} />
+                        ) : isCurrent ? (
+                          <Play size={22} color="#FFFFFF" fill="#FFFFFF" />
+                        ) : (
+                          <Lock size={20} color="#71717A" />
                         )}
-                      </TouchableOpacity>
-                    </React.Fragment>
-                  );
-                })}
-              </View>
-            )}
+                      </View>
+
+                      {/* Current Floating Indicator */}
+                      {isCurrent && (
+                        <View style={styles.currentFloatPill}>
+                          <Text style={styles.currentFloatText}>BOSHLASH</Text>
+                        </View>
+                      )}
+                    </TouchableOpacity>
+
+                    {/* Lesson Label Under Node */}
+                    <View style={styles.nodeLabelBox}>
+                      <Text
+                        style={[
+                          styles.nodeTitleText,
+                          isCompleted && styles.nodeTitleCompleted,
+                          isCurrent && styles.nodeTitleCurrent,
+                          isLocked && styles.nodeTitleLocked,
+                        ]}
+                        numberOfLines={1}
+                      >
+                        {lesson.order || lIdx + 1}. {lesson.title}
+                      </Text>
+                      <Text style={styles.nodeXpText}>+{lesson.xpReward || 50} XP</Text>
+                    </View>
+                  </View>
+                );
+              })}
+            </View>
           </View>
         );
       })}
 
-      <View style={{ height: 40 }} />
+      <View style={{ height: 60 }} />
     </ScrollView>
   );
 }
@@ -225,201 +239,257 @@ export default function CurriculumScreen({ onSelectLesson }: CurriculumScreenPro
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000', // Apple OLED True Black
+    backgroundColor: '#09090B',
   },
   contentContainer: {
-    paddingTop: 8,
     paddingBottom: 40,
   },
   centerContainer: {
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-    backgroundColor: '#000000',
+    backgroundColor: '#09090B',
   },
   loadingText: {
-    marginTop: 8,
+    marginTop: 12,
     fontSize: 14,
-    color: '#8E8E93',
-    fontWeight: '500',
-  },
-  header: {
-    paddingHorizontal: 20,
-    paddingTop: 12,
-    paddingBottom: 16,
-  },
-  categoryLabel: {
-    fontSize: 12,
+    color: '#A1A1AA',
     fontWeight: '600',
-    color: '#8E8E93',
-    letterSpacing: 0.5,
-    marginBottom: 2,
   },
-  largeTitle: {
-    fontSize: 34,
-    fontWeight: '800',
-    color: '#FFFFFF',
-    letterSpacing: -0.6,
-  },
-  courseCard: {
-    backgroundColor: '#1C1C1E', // Apple Dark Slate
-    borderRadius: 22,
-    marginHorizontal: 16,
-    padding: 20,
-    marginBottom: 24,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    ...APPLE_SHADOW,
-  },
-  courseBadgeRow: {
+
+  /* Top Stats Bar */
+  topStatsBar: {
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'space-between',
-    marginBottom: 10,
+    justifyContent: 'space-around',
+    paddingVertical: 12,
+    paddingHorizontal: 16,
+    backgroundColor: '#18181B',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
   },
-  coursePill: {
-    backgroundColor: 'rgba(255, 149, 0, 0.16)',
+  statChip: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    backgroundColor: '#27272A',
+    paddingHorizontal: 12,
+    paddingVertical: 6,
+    borderRadius: 12,
+  },
+  statChipText: {
+    fontSize: 12,
+    fontWeight: '800',
+    color: '#FFFFFF',
+  },
+
+  /* Course Banner */
+  courseHeaderBanner: {
+    marginHorizontal: 16,
+    marginTop: 16,
+    marginBottom: 20,
+    backgroundColor: '#18181B',
+    padding: 20,
+    borderRadius: 22,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  bannerBadge: {
+    alignSelf: 'flex-start',
+    backgroundColor: 'rgba(255, 149, 0, 0.15)',
     paddingHorizontal: 8,
     paddingVertical: 3,
     borderRadius: 6,
+    marginBottom: 8,
   },
-  coursePillText: {
+  bannerBadgeText: {
+    fontSize: 10,
+    fontWeight: '800',
     color: '#FF9500',
-    fontSize: 11,
-    fontWeight: '700',
+    letterSpacing: 0.8,
   },
-  progressPercentText: {
-    fontSize: 12,
-    fontWeight: '600',
-    color: '#8E8E93',
-  },
-  courseTitle: {
-    fontSize: 20,
-    fontWeight: '700',
+  courseHeaderTitle: {
+    fontSize: 22,
+    fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.4,
-    marginBottom: 6,
+    marginBottom: 4,
   },
-  courseSubtitle: {
+  courseHeaderSub: {
     fontSize: 13,
-    color: '#8E8E93',
-    lineHeight: 18,
-    marginBottom: 16,
+    color: '#A1A1AA',
+    marginBottom: 14,
   },
   progressBarTrack: {
-    height: 6,
-    backgroundColor: 'rgba(255, 255, 255, 0.12)',
-    borderRadius: 3,
+    height: 8,
+    backgroundColor: '#27272A',
+    borderRadius: 4,
     overflow: 'hidden',
-    marginBottom: 8,
   },
   progressBarFill: {
     height: '100%',
-    backgroundColor: '#FF9500',
-    borderRadius: 3,
+    backgroundColor: '#30D158',
+    borderRadius: 4,
   },
-  progressFooter: {
+
+  /* Duolingo Unit Section */
+  moduleSection: {
+    marginBottom: 28,
+  },
+  unitBanner: {
     flexDirection: 'row',
+    alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  progressCountText: {
-    fontSize: 12,
-    color: '#8E8E93',
-    fontWeight: '500',
-  },
-  sectionHeader: {
-    paddingHorizontal: 20,
-    marginBottom: 10,
-  },
-  sectionTitle: {
-    fontSize: 13,
-    fontWeight: '700',
-    color: '#8E8E93',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
-  },
-  moduleCard: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
+    backgroundColor: '#FF9500',
     marginHorizontal: 16,
-    marginBottom: 14,
-    overflow: 'hidden',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    ...APPLE_SHADOW,
+    paddingHorizontal: 18,
+    paddingVertical: 14,
+    borderRadius: 18,
+    marginBottom: 24,
+    shadowColor: '#FF9500',
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 4,
   },
-  moduleHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    padding: 16,
-  },
-  moduleNumberBadge: {
-    width: 32,
-    height: 32,
-    borderRadius: 16,
-    backgroundColor: 'rgba(255, 255, 255, 0.10)',
-    alignItems: 'center',
-    justifyContent: 'center',
-    marginRight: 12,
-  },
-  moduleNumberText: {
-    fontSize: 14,
-    fontWeight: '700',
-    color: '#FFFFFF',
-  },
-  moduleHeaderInfo: {
+  unitBannerLeft: {
     flex: 1,
   },
-  moduleTitle: {
-    fontSize: 16,
-    fontWeight: '600',
-    color: '#FFFFFF',
+  unitBannerSub: {
+    fontSize: 11,
+    fontWeight: '900',
+    color: 'rgba(0, 0, 0, 0.65)',
+    letterSpacing: 0.8,
+  },
+  unitBannerTitle: {
+    fontSize: 17,
+    fontWeight: '900',
+    color: '#000000',
     letterSpacing: -0.3,
   },
-  moduleMeta: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 2,
-  },
-  lessonsContainer: {
-    borderTopWidth: StyleSheet.hairlineWidth,
-    borderTopColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  lessonRow: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
-  },
-  lessonRowLocked: {
-    opacity: 0.45,
-  },
-  statusIconBox: {
-    width: 32,
+  unitCrownBadge: {
+    width: 36,
+    height: 36,
+    borderRadius: 18,
+    backgroundColor: 'rgba(0, 0, 0, 0.2)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
   },
-  lessonTextCol: {
-    flex: 1,
+
+  /* Stepping Nodes Path */
+  pathNodesWrapper: {
+    alignItems: 'center',
+    paddingVertical: 8,
   },
-  lessonTitle: {
-    fontSize: 14,
-    fontWeight: '600',
+  nodeRow: {
+    alignItems: 'center',
+    marginVertical: 14,
+    position: 'relative',
+  },
+  connectingLine: {
+    position: 'absolute',
+    top: -24,
+    width: 6,
+    height: 24,
+    backgroundColor: '#27272A',
+    borderRadius: 3,
+    zIndex: -1,
+  },
+  connectingLineActive: {
+    backgroundColor: '#30D158',
+  },
+
+  /* Node 3D Button Styles */
+  nodeCircleBase: {
+    width: 74,
+    height: 74,
+    borderRadius: 37,
+    alignItems: 'center',
+    justifyContent: 'flex-start',
+    paddingTop: 0,
+    position: 'relative',
+  },
+  nodeInnerCircle: {
+    width: 74,
+    height: 66,
+    borderRadius: 33,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+
+  /* State: Completed */
+  nodeCircleCompleted: {
+    backgroundColor: '#249C42', // Darker bottom 3D shadow
+  },
+  nodeInnerCompleted: {
+    backgroundColor: '#30D158', // Duolingo Vibrant Green
+  },
+
+  /* State: Current Active */
+  nodeCircleCurrent: {
+    backgroundColor: '#CC7700', // Darker orange 3D shadow
+  },
+  nodeInnerCurrent: {
+    backgroundColor: '#FF9500', // Vibrant Active Orange
+  },
+
+  /* State: Locked */
+  nodeCircleLocked: {
+    backgroundColor: '#1E1E22',
+  },
+  nodeInnerLocked: {
+    backgroundColor: '#27272A',
+  },
+
+  /* Floating "START" Pill */
+  currentFloatPill: {
+    position: 'absolute',
+    top: -12,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 10,
+    paddingVertical: 3,
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: '#FF9500',
+    shadowColor: '#000000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.3,
+    shadowRadius: 4,
+    elevation: 3,
+  },
+  currentFloatText: {
+    fontSize: 10,
+    fontWeight: '900',
+    color: '#FF9500',
+    letterSpacing: 0.5,
+  },
+
+  /* Labels */
+  nodeLabelBox: {
+    alignItems: 'center',
+    marginTop: 8,
+    maxWidth: 160,
+  },
+  nodeTitleText: {
+    fontSize: 13,
+    fontWeight: '700',
     color: '#FFFFFF',
-    letterSpacing: -0.2,
+    textAlign: 'center',
   },
-  lessonTitleLocked: {
-    color: '#8E8E93',
+  nodeTitleCompleted: {
+    color: '#30D158',
   },
-  lessonSub: {
-    fontSize: 12,
-    color: '#8E8E93',
-    marginTop: 2,
+  nodeTitleCurrent: {
+    color: '#FF9500',
+    fontWeight: '800',
   },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginLeft: 58,
+  nodeTitleLocked: {
+    color: '#71717A',
+  },
+  nodeXpText: {
+    fontSize: 11,
+    fontWeight: '700',
+    color: '#71717A',
+    marginTop: 1,
   },
 });

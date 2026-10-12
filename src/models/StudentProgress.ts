@@ -7,6 +7,8 @@ export interface ILessonState {
   testPassed: boolean;
   testScore: number; // e.g. 8 or 9 out of 9
   testAttempts: number;
+  testAnswers?: number[];
+  testResultDetails?: any;
   practiceCompleted: boolean;
   practiceSubmission?: string;
   completedAt?: Date;
@@ -40,6 +42,8 @@ const LessonStateSchema = new Schema<ILessonState>(
     testPassed: { type: Boolean, default: false },
     testScore: { type: Number, default: 0 },
     testAttempts: { type: Number, default: 0 },
+    testAnswers: [{ type: Number }],
+    testResultDetails: { type: Schema.Types.Mixed },
     practiceCompleted: { type: Boolean, default: false },
     practiceSubmission: { type: String },
     completedAt: { type: Date },

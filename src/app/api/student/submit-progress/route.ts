@@ -128,44 +128,49 @@ export async function POST(request: Request) {
         };
       });
 
-      const passingThreshold = Math.min(8, totalQuestions);
-      const passed = correctCount >= passingThreshold;
+      const passingThreshold = 0; // Har qanday natija bilan o'tadi
+      const passed = true; // Javobi to'g'ri bo'lsa ham noto'g'ri bo'lsa ham o'taveradi
 
       state.testAttempts = (state.testAttempts || 0) + 1;
-      state.testScore = Math.max(state.testScore || 0, correctCount);
+      state.testScore = correctCount;
+      state.testAnswers = testAnswers;
+      state.testResultDetails = {
+        score: correctCount,
+        maxScore: totalQuestions,
+        percentage: Math.round((correctCount / totalQuestions) * 100),
+        details,
+      };
 
-      if (passed && !state.testPassed) {
+      // Proportional XP calculation: correctCount ga qarab XP ko'p yoki kam beriladi
+      // Masalan, 9 ta savoldan 9 ta to'g'ri = 100% XP (masalan 60 XP), 5 ta to'g'ri = 33 XP va hk.
+      const baseXp = lesson.xpReward || 50;
+      const calculatedXp = Math.round((correctCount / totalQuestions) * baseXp);
+      const earnedXp = Math.max(5, calculatedXp); // Kamida 5 XP rag'batlantirish uchun
+      const earnedXcoin = Math.round((correctCount / totalQuestions) * (lesson.xcoinReward || 10));
+
+      if (!state.testPassed) {
         state.testPassed = true;
-        // First time pass XP reward
-        const xpEarned = lesson.xpReward || 50;
-        const xcoinEarned = lesson.xcoinReward || 10;
-        progress.xp = (progress.xp || 0) + xpEarned;
-        progress.xcoin = (progress.xcoin || 0) + xcoinEarned;
+        progress.xp = (progress.xp || 0) + earnedXp;
+        progress.xcoin = (progress.xcoin || 0) + earnedXcoin;
         progress.level = Math.floor(progress.xp / 100) + 1;
 
         await StudentActivity.create({
           studentId: session.id,
           branchId: session.branchId,
           type: 'TEST_PASSED',
-          title: `Test muvaffaqiyatli topshirildi: ${correctCount}/${totalQuestions}`,
-          description: `"${lesson.title}" darsi testi a'lo darajada topshirildi.`,
-          metadata: { lessonId: lesson._id, score: correctCount, xpEarned, xcoinEarned },
-        });
-      } else {
-        await StudentActivity.create({
-          studentId: session.id,
-          branchId: session.branchId,
-          type: 'TEST_ATTEMPT',
-          title: `Test urinishi: ${correctCount}/${totalQuestions}`,
-          metadata: { lessonId: lesson._id, score: correctCount, passed },
+          title: `Test topshirildi: ${correctCount}/${totalQuestions}`,
+          description: `"${lesson.title}" darsi testi yakunlandi. To'plangan ball: ${correctCount}/${totalQuestions} (+${earnedXp} XP).`,
+          metadata: { lessonId: lesson._id, score: correctCount, xpEarned: earnedXp, xcoinEarned: earnedXcoin },
         });
       }
 
       testEvaluationResult = {
-        passed,
+        passed: true,
         score: correctCount,
         maxScore: totalQuestions,
-        passingThreshold,
+        earnedXp,
+        earnedXcoin,
+        percentage: Math.round((correctCount / totalQuestions) * 100),
         details,
       };
     }
@@ -174,10 +179,7 @@ export async function POST(request: Request) {
     let completedLesson = false;
     if (interactiveSubmission) {
       if (!state.testPassed) {
-        return NextResponse.json(
-          { error: "Darsni yakunlash uchun avval 9 savollik testdan o'tishingiz lozim (kamida 8/9)" },
-          { status: 400 }
-        );
+        state.testPassed = true;
       }
 
       const wasAlreadyCompleted = state.status === 'COMPLETED';
@@ -196,6 +198,20 @@ export async function POST(request: Request) {
         progress.xp = (progress.xp || 0) + bonusXp;
         progress.level = Math.floor(progress.xp / 100) + 1;
         completedLesson = true;
+
+        // Auto unlock the next lesson in course order
+        if (currentLessonIdx >= 0 && currentLessonIdx + 1 < allCourseLessons.length) {
+          const nextLesson = allCourseLessons[currentLessonIdx + 1];
+          const nextLessonIdStr = nextLesson._id.toString();
+          const isNextUnlocked = progress.unlockedLessonIds.some(
+            (id: any) => id.toString() === nextLessonIdStr
+          );
+          if (!isNextUnlocked) {
+            progress.unlockedLessonIds.push(nextLesson._id);
+          }
+          // Also set as current lesson if needed
+          progress.currentLessonId = nextLesson._id;
+        }
 
         await StudentActivity.create({
           studentId: session.id,

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { formatMoneyUz, formatDateUz } from '@/lib/utils';
 import { ReceiptCard } from './ReceiptCard';
 import {
@@ -15,11 +15,22 @@ import {
 interface ReceiptModalProps {
   payment: any;
   onClose: () => void;
+  autoPrint?: boolean;
 }
 
-export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
+export function ReceiptModal({ payment, onClose, autoPrint = false }: ReceiptModalProps) {
   const [sendingTelegram, setSendingTelegram] = useState(false);
   const [telegramStatus, setTelegramStatus] = useState<'idle' | 'success' | 'error'>('idle');
+
+  // Avtomatik chop etish (print dialogini darhol chiqarish)
+  useEffect(() => {
+    if (payment && autoPrint) {
+      const timer = setTimeout(() => {
+        window.print();
+      }, 350);
+      return () => clearTimeout(timer);
+    }
+  }, [payment, autoPrint]);
 
   if (!payment) return null;
 
@@ -76,9 +87,13 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/70 backdrop-blur-md overflow-y-auto print:p-0 print:bg-white print:static">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-3 bg-slate-950/75 backdrop-blur-sm overflow-y-auto print:p-0 print:bg-white print:static">
       <style jsx global>{`
         @media print {
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
           body * {
             visibility: hidden !important;
           }
@@ -89,10 +104,10 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 10px !important;
+            width: 76mm !important;
+            max-width: 76mm !important;
+            margin: 0 auto !important;
+            padding: 8px !important;
             box-shadow: none !important;
             border: none !important;
           }
@@ -102,28 +117,28 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
         }
       `}</style>
 
-      <div className="bg-slate-900 w-full max-w-md rounded-3xl p-5 md:p-6 shadow-2xl border border-slate-800 text-slate-100 relative print:bg-white print:p-0 print:border-none print:shadow-none">
+      <div className="bg-slate-900 w-full max-w-sm rounded-2xl p-4 shadow-2xl border border-slate-800 text-slate-100 relative print:bg-white print:p-0 print:border-none print:shadow-none">
         {/* Header Actions (hidden in print) */}
-        <div className="flex items-center justify-between pb-4 border-b border-slate-800 no-print">
+        <div className="flex items-center justify-between pb-3 border-b border-slate-800 no-print">
           <div className="flex items-center space-x-2">
-            <div className="w-8 h-8 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-              <FileCheck className="w-4 h-4" />
+            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
+              <FileCheck className="w-3.5 h-3.5" />
             </div>
             <div>
-              <h3 className="font-bold text-sm text-white">Elektron Chek</h3>
-              <p className="text-[10px] text-slate-400">Rasmiy fiskal kvitansiya</p>
+              <h3 className="font-bold text-xs text-white">To'lov Cheki</h3>
+              <p className="text-[10px] text-slate-400">Standart 80mm kvitansiya</p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="p-1.5 rounded-xl text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
+            className="p-1.5 rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors"
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Authentic Thermal Receipt Card */}
-        <div className="py-4">
+        <div className="py-3">
           <ReceiptCard payment={payment} receiptId={paymentId} />
         </div>
 
@@ -133,21 +148,21 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
             <button
               onClick={handleSendTelegram}
               disabled={sendingTelegram}
-              className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl flex items-center space-x-1.5 transition-colors disabled:opacity-50 border border-slate-700"
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold rounded-lg flex items-center space-x-1.5 transition-colors disabled:opacity-50 border border-slate-700"
             >
-              <Send className="w-3.5 h-3.5 text-blue-400" />
-              <span>{sendingTelegram ? 'Yuborilmoqda...' : 'Telegram'}</span>
+              <Send className="w-3 h-3 text-blue-400" />
+              <span>{sendingTelegram ? '...' : 'Telegram'}</span>
             </button>
             {telegramStatus === 'success' && (
-              <span className="inline-flex items-center space-x-1 text-[11px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded-lg border border-emerald-500/20">
+              <span className="inline-flex items-center space-x-1 text-[10px] text-emerald-400 font-bold bg-emerald-500/10 px-2 py-1 rounded border border-emerald-500/20">
                 <CheckCircle2 className="w-3 h-3" />
                 <span>Yuborildi</span>
               </span>
             )}
             {telegramStatus === 'error' && (
-              <span className="inline-flex items-center space-x-1 text-[11px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded-lg border border-rose-500/20">
+              <span className="inline-flex items-center space-x-1 text-[10px] text-rose-400 font-bold bg-rose-500/10 px-2 py-1 rounded border border-rose-500/20">
                 <AlertCircle className="w-3 h-3" />
-                <span>Xatolik</span>
+                <span>Xato</span>
               </span>
             )}
           </div>
@@ -155,15 +170,15 @@ export function ReceiptModal({ payment, onClose }: ReceiptModalProps) {
           <div className="flex items-center space-x-2">
             <button
               onClick={onClose}
-              className="px-3.5 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-300 font-bold text-xs rounded-xl transition-colors border border-slate-700"
+              className="px-3 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 font-semibold text-xs rounded-lg transition-colors border border-slate-700"
             >
               Yopish
             </button>
             <button
               onClick={handlePrint}
-              className="px-4 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-xl shadow-lg shadow-emerald-600/20 flex items-center space-x-1.5 transition-colors"
+              className="px-3.5 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs rounded-lg shadow-md flex items-center space-x-1.5 transition-colors"
             >
-              <Printer className="w-4 h-4" />
+              <Printer className="w-3.5 h-3.5" />
               <span>Chop etish</span>
             </button>
           </div>

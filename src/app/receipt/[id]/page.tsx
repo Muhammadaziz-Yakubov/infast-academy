@@ -85,6 +85,10 @@ export default function PublicReceiptPage() {
     <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 flex flex-col items-center justify-center print:bg-white print:p-0">
       <style jsx global>{`
         @media print {
+          @page {
+            size: 80mm auto;
+            margin: 0;
+          }
           body * {
             visibility: hidden !important;
           }
@@ -95,10 +99,10 @@ export default function PublicReceiptPage() {
             position: absolute !important;
             left: 0 !important;
             top: 0 !important;
-            width: 100% !important;
-            max-width: 100% !important;
-            margin: 0 !important;
-            padding: 10px !important;
+            width: 76mm !important;
+            max-width: 76mm !important;
+            margin: 0 auto !important;
+            padding: 8px !important;
             box-shadow: none !important;
             border: none !important;
           }

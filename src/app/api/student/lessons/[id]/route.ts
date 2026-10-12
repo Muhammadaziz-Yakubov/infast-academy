@@ -85,6 +85,8 @@ export async function GET(request: Request, { params }: { params: { id: string }
         testPassed: state?.testPassed || false,
         testScore: state?.testScore || 0,
         testAttempts: state?.testAttempts || 0,
+        testAnswers: state?.testAnswers || [],
+        testResultDetails: state?.testResultDetails || null,
         practiceCompleted: state?.practiceCompleted || false,
         status: state?.status || 'UNLOCKED',
       },

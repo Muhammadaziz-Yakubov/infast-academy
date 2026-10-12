@@ -22,6 +22,7 @@ export default function PaymentsPage() {
   const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [selectedPaymentForReceipt, setSelectedPaymentForReceipt] = useState<any>(null);
+  const [autoPrintReceipt, setAutoPrintReceipt] = useState<boolean>(false);
 
   const [formData, setFormData] = useState({
     studentId: '',
@@ -126,6 +127,7 @@ export default function PaymentsPage() {
             ...data.payment,
             studentId: currentStudent || data.payment.studentId,
           };
+          setAutoPrintReceipt(true);
           setSelectedPaymentForReceipt(newPayment);
         }
       } else {
@@ -195,7 +197,10 @@ export default function PaymentsPage() {
                     <td className="p-3.5 text-slate-500">{p.notes || '-'}</td>
                     <td className="p-3.5 text-right">
                       <button
-                        onClick={() => setSelectedPaymentForReceipt(p)}
+                        onClick={() => {
+                          setAutoPrintReceipt(false);
+                          setSelectedPaymentForReceipt(p);
+                        }}
                         className="px-2.5 py-1.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-bold text-xs rounded-lg border border-emerald-200 inline-flex items-center space-x-1 transition-colors"
                       >
                         <FileText className="w-3.5 h-3.5" />
@@ -325,7 +330,11 @@ export default function PaymentsPage() {
       {selectedPaymentForReceipt && (
         <ReceiptModal
           payment={selectedPaymentForReceipt}
-          onClose={() => setSelectedPaymentForReceipt(null)}
+          autoPrint={autoPrintReceipt}
+          onClose={() => {
+            setSelectedPaymentForReceipt(null);
+            setAutoPrintReceipt(false);
+          }}
         />
       )}
     </div>
