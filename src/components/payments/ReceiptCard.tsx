@@ -2,7 +2,6 @@
 
 import React from 'react';
 import { formatMoneyUz, formatDateUz, formatDateTimeUz } from '@/lib/utils';
-import { CheckCircle2 } from 'lucide-react';
 
 interface ReceiptCardProps {
   payment: any;
@@ -20,7 +19,7 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
   const student = payment.studentId || {};
   const studentName = student.firstName && student.lastName
     ? `${student.firstName} ${student.lastName}`
-    : student.name || 'Noma\'lum Talaba';
+    : student.name || 'Talaba';
 
   const studentCode = student.studentCode || '';
   const groupName = student.groupId?.name || payment.groupName || '-';
@@ -28,7 +27,7 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://infast.uz';
   const receiptUrl = `${origin}/receipt/${cleanId}`;
-  const qrCodeSrc = `https://api.qrserver.com/v1/create-qr-code/?size=140x140&margin=0&data=${encodeURIComponent(receiptUrl)}`;
+  const qrCodeSrc = `https://api.qrserver.com/v1/create-qr-code/?size=110x110&margin=0&data=${encodeURIComponent(receiptUrl)}`;
 
   const paymentDateFormatted = formatDateTimeUz(payment.paymentDate || payment.createdAt);
   const periodStartFormatted = formatDateUz(payment.periodStartDate);
@@ -37,75 +36,75 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
   return (
     <div
       id="receipt-print-area"
-      className={`w-full max-w-[340px] mx-auto bg-white text-black font-mono text-[11px] p-5 rounded-xl shadow-lg border border-slate-200 select-text leading-tight print:shadow-none print:border-none print:w-[76mm] print:max-w-[76mm] print:p-1 print:m-0 ${className}`}
+      className={`receipt-box w-full max-w-[300px] mx-auto bg-white text-black font-mono text-[10px] p-4 rounded-xl shadow-md border border-neutral-200 select-text leading-tight ${className}`}
     >
       {/* 1. KORXONA SHAPKASI */}
-      <div className="text-center pb-2.5 border-b border-dashed border-neutral-400">
-        <h2 className="font-extrabold text-[15px] tracking-tight font-sans text-neutral-900 uppercase">
+      <div className="text-center pb-1.5 border-b border-dashed border-black">
+        <h2 className="font-extrabold text-[13px] tracking-tight font-sans text-black uppercase">
           INFAST ACADEMY
         </h2>
-        <p className="text-[10px] font-sans font-semibold text-neutral-700">
+        <p className="text-[9px] font-sans font-semibold text-neutral-800">
           "INFAST26" XK • Farg'ona sh.
         </p>
-        <p className="text-[9px] text-neutral-600">
-          STIR: 312956346 • Tel: +998 (90) 271-00-27
+        <p className="text-[8px] text-neutral-700">
+          STIR: 312956346 • Tel: (90) 271-00-27
         </p>
       </div>
 
       {/* 2. CHEK SARIQLIGI VA HOLATI */}
-      <div className="py-2 text-center border-b border-dashed border-neutral-300">
-        <div className="font-bold text-[11px] text-neutral-900 uppercase tracking-wider">
-          TO'LOV KVITANSIYASI
+      <div className="py-1 text-center border-b border-dashed border-neutral-400">
+        <div className="font-bold text-[10px] text-black uppercase tracking-wider">
+          TO'LOV CHEKI (KVITANSIYA)
         </div>
-        <div className="text-[9px] text-emerald-700 font-bold font-sans mt-0.5">
+        <div className="text-[8.5px] text-black font-bold font-sans">
           ✓ TO'LOV QABUL QILINDI
         </div>
       </div>
 
-      {/* 3. METALAR */}
-      <div className="py-2.5 space-y-1.5 border-b border-dashed border-neutral-300">
+      {/* 3. REKVIZITLAR VA MA'LUMOTLAR */}
+      <div className="py-1.5 space-y-1 border-b border-dashed border-neutral-400 text-[9px]">
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">Chek №:</span>
-          <span className="font-bold text-neutral-900">{receiptNo}</span>
+          <span className="text-neutral-600">Chek №:</span>
+          <span className="font-bold text-black">{receiptNo}</span>
         </div>
 
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">Sana:</span>
-          <span className="font-semibold text-neutral-800">{paymentDateFormatted}</span>
+          <span className="text-neutral-600">Sana:</span>
+          <span className="font-semibold text-black">{paymentDateFormatted}</span>
         </div>
 
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">Talaba:</span>
-          <span className="font-bold text-neutral-950 text-right max-w-[190px]">
-            {studentName} {studentCode ? `(${studentCode})` : ''}
+          <span className="text-neutral-600">Talaba:</span>
+          <span className="font-bold text-black text-right max-w-[155px]">
+            {studentName} {studentCode ? `[${studentCode}]` : ''}
           </span>
         </div>
 
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">Guruh/Kurs:</span>
-          <span className="font-medium text-neutral-800 text-right max-w-[190px]">
-            {groupName} {courseName ? `• ${courseName}` : ''}
+          <span className="text-neutral-600">Guruh:</span>
+          <span className="font-medium text-black text-right max-w-[155px]">
+            {groupName} {courseName ? `(${courseName})` : ''}
           </span>
         </div>
 
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">Davr:</span>
-          <span className="font-semibold text-neutral-900 text-right">
+          <span className="text-neutral-600">Davr:</span>
+          <span className="font-semibold text-black text-right">
             {periodStartFormatted} - {periodEndFormatted}
           </span>
         </div>
 
         <div className="flex justify-between items-start">
-          <span className="text-neutral-500">To'lov turi:</span>
-          <span className="font-bold text-neutral-900 uppercase">
+          <span className="text-neutral-600">Usul:</span>
+          <span className="font-bold text-black uppercase">
             {payment.paymentMethod || 'NAQD'}
           </span>
         </div>
 
         {payment.notes ? (
           <div className="flex justify-between items-start">
-            <span className="text-neutral-500">Izoh:</span>
-            <span className="font-normal text-neutral-700 text-right max-w-[190px]">
+            <span className="text-neutral-600">Izoh:</span>
+            <span className="font-normal text-neutral-800 text-right max-w-[155px]">
               {payment.notes}
             </span>
           </div>
@@ -113,35 +112,35 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
       </div>
 
       {/* 4. JAMI SUMMA */}
-      <div className="py-2.5 border-b-2 border-neutral-900 text-center">
-        <div className="text-[10px] text-neutral-600 uppercase font-bold tracking-wider mb-0.5">
-          Jami To'landi:
+      <div className="py-1.5 border-b-2 border-black text-center my-0.5">
+        <div className="text-[8.5px] text-neutral-700 uppercase font-bold tracking-wider">
+          Jami to'landi:
         </div>
-        <div className="text-xl font-black text-neutral-950 tracking-tight font-mono">
+        <div className="text-[17px] font-black text-black tracking-tight font-mono">
           {formatMoneyUz(payment.amount)}
         </div>
       </div>
 
       {/* 5. QR VA TEKSHIRUV */}
-      <div className="pt-2.5 flex items-center justify-between gap-2">
-        <div className="space-y-0.5 text-[8.5px] text-neutral-600 leading-tight flex-1">
-          <p className="font-bold text-neutral-900">Elektron chek tasdiqlangan</p>
+      <div className="pt-1.5 flex items-center justify-between gap-1.5">
+        <div className="space-y-0.5 text-[7.5px] text-neutral-700 leading-tight flex-1">
+          <p className="font-bold text-black text-[8px]">Elektron tasdiq</p>
           <p>Haqiqiyligini tekshirish uchun QR-kodni skanerlang.</p>
-          <p className="text-neutral-500 pt-0.5">Terminal: INF-POS-01</p>
+          <p className="text-neutral-600">Terminal: INF-POS-01</p>
         </div>
 
         <div className="p-0.5 bg-white border border-neutral-300 rounded shrink-0">
           <img
             src={qrCodeSrc}
             alt="QR"
-            className="w-14 h-14 object-contain"
+            className="w-11 h-11 object-contain"
           />
         </div>
       </div>
 
       {/* 6. PASTKI TASHAKKUR */}
-      <div className="text-center text-[9px] text-neutral-500 pt-2.5 border-t border-dashed border-neutral-300 mt-2 font-sans">
-        Xaridingiz uchun rahmat!
+      <div className="text-center text-[8px] text-neutral-600 pt-1.5 border-t border-dashed border-neutral-300 mt-1.5 font-sans">
+        Rahmat! • www.infast.uz
       </div>
     </div>
   );
