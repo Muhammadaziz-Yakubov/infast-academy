@@ -27,8 +27,10 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
   const courseName = student.courseId?.name || payment.courseName || '';
 
   const branch = payment.branchId || {};
-  const branchName = branch.name || 'INFAST ACADEMY';
-  const branchAddress = branch.address || "Farg'ona sh., Al-Farg'oniy k.";
+  const branchName = 'INFAST IT-Academy';
+  const branchAddress = branch.address && branch.address !== "Farg'ona sh., Al-Farg'oniy k."
+    ? branch.address
+    : 'Buloqboshi tumani, Yangi Hokimiyat';
   const branchPhone = branch.phone || '+998 (90) 271-00-27';
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://infast.uz';
