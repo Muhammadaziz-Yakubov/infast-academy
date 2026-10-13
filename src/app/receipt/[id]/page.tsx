@@ -44,7 +44,7 @@ export default function PublicReceiptPage() {
       return;
     }
 
-    const printWindow = window.open('', '_blank', 'width=380,height=600');
+    const printWindow = window.open('', '_blank', 'width=420,height=650');
     if (!printWindow) {
       window.print();
       return;
@@ -65,27 +65,33 @@ export default function PublicReceiptPage() {
               box-sizing: border-box;
               margin: 0;
               padding: 0;
+              -webkit-print-color-adjust: exact !important;
+              print-color-adjust: exact !important;
             }
             html, body {
               width: 58mm;
               margin: 0 auto;
-              padding: 2mm 1mm;
-              background: #ffffff;
-              color: #000000;
-              font-family: monospace;
+              padding: 0;
+              background: #ffffff !important;
+              color: #000000 !important;
+              font-family: 'Courier New', Courier, monospace, system-ui;
               font-size: 10px;
-              line-height: 1.25;
+              line-height: 1.35;
             }
             .receipt-box {
-              width: 100% !important;
-              max-width: 56mm !important;
+              width: 50mm !important;
+              max-width: 50mm !important;
               margin: 0 auto !important;
-              padding: 0 !important;
+              padding: 2mm 0mm 15mm 0mm !important;
               border: none !important;
               box-shadow: none !important;
+              background: #ffffff !important;
+              color: #000000 !important;
             }
             .text-center { text-align: center; }
+            .text-right { text-align: right; }
             .font-bold { font-weight: bold; }
+            .font-semibold { font-weight: 600; }
             .font-extrabold { font-weight: 800; }
             .font-black { font-weight: 900; }
             .uppercase { text-transform: uppercase; }
@@ -93,28 +99,50 @@ export default function PublicReceiptPage() {
             .justify-between { justify-content: space-between; }
             .items-start { align-items: flex-start; }
             .items-center { align-items: center; }
-            .border-b { border-bottom: 1px dashed #000; }
+            .mx-auto { margin-left: auto; margin-right: auto; }
+            .block { display: block; }
+            .inline-block { display: inline-block; }
+            .border-b { border-bottom: 1px dashed #666; }
             .border-b-2 { border-bottom: 2px solid #000; }
-            .border-t { border-top: 1px dashed #999; }
-            .py-1 { padding-top: 3px; padding-bottom: 3px; }
-            .py-1\\.5 { padding-top: 4px; padding-bottom: 4px; }
-            .pb-1\\.5 { padding-bottom: 4px; }
-            .pt-1\\.5 { padding-top: 4px; }
-            .my-0\\.5 { margin-top: 2px; margin-bottom: 2px; }
-            .mt-1\\.5 { margin-top: 4px; }
-            .space-y-1 > * + * { margin-top: 3px; }
-            .space-y-0\\.5 > * + * { margin-top: 1px; }
-            .text-black { color: #000; }
-            .text-neutral-800, .text-neutral-700, .text-neutral-600 { color: #222; }
-            .text-\\[13px\\] { font-size: 13px; }
-            .text-\\[10px\\] { font-size: 10px; }
+            .py-1 { padding-top: 4px; padding-bottom: 4px; }
+            .py-2 { padding-top: 8px; padding-bottom: 8px; }
+            .py-2\\.5 { padding-top: 10px; padding-bottom: 10px; }
+            .pb-2\\.5 { padding-bottom: 10px; }
+            .pb-6 { padding-bottom: 24px; }
+            .pt-2 { padding-top: 8px; }
+            .my-1 { margin-top: 4px; margin-bottom: 4px; }
+            .my-2 { margin-top: 8px; margin-bottom: 8px; }
+            .mt-1 { margin-top: 4px; }
+            .mt-2 { margin-top: 8px; }
+            .space-y-2 > * + * { margin-top: 6px; }
+            .space-y-1 > * + * { margin-top: 4px; }
+            .text-black { color: #000 !important; }
+            .text-neutral-800 { color: #222 !important; }
+            .text-neutral-700 { color: #444 !important; }
+            .text-neutral-600 { color: #666 !important; }
+            .text-neutral-500 { color: #777 !important; }
+            .text-\\[15px\\] { font-size: 14px; }
+            .text-\\[11px\\] { font-size: 11px; }
+            .text-\\[9\\.5px\\] { font-size: 9.5px; }
             .text-\\[9px\\] { font-size: 9px; }
+            .text-\\[8\\.5px\\] { font-size: 8.5px; }
             .text-\\[8px\\] { font-size: 8px; }
-            .text-\\[7\\.5px\\] { font-size: 7.5px; }
-            .text-\\[17px\\] { font-size: 17px; }
-            img { max-width: 100%; height: auto; }
-            .w-11 { width: 44px; }
-            .h-11 { height: 44px; }
+            .text-\\[19px\\] { font-size: 18px; }
+            img {
+              max-width: 100%;
+              height: auto;
+              image-rendering: -webkit-optimize-contrast;
+              image-rendering: pixelated;
+            }
+            .qr-img {
+              width: 110px !important;
+              height: 110px !important;
+              max-width: 110px !important;
+              max-height: 110px !important;
+              display: block !important;
+              margin: 0 auto !important;
+              image-rendering: pixelated;
+            }
           </style>
         </head>
         <body>
@@ -122,8 +150,10 @@ export default function PublicReceiptPage() {
           <script>
             window.onload = function() {
               window.focus();
-              window.print();
-              setTimeout(function() { window.close(); }, 800);
+              setTimeout(function() {
+                window.print();
+                setTimeout(function() { window.close(); }, 800);
+              }, 250);
             };
           </script>
         </body>
@@ -196,11 +226,12 @@ export default function PublicReceiptPage() {
           #receipt-print-area {
             position: absolute !important;
             left: 0 !important;
+            right: 0 !important;
             top: 0 !important;
-            width: 54mm !important;
-            max-width: 54mm !important;
+            width: 50mm !important;
+            max-width: 50mm !important;
             margin: 0 auto !important;
-            padding: 2mm !important;
+            padding: 2mm 0mm 15mm 0mm !important;
             box-shadow: none !important;
             border: none !important;
             background: #ffffff !important;

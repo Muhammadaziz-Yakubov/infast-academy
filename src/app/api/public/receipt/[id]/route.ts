@@ -1,6 +1,7 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Payment } from '@/models/Payment';
+import '@/models/Branch';
 
 export async function GET(
   request: Request,
@@ -14,14 +15,16 @@ export async function GET(
       return NextResponse.json({ error: "To'lov ID ko'rsatilmadi" }, { status: 400 });
     }
 
-    const payment = await Payment.findById(id).populate({
-      path: 'studentId',
-      select: 'firstName lastName phone courseId groupId',
-      populate: [
-        { path: 'courseId', select: 'name price' },
-        { path: 'groupId', select: 'name room' },
-      ],
-    });
+    const payment = await Payment.findById(id)
+      .populate({
+        path: 'studentId',
+        select: 'firstName lastName phone studentCode courseId groupId',
+        populate: [
+          { path: 'courseId', select: 'name price' },
+          { path: 'groupId', select: 'name room' },
+        ],
+      })
+      .populate('branchId', 'name address phone');
 
     if (!payment) {
       return NextResponse.json({ error: "To'lov topilmadi" }, { status: 404 });
