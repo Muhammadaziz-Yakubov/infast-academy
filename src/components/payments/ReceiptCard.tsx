@@ -29,7 +29,7 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
   const branch = payment.branchId || {};
   const branchName = branch.name || 'INFAST ACADEMY';
   const branchAddress = branch.address || "Farg'ona sh., Al-Farg'oniy k.";
-  const branchPhone = branch.phone || '(90) 271-00-27';
+  const branchPhone = branch.phone || '+998 (90) 271-00-27';
 
   const origin = typeof window !== 'undefined' ? window.location.origin : 'https://infast.uz';
   const receiptUrl = `${origin}/receipt/${cleanId}`;
@@ -42,7 +42,7 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
     let isMounted = true;
     if (receiptUrl) {
       QRCode.toDataURL(receiptUrl, {
-        width: 260,
+        width: 280,
         margin: 1,
         errorCorrectionLevel: 'M',
         color: {
@@ -62,7 +62,7 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
     };
   }, [receiptUrl]);
 
-  const fallbackQr = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&margin=1&data=${encodeURIComponent(receiptUrl)}`;
+  const fallbackQr = `https://api.qrserver.com/v1/create-qr-code/?size=250x250&margin=1&data=${encodeURIComponent(receiptUrl)}`;
   const displayQr = qrDataUrl || fallbackQr;
 
   const paymentDateFormatted = formatDateTimeUz(payment.paymentDate || payment.createdAt);
@@ -92,194 +92,194 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
   return (
     <div
       id="receipt-print-area"
-      className={`receipt-box w-full max-w-[320px] mx-auto bg-white text-black font-mono text-[10px] p-5 rounded-2xl shadow-xl border border-neutral-300 select-text leading-normal ${className}`}
+      className={`receipt-box w-full max-w-[330px] mx-auto bg-white text-black font-sans text-[11px] p-5 rounded-2xl shadow-xl border-2 border-neutral-300 select-text leading-normal ${className}`}
       style={{
         backgroundColor: '#ffffff',
         color: '#000000',
-        fontFamily: '"Courier New", Courier, monospace, system-ui',
+        fontFamily: '-apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif',
         boxSizing: 'border-box',
       }}
     >
       {/* 1. KORXONA SHAPKASI */}
       <div className="text-center pb-2.5" style={{ textAlign: 'center', paddingBottom: '10px' }}>
         <h2
-          className="font-extrabold text-[15px] tracking-wider text-black uppercase"
-          style={{ fontSize: '15px', fontWeight: 900, letterSpacing: '0.05em', color: '#000000', margin: 0 }}
+          className="font-black text-[16px] tracking-wider text-black uppercase"
+          style={{ fontSize: '16px', fontWeight: 900, letterSpacing: '0.05em', color: '#000000', margin: 0 }}
         >
           {branchName.toUpperCase()}
         </h2>
         <p
-          className="text-[9.5px] font-semibold text-neutral-800 mt-1"
-          style={{ fontSize: '9.5px', fontWeight: 600, color: '#222222', marginTop: '4px' }}
+          className="text-[11px] font-bold text-black mt-1"
+          style={{ fontSize: '11px', fontWeight: 700, color: '#000000', marginTop: '4px' }}
         >
           IT & Kasbiy Ta'lim Markazi
         </p>
         <p
-          className="text-[8.5px] text-neutral-600 mt-0.5"
-          style={{ fontSize: '8.5px', color: '#555555', marginTop: '2px' }}
+          className="text-[10px] font-semibold text-black mt-0.5"
+          style={{ fontSize: '10px', fontWeight: 600, color: '#000000', marginTop: '2px' }}
         >
           {branchAddress}
         </p>
         <p
-          className="text-[8.5px] text-neutral-600 mt-0.5"
-          style={{ fontSize: '8.5px', color: '#555555', marginTop: '2px' }}
+          className="text-[10px] font-bold text-black mt-0.5"
+          style={{ fontSize: '10px', fontWeight: 700, color: '#000000', marginTop: '2px' }}
         >
           STIR: 312956346 • Tel: {branchPhone}
         </p>
       </div>
 
-      {/* AJRATUVCHI CHIZIQ */}
+      {/* QALIN AJRATUVCHI CHIZIQ */}
       <div
-        className="my-2 border-b border-dashed border-neutral-400"
-        style={{ borderBottom: '1px dashed #666666', margin: '8px 0' }}
+        className="my-2.5 border-b-2 border-dashed border-black"
+        style={{ borderBottom: '1.5px dashed #000000', margin: '10px 0' }}
       />
 
       {/* 2. CHEK SARIQLIGI VA HOLATI */}
       <div className="py-1 text-center" style={{ textAlign: 'center', padding: '4px 0' }}>
         <div
-          className="font-bold text-[11px] text-black uppercase tracking-wider"
-          style={{ fontSize: '11px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em' }}
+          className="font-black text-[13px] text-black uppercase tracking-wider"
+          style={{ fontSize: '13px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#000000' }}
         >
-          TO'LOV CHEKI (KVITANSIYA)
+          TO'LOV KVITANSIYASI
         </div>
         <div
-          className="text-[9px] text-black font-bold tracking-wide mt-1"
-          style={{ fontSize: '9px', fontWeight: 'bold', marginTop: '4px' }}
+          className="text-[11px] text-black font-extrabold tracking-wide mt-1"
+          style={{ fontSize: '11px', fontWeight: 800, marginTop: '4px', color: '#000000' }}
         >
-          ✓ TO'LOV MUVAFFAQIYATLI QABUL QILINDI
+          ✓ TO'LOV QABUL QILINDI
         </div>
       </div>
 
-      {/* AJRATUVCHI CHIZIQ */}
+      {/* QALIN AJRATUVCHI CHIZIQ */}
       <div
-        className="my-2 border-b border-dashed border-neutral-400"
-        style={{ borderBottom: '1px dashed #666666', margin: '8px 0' }}
+        className="my-2.5 border-b-2 border-dashed border-black"
+        style={{ borderBottom: '1.5px dashed #000000', margin: '10px 0' }}
       />
 
-      {/* 3. REKVIZITLAR VA MA'LUMOTLAR (Bemalol, uzunroq qilib) */}
-      <div className="py-2 space-y-2 text-[9.5px]" style={{ padding: '8px 0' }}>
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>Chek №:</span>
-          <span className="font-bold text-black" style={{ fontWeight: 'bold', color: '#000000' }}>{receiptNo}</span>
+      {/* 3. REKVIZITLAR VA MA'LUMOTLAR (Katta va qalin shriftlar) */}
+      <div className="py-2 space-y-2 text-[11px]" style={{ padding: '8px 0' }}>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Chek №:</span>
+          <span className="font-black text-black" style={{ fontWeight: 900, color: '#000000' }}>{receiptNo}</span>
         </div>
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>Sana va vaqt:</span>
-          <span className="font-semibold text-black" style={{ fontWeight: 600, color: '#000000' }}>{paymentDateFormatted}</span>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Sana va vaqt:</span>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>{paymentDateFormatted}</span>
         </div>
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>Terminal / Kassa:</span>
-          <span className="font-medium text-black" style={{ color: '#000000' }}>INF-POS-01</span>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Terminal:</span>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>INF-POS-01</span>
         </div>
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>Talaba:</span>
-          <span className="font-bold text-black text-right max-w-[170px]" style={{ fontWeight: 'bold', textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Talaba:</span>
+          <span className="font-black text-black text-right max-w-[170px]" style={{ fontWeight: 900, textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
             {studentName}
           </span>
         </div>
 
         {studentCode ? (
-          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span className="text-neutral-600" style={{ color: '#555555' }}>Talaba ID:</span>
-            <span className="font-bold text-black text-right" style={{ fontWeight: 'bold', color: '#000000' }}>
+          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+            <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Talaba ID:</span>
+            <span className="font-black text-black text-right" style={{ fontWeight: 900, color: '#000000' }}>
               {studentCode}
             </span>
           </div>
         ) : null}
 
         {courseName ? (
-          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span className="text-neutral-600" style={{ color: '#555555' }}>Kurs:</span>
-            <span className="font-medium text-black text-right max-w-[170px]" style={{ textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
+          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+            <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Kurs:</span>
+            <span className="font-bold text-black text-right max-w-[170px]" style={{ fontWeight: 700, textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
               {courseName}
             </span>
           </div>
         ) : null}
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>Guruh:</span>
-          <span className="font-medium text-black text-right max-w-[170px]" style={{ textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Guruh:</span>
+          <span className="font-bold text-black text-right max-w-[170px]" style={{ fontWeight: 700, textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
             {groupName}
           </span>
         </div>
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>To'lov davri:</span>
-          <span className="font-semibold text-black text-right" style={{ fontWeight: 600, textAlign: 'right', color: '#000000' }}>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>To'lov davri:</span>
+          <span className="font-bold text-black text-right" style={{ fontWeight: 700, textAlign: 'right', color: '#000000' }}>
             {periodStartFormatted} — {periodEndFormatted}
           </span>
         </div>
 
-        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-          <span className="text-neutral-600" style={{ color: '#555555' }}>To'lov turi:</span>
-          <span className="font-bold text-black uppercase" style={{ fontWeight: 'bold', textTransform: 'uppercase', color: '#000000' }}>
+        <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+          <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>To'lov turi:</span>
+          <span className="font-black text-black uppercase" style={{ fontWeight: 900, textTransform: 'uppercase', color: '#000000' }}>
             {getPaymentMethodName(payment.paymentMethod)}
           </span>
         </div>
 
         {payment.notes ? (
-          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '6px' }}>
-            <span className="text-neutral-600" style={{ color: '#555555' }}>Izoh:</span>
-            <span className="font-normal text-neutral-800 text-right max-w-[170px]" style={{ textAlign: 'right', color: '#222222', maxWidth: '170px' }}>
+          <div className="flex justify-between items-start" style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '7px' }}>
+            <span className="font-bold text-black" style={{ fontWeight: 700, color: '#000000' }}>Izoh:</span>
+            <span className="font-semibold text-black text-right max-w-[170px]" style={{ fontWeight: 600, textAlign: 'right', color: '#000000', maxWidth: '170px' }}>
               {payment.notes}
             </span>
           </div>
         ) : null}
       </div>
 
-      {/* QALIN AJRATUVCHI CHIZIQ (JAMI OLDIDAN) */}
+      {/* QALIN 2PX AJRATUVCHI CHIZIQ (JAMI OLDIDAN) */}
       <div
-        className="my-2 border-b-2 border-black"
-        style={{ borderBottom: '2px solid #000000', margin: '10px 0' }}
+        className="my-2.5 border-b-2 border-black"
+        style={{ borderBottom: '2.5px solid #000000', margin: '10px 0' }}
       />
 
-      {/* 4. JAMI SUMMA */}
+      {/* 4. JAMI SUMMA (Katta va judayam qalin) */}
       <div className="py-2.5 text-center my-1" style={{ textAlign: 'center', padding: '10px 0', margin: '4px 0' }}>
         <div
-          className="text-[9.5px] text-neutral-700 uppercase font-bold tracking-wider"
-          style={{ fontSize: '9.5px', color: '#444444', textTransform: 'uppercase', fontWeight: 'bold', letterSpacing: '0.05em' }}
+          className="text-[12px] text-black uppercase font-black tracking-wider"
+          style={{ fontSize: '12px', color: '#000000', textTransform: 'uppercase', fontWeight: 900, letterSpacing: '0.05em' }}
         >
           JAMI TO'LANDI:
         </div>
         <div
-          className="text-[19px] font-black text-black tracking-tight mt-1"
-          style={{ fontSize: '19px', fontWeight: 900, color: '#000000', letterSpacing: '-0.02em', marginTop: '4px' }}
+          className="text-[22px] font-black text-black tracking-tight mt-1"
+          style={{ fontSize: '22px', fontWeight: 900, color: '#000000', letterSpacing: '-0.02em', marginTop: '4px' }}
         >
           {formatMoneyUz(payment.amount)}
         </div>
         <div
-          className="text-[8px] text-neutral-500 mt-1"
-          style={{ fontSize: '8px', color: '#777777', marginTop: '4px' }}
+          className="text-[10px] text-black font-bold mt-1"
+          style={{ fontSize: '10px', color: '#000000', fontWeight: 700, marginTop: '4px' }}
         >
-          QQS (0%) • To'liq to'landi
+          QQS (0%) • TO'LIQ TO'LANDI
         </div>
       </div>
 
-      {/* AJRATUVCHI CHIZIQ */}
+      {/* QALIN 2PX AJRATUVCHI CHIZIQ */}
       <div
-        className="my-2 border-b border-dashed border-neutral-400"
-        style={{ borderBottom: '1px dashed #666666', margin: '8px 0' }}
+        className="my-2.5 border-b-2 border-black"
+        style={{ borderBottom: '2.5px solid #000000', margin: '10px 0' }}
       />
 
-      {/* 5. QR-KOD VA ELEKTRON TEKSHIRUV (O'rtada, bemalol, qog'ozga to'liq sig'adigan) */}
+      {/* 5. QR-KOD VA ELEKTRON TEKSHIRUV (O'rtada, bemalol, to'liq sig'adigan) */}
       <div className="py-2.5 text-center" style={{ textAlign: 'center', padding: '10px 0' }}>
         <div
-          className="font-bold text-[9px] uppercase tracking-wider text-black mb-2"
-          style={{ fontSize: '9px', fontWeight: 'bold', textTransform: 'uppercase', letterSpacing: '0.05em', color: '#000000', marginBottom: '8px' }}
+          className="font-black text-[11px] uppercase tracking-wider text-black mb-2"
+          style={{ fontSize: '11px', fontWeight: 900, textTransform: 'uppercase', letterSpacing: '0.05em', color: '#000000', marginBottom: '8px' }}
         >
           ELEKTRON CHEKNI TEKSHIRISH
         </div>
 
         {/* QR Kod konteyneri — markazlashtirilgan, sig'adigan va aniq */}
         <div
-          className="inline-block p-1 bg-white border border-neutral-300 rounded shadow-sm mx-auto"
+          className="inline-block p-1.5 bg-white border-2 border-black rounded shadow-sm mx-auto"
           style={{
             display: 'inline-block',
             padding: '4px',
             backgroundColor: '#ffffff',
-            border: '1px solid #cccccc',
+            border: '2px solid #000000',
             borderRadius: '4px',
             margin: '0 auto',
           }}
@@ -287,12 +287,12 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
           <img
             src={displayQr}
             alt="QR Kod"
-            className="qr-img w-[110px] h-[110px] object-contain mx-auto block"
+            className="qr-img w-[115px] h-[115px] object-contain mx-auto block"
             style={{
-              width: '110px',
-              height: '110px',
-              maxWidth: '110px',
-              maxHeight: '110px',
+              width: '115px',
+              height: '115px',
+              maxWidth: '115px',
+              maxHeight: '115px',
               display: 'block',
               margin: '0 auto',
               imageRendering: 'pixelated',
@@ -301,52 +301,52 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
         </div>
 
         <p
-          className="text-[8.5px] text-neutral-700 mt-2 leading-tight"
-          style={{ fontSize: '8.5px', color: '#333333', marginTop: '8px', lineHeight: '1.3' }}
+          className="text-[10.5px] text-black font-bold mt-2.5 leading-snug"
+          style={{ fontSize: '10.5px', color: '#000000', fontWeight: 700, marginTop: '8px', lineHeight: '1.35' }}
         >
           Chek haqiqiyligini tekshirish uchun<br />QR-kodni kamerangiz orqali skanerlang
         </p>
 
         <p
-          className="text-[8px] text-neutral-500 font-sans mt-1"
-          style={{ fontSize: '8px', color: '#666666', marginTop: '4px' }}
+          className="text-[10px] text-black font-bold font-mono mt-1"
+          style={{ fontSize: '10px', color: '#000000', fontWeight: 700, marginTop: '4px' }}
         >
           {shortReceiptUrl}
         </p>
       </div>
 
-      {/* AJRATUVCHI CHIZIQ */}
+      {/* QALIN AJRATUVCHI CHIZIQ */}
       <div
-        className="my-2 border-b border-dashed border-neutral-300"
-        style={{ borderBottom: '1px dashed #888888', margin: '8px 0' }}
+        className="my-2.5 border-b-2 border-dashed border-black"
+        style={{ borderBottom: '1.5px dashed #000000', margin: '10px 0' }}
       />
 
       {/* 6. PASTKI TASHAKKUR VA KESISH JOVI (Printer kesishi uchun bemalol bo'sh joy) */}
       <div
-        className="text-center pt-2 pb-6 space-y-1"
+        className="text-center pt-2 pb-6 space-y-1.5"
         style={{ textAlign: 'center', paddingTop: '8px', paddingBottom: '24px' }}
       >
         <p
-          className="text-[9px] font-bold text-black uppercase"
-          style={{ fontSize: '9px', fontWeight: 'bold', color: '#000000', textTransform: 'uppercase' }}
+          className="text-[12px] font-black text-black uppercase"
+          style={{ fontSize: '12px', fontWeight: 900, color: '#000000', textTransform: 'uppercase' }}
         >
-          Tashakkur!
+          TASHAKKUR!
         </p>
         <p
-          className="text-[8px] text-neutral-600"
-          style={{ fontSize: '8px', color: '#555555' }}
+          className="text-[10px] font-bold text-black"
+          style={{ fontSize: '10px', fontWeight: 700, color: '#000000' }}
         >
           INFAST ACADEMY ni tanlaganingiz uchun rahmat!
         </p>
         <p
-          className="text-[8px] text-neutral-600"
-          style={{ fontSize: '8px', color: '#555555' }}
+          className="text-[10px] font-bold text-black"
+          style={{ fontSize: '10px', fontWeight: 700, color: '#000000' }}
         >
-          Murojaat: +998 (90) 271-00-27
+          Murojaat uchun: +998 (90) 271-00-27
         </p>
         <p
-          className="text-[8px] text-neutral-500 font-sans"
-          style={{ fontSize: '8px', color: '#777777' }}
+          className="text-[10px] font-bold text-black"
+          style={{ fontSize: '10px', fontWeight: 700, color: '#000000' }}
         >
           www.infast.uz
         </p>

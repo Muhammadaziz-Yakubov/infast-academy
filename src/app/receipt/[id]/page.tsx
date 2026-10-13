@@ -74,8 +74,8 @@ export default function PublicReceiptPage() {
               padding: 0;
               background: #ffffff !important;
               color: #000000 !important;
-              font-family: 'Courier New', Courier, monospace, system-ui;
-              font-size: 10px;
+              font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+              font-size: 11px;
               line-height: 1.35;
             }
             .receipt-box {
@@ -90,10 +90,10 @@ export default function PublicReceiptPage() {
             }
             .text-center { text-align: center; }
             .text-right { text-align: right; }
-            .font-bold { font-weight: bold; }
-            .font-semibold { font-weight: 600; }
-            .font-extrabold { font-weight: 800; }
-            .font-black { font-weight: 900; }
+            .font-bold { font-weight: 700 !important; }
+            .font-semibold { font-weight: 600 !important; }
+            .font-extrabold { font-weight: 800 !important; }
+            .font-black { font-weight: 900 !important; }
             .uppercase { text-transform: uppercase; }
             .flex { display: flex; }
             .justify-between { justify-content: space-between; }
@@ -102,8 +102,8 @@ export default function PublicReceiptPage() {
             .mx-auto { margin-left: auto; margin-right: auto; }
             .block { display: block; }
             .inline-block { display: inline-block; }
-            .border-b { border-bottom: 1px dashed #666; }
-            .border-b-2 { border-bottom: 2px solid #000; }
+            .border-b-2 { border-bottom: 2px solid #000 !important; }
+            .border-dashed { border-style: dashed !important; }
             .py-1 { padding-top: 4px; padding-bottom: 4px; }
             .py-2 { padding-top: 8px; padding-bottom: 8px; }
             .py-2\\.5 { padding-top: 10px; padding-bottom: 10px; }
@@ -111,23 +111,19 @@ export default function PublicReceiptPage() {
             .pb-6 { padding-bottom: 24px; }
             .pt-2 { padding-top: 8px; }
             .my-1 { margin-top: 4px; margin-bottom: 4px; }
-            .my-2 { margin-top: 8px; margin-bottom: 8px; }
+            .my-2\\.5 { margin-top: 10px; margin-bottom: 10px; }
             .mt-1 { margin-top: 4px; }
-            .mt-2 { margin-top: 8px; }
-            .space-y-2 > * + * { margin-top: 6px; }
-            .space-y-1 > * + * { margin-top: 4px; }
+            .mt-2\\.5 { margin-top: 10px; }
+            .space-y-2 > * + * { margin-top: 7px; }
+            .space-y-1\\.5 > * + * { margin-top: 6px; }
             .text-black { color: #000 !important; }
-            .text-neutral-800 { color: #222 !important; }
-            .text-neutral-700 { color: #444 !important; }
-            .text-neutral-600 { color: #666 !important; }
-            .text-neutral-500 { color: #777 !important; }
-            .text-\\[15px\\] { font-size: 14px; }
-            .text-\\[11px\\] { font-size: 11px; }
-            .text-\\[9\\.5px\\] { font-size: 9.5px; }
-            .text-\\[9px\\] { font-size: 9px; }
-            .text-\\[8\\.5px\\] { font-size: 8.5px; }
-            .text-\\[8px\\] { font-size: 8px; }
-            .text-\\[19px\\] { font-size: 18px; }
+            .text-\\[16px\\] { font-size: 16px !important; }
+            .text-\\[13px\\] { font-size: 13px !important; }
+            .text-\\[12px\\] { font-size: 12px !important; }
+            .text-\\[11px\\] { font-size: 11px !important; }
+            .text-\\[10\\.5px\\] { font-size: 10.5px !important; }
+            .text-\\[10px\\] { font-size: 10px !important; }
+            .text-\\[22px\\] { font-size: 22px !important; }
             img {
               max-width: 100%;
               height: auto;
@@ -135,10 +131,10 @@ export default function PublicReceiptPage() {
               image-rendering: pixelated;
             }
             .qr-img {
-              width: 110px !important;
-              height: 110px !important;
-              max-width: 110px !important;
-              max-height: 110px !important;
+              width: 115px !important;
+              height: 115px !important;
+              max-width: 115px !important;
+              max-height: 115px !important;
               display: block !important;
               margin: 0 auto !important;
               image-rendering: pixelated;
