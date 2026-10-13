@@ -915,11 +915,11 @@ export default function StudentsPage() {
 
               <div>
                 <label className="block font-bold text-slate-700 mb-1">
-                  Student App Paroli <span className="text-slate-400 font-normal">(Ixtiyoriy — bo'sh qolsa: student kodi yoki telefon raqam)</span>
+                  Student App Paroli <span className="text-slate-400 font-normal">(Standart: 12345678)</span>
                 </label>
                 <input
                   type="text"
-                  placeholder="Masalan: 123456 yoki yangi parol"
+                  placeholder="Bo'sh qolsa avtomatik: 12345678"
                   value={formData.password}
                   onChange={(e) => setFormData({ ...formData, password: e.target.value })}
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"
@@ -1077,7 +1077,7 @@ export default function StudentsPage() {
                 </label>
                 <input
                   type="text"
-                  placeholder="Yangi parol kiriting (masalan: 123456)..."
+                  placeholder="Yangi parol (masalan: 12345678)..."
                   value={editFormData.password}
                   onChange={(e) => setEditFormData({ ...editFormData, password: e.target.value })}
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-mono"

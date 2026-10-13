@@ -192,10 +192,10 @@ export async function POST(request: Request) {
 
     const studentCode = body.studentCode || (await generateNextStudentCode());
 
-    let passwordHash: string | undefined = undefined;
-    if (password && typeof password === 'string' && password.trim().length > 0) {
-      passwordHash = await bcrypt.hash(password.trim(), 10);
-    }
+    const initialPassword = (password && typeof password === 'string' && password.trim().length > 0)
+      ? password.trim()
+      : '12345678';
+    const passwordHash = await bcrypt.hash(initialPassword, 10);
 
     const newStudent = await Student.create({
       studentCode,

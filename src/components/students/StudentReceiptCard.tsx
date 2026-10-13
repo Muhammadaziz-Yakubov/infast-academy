@@ -12,7 +12,7 @@ interface StudentReceiptCardProps {
 
 export function StudentReceiptCard({
   student,
-  password = '123456',
+  password = '12345678',
   className = '',
 }: StudentReceiptCardProps) {
   if (!student) return null;
@@ -275,7 +275,7 @@ export function StudentReceiptCard({
             className="text-[19px] font-black tracking-widest text-black font-mono mt-0.5"
             style={{ fontSize: '19px', fontWeight: 900, color: '#000000', letterSpacing: '0.08em', marginTop: '2px' }}
           >
-            {password || '123456'}
+            {password || '12345678'}
           </div>
         </div>
       </div>

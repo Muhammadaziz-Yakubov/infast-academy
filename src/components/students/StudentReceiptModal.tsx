@@ -24,7 +24,7 @@ export function StudentReceiptModal({
   onClose,
   onStudentUpdated,
 }: StudentReceiptModalProps) {
-  const [password, setPassword] = useState('123456');
+  const [password, setPassword] = useState('12345678');
   const [copied, setCopied] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -231,10 +231,10 @@ export function StudentReceiptModal({
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setPassword('123456')}
+                onClick={() => setPassword('12345678')}
                 className="text-[10px] px-2 py-0.5 bg-slate-700 hover:bg-slate-600 rounded text-slate-200 transition-colors font-mono"
               >
-                123456
+                12345678
               </button>
               <button
                 type="button"
