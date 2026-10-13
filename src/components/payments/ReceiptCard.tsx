@@ -106,19 +106,19 @@ export function ReceiptCard({ payment, receiptId, className = '' }: ReceiptCardP
           className="font-black text-[16px] tracking-wider text-black uppercase"
           style={{ fontSize: '16px', fontWeight: 900, letterSpacing: '0.05em', color: '#000000', margin: 0 }}
         >
-          {branchName.toUpperCase()}
+          INFAST IT-ACADEMY
         </h2>
         <p
           className="text-[11px] font-bold text-black mt-1"
           style={{ fontSize: '11px', fontWeight: 700, color: '#000000', marginTop: '4px' }}
         >
-          IT & Kasbiy Ta'lim Markazi
+          Zamonaviy Kasblar Markazi
         </p>
         <p
           className="text-[10px] font-semibold text-black mt-0.5"
           style={{ fontSize: '10px', fontWeight: 600, color: '#000000', marginTop: '2px' }}
         >
-          {branchAddress}
+          Buloqboshi tumani, Yangi Hokimiyat binosi
         </p>
         <p
           className="text-[10px] font-bold text-black mt-0.5"
