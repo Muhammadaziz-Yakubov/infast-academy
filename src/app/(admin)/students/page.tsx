@@ -28,9 +28,11 @@ import {
   SendHorizontal,
   Loader2,
   ShieldCheck,
+  Receipt,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
+import { StudentReceiptModal } from '@/components/students/StudentReceiptModal';
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<any[]>([]);
@@ -52,6 +54,7 @@ export default function StudentsPage() {
   const [showImportModal, setShowImportModal] = useState(false);
   const [showBulkPaymentModal, setShowBulkPaymentModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<any>(null);
+  const [selectedStudentForReceipt, setSelectedStudentForReceipt] = useState<any>(null);
 
   // Multi-select & Bulk Payment state
   const [selectedStudentIds, setSelectedStudentIds] = useState<string[]>([]);
@@ -763,6 +766,13 @@ export default function StudentsPage() {
                           >
                             <Eye className="w-4 h-4" />
                           </Link>
+                          <button
+                            onClick={() => setSelectedStudentForReceipt(s)}
+                            className="p-1.5 text-slate-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors"
+                            title="O'quvchi ma'lumotlari & parol cheki"
+                          >
+                            <Receipt className="w-4 h-4" />
+                          </button>
                           <button
                             onClick={() => handleOpenEditModal(s)}
                             className="p-1.5 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors"
@@ -1651,6 +1661,15 @@ export default function StudentsPage() {
             </form>
           </div>
         </div>
+      )}
+
+      {/* Student Receipt Modal */}
+      {selectedStudentForReceipt && (
+        <StudentReceiptModal
+          student={selectedStudentForReceipt}
+          onClose={() => setSelectedStudentForReceipt(null)}
+          onStudentUpdated={fetchStudents}
+        />
       )}
     </div>
   );
