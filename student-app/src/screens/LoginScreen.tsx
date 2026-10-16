@@ -136,7 +136,7 @@ export default function LoginScreen() {
           onPress={async () => {
             try {
               setLoading(true);
-              await loginDemo();
+              await loginDemo(false);
             } finally {
               setLoading(false);
             }
@@ -146,6 +146,24 @@ export default function LoginScreen() {
         >
           <Sparkles size={16} color="#FF9500" />
           <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo rejim)</Text>
+        </TouchableOpacity>
+
+        {/* Debtor Test Button */}
+        <TouchableOpacity
+          style={[styles.demoButton, { borderColor: 'rgba(255, 69, 58, 0.35)', backgroundColor: 'rgba(255, 69, 58, 0.08)', marginTop: 8 }]}
+          onPress={async () => {
+            try {
+              setLoading(true);
+              await loginDemo(true);
+            } finally {
+              setLoading(false);
+            }
+          }}
+          disabled={loading}
+          activeOpacity={0.7}
+        >
+          <Lock size={15} color="#FF453A" />
+          <Text style={[styles.demoButtonText, { color: '#FF453A' }]}>Qarzdor holatini sinab ko'rish</Text>
         </TouchableOpacity>
 
         <View style={styles.footerNote}>

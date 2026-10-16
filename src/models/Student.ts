@@ -21,7 +21,7 @@ export interface IStudent extends Document {
   joinedDate: Date;
   monthlyFee?: number;
   paymentDueDay: number;
-  status: "ACTIVE" | "PAUSED" | "LEFT" | "COMPLETED";
+  status: "ACTIVE" | "PAUSED" | "LEFT" | "COMPLETED" | "QARZDOR" | "BLOCKED" | "BLOCK";
   passwordHash?: string;
 
   // Portfolio & Resume fields
@@ -73,7 +73,7 @@ const StudentSchema: Schema<IStudent> = new Schema(
     joinedDate: { type: Date, required: true, default: Date.now },
     monthlyFee: { type: Number },
     paymentDueDay: { type: Number, required: true, default: 5 },
-    status: { type: String, enum: ["ACTIVE", "PAUSED", "LEFT", "COMPLETED"], default: "ACTIVE", index: true },
+    status: { type: String, enum: ["ACTIVE", "PAUSED", "LEFT", "COMPLETED", "QARZDOR", "BLOCKED", "BLOCK"], default: "ACTIVE", index: true },
     passwordHash: { type: String },
 
     // Portfolio fields

@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
+import { Payment } from '@/models/Payment';
+import { calculatePaymentPeriods } from '@/lib/calculations';
 import { createStudentSession } from '@/lib/auth';
 import bcrypt from 'bcryptjs';
 
@@ -25,7 +27,7 @@ export async function POST(request: Request) {
         ...(cleanDigits ? [{ phone: cleanDigits }, { phone: `+${cleanDigits}` }] : []),
         { studentCode: cleanIdentifier.toUpperCase() },
       ],
-      status: { $in: ['ACTIVE', 'PAUSED'] },
+      status: { $in: ['ACTIVE', 'PAUSED', 'QARZDOR', 'BLOCKED', 'BLOCK'] },
     })
       .populate('courseId', 'name price')
       .populate('groupId', 'name schedules')
@@ -68,6 +70,30 @@ export async function POST(request: Request) {
       role: 'STUDENT',
     });
 
+    // Calculate real-time payment / debtor status
+    const studentPayments = await Payment.find({ studentId: student._id }).lean();
+    const totalPaid = studentPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+    const fee = student.monthlyFee || (student.courseId as any)?.price || 0;
+    const paymentInfo = calculatePaymentPeriods(
+      student.joinedDate,
+      fee,
+      student.paymentDueDay || 5,
+      totalPaid
+    );
+
+    let effectiveStatus = student.status;
+    if (paymentInfo.paymentStatus === 'OVERDUE' && student.status === 'ACTIVE') {
+      effectiveStatus = 'BLOCKED';
+      await Student.findByIdAndUpdate(student._id, { status: 'BLOCKED' });
+    }
+
+    const isDebtor =
+      effectiveStatus === 'BLOCKED' ||
+      effectiveStatus === 'BLOCK' ||
+      effectiveStatus === 'QARZDOR' ||
+      paymentInfo.paymentStatus === 'OVERDUE' ||
+      (paymentInfo.totalDebt > 0);
+
     const studentProfile = {
       id: student._id,
       studentCode: student.studentCode,
@@ -76,11 +102,17 @@ export async function POST(request: Request) {
       phone: student.phone,
       avatarUrl: student.avatarUrl,
       bio: student.bio,
-      status: student.status,
+      status: effectiveStatus,
+      originalStatus: student.status,
+      paymentStatus: paymentInfo.paymentStatus,
+      totalDebt: paymentInfo.totalDebt,
+      isDebtor: isDebtor,
       course: student.courseId,
       group: student.groupId,
       branch: student.branchId,
       joinedDate: student.joinedDate,
+      monthlyFee: fee,
+      paymentDueDay: student.paymentDueDay,
     };
 
     const response = NextResponse.json({

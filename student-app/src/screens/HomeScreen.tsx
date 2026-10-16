@@ -25,6 +25,7 @@ import {
   Calendar,
   GraduationCap,
   Award,
+  AlertTriangle,
   Layers,
   Play,
 } from 'lucide-react-native';
@@ -306,15 +307,56 @@ export default function HomeScreen({
 
         <View style={styles.separator} />
 
-        <View style={styles.groupedRow}>
-          <View style={[styles.rowIconBox, { backgroundColor: 'rgba(48, 209, 88, 0.15)' }]}>
-            <Award size={18} color="#30D158" />
-          </View>
-          <View style={styles.rowContent}>
-            <Text style={styles.rowLabel}>To'lov holati</Text>
-            <Text style={[styles.rowValue, { color: '#30D158', fontWeight: '700' }]}>Faol (To'langan)</Text>
-          </View>
-        </View>
+        {(() => {
+          const isOverdue =
+            studentProfile?.paymentStatus === 'OVERDUE' ||
+            studentProfile?.status === 'BLOCKED' ||
+            studentProfile?.status === 'BLOCK' ||
+            studentProfile?.status === 'QARZDOR' ||
+            (studentProfile?.totalDebt && studentProfile.totalDebt > 0);
+
+          const formatMoney = (amount?: number) => {
+            if (!amount || isNaN(amount)) return '';
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " so'm";
+          };
+
+          const debtSum = studentProfile?.totalDebt || 0;
+          const statusText = isOverdue
+            ? debtSum > 0 ? `Qarzdor (${formatMoney(debtSum)})` : "Qarzdor"
+            : studentProfile?.paymentStatus === 'PARTIAL'
+            ? `Kutilmoqda (${formatMoney(debtSum)})`
+            : "Faol (To'langan)";
+
+          const statusColor = isOverdue
+            ? '#FF453A'
+            : studentProfile?.paymentStatus === 'PARTIAL'
+            ? '#FF9500'
+            : '#30D158';
+
+          const statusBg = isOverdue
+            ? 'rgba(255, 69, 58, 0.15)'
+            : studentProfile?.paymentStatus === 'PARTIAL'
+            ? 'rgba(255, 149, 0, 0.15)'
+            : 'rgba(48, 209, 88, 0.15)';
+
+          return (
+            <View style={styles.groupedRow}>
+              <View style={[styles.rowIconBox, { backgroundColor: statusBg }]}>
+                {isOverdue ? (
+                  <AlertTriangle size={18} color={statusColor} />
+                ) : (
+                  <Award size={18} color={statusColor} />
+                )}
+              </View>
+              <View style={styles.rowContent}>
+                <Text style={styles.rowLabel}>To'lov holati</Text>
+                <Text style={[styles.rowValue, { color: statusColor, fontWeight: '700' }]}>
+                  {statusText}
+                </Text>
+              </View>
+            </View>
+          );
+        })()}
       </View>
 
       <View style={{ height: 24 }} />

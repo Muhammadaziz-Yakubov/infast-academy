@@ -10,11 +10,12 @@ import LeaderboardScreen from './src/screens/LeaderboardScreen';
 import ShopScreen from './src/screens/ShopScreen';
 import EventsScreen from './src/screens/EventsScreen';
 import ProfileScreen from './src/screens/ProfileScreen';
+import DebtLockScreen from './src/screens/DebtLockScreen';
 import { COLORS } from './src/constants/theme';
 import BottomNavBar, { TabType } from './src/components/BottomNavBar';
 
 function MainAppContent() {
-  const { token, loading } = useAuth();
+  const { token, student, loading } = useAuth();
   const insets = useSafeAreaInsets();
   const [activeTab, setActiveTab] = useState<TabType>('home');
   const [selectedLessonId, setSelectedLessonId] = useState<string | null>(null);
@@ -31,6 +32,25 @@ function MainAppContent() {
     return (
       <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
         <LoginScreen />
+      </View>
+    );
+  }
+
+  // Agar o'quvchining statusi qarzdor yoki bloklangan bo'lsa, ilovani to'sib DebtLockScreen ko'rsatiladi
+  const isDebtor =
+    student?.status?.toUpperCase() === 'BLOCKED' ||
+    student?.status?.toUpperCase() === 'BLOCK' ||
+    student?.status?.toUpperCase() === 'QARZDOR' ||
+    student?.status?.toUpperCase() === 'OVERDUE' ||
+    student?.paymentStatus?.toUpperCase() === 'OVERDUE' ||
+    (typeof student?.totalDebt === 'number' && student.totalDebt > 0) ||
+    student?.isDebtor === true;
+
+  if (isDebtor) {
+    return (
+      <View style={[styles.mainContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <DebtLockScreen />
       </View>
     );
   }

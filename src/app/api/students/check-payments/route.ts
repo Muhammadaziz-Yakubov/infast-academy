@@ -18,7 +18,7 @@ export async function POST() {
 
     await connectToDatabase();
 
-    const students = await Student.find({ status: 'ACTIVE' }).populate('courseId', 'price');
+    const students = await Student.find({ status: { $in: ['ACTIVE', 'BLOCKED', 'BLOCK'] } }).populate('courseId', 'price');
     const studentIds = students.map((s) => s._id);
 
     const payments = await Payment.find({ studentId: { $in: studentIds } });
@@ -47,10 +47,18 @@ export async function POST() {
 
       if (paymentInfo.paymentStatus === 'OVERDUE') {
         overdueCount++;
-      } else if (paymentInfo.paymentStatus === 'PARTIAL') {
-        pendingCount++;
-      } else {
+        // Agar o'quvchi qarzdor bo'lsa, holati ACTIVE dan BLOCKED ga o'tkazilsin
+        if (student.status === 'ACTIVE') {
+          await Student.findByIdAndUpdate(student._id, { status: 'BLOCKED' });
+        }
+      } else if (paymentInfo.paymentStatus === 'PAID') {
         paidCount++;
+        // Agar qarzdorlik to'langan bo'lsa va holati BLOCKED bo'lsa, ACTIVE ga o'tkaziladi
+        if (student.status === 'BLOCKED' || student.status === 'BLOCK') {
+          await Student.findByIdAndUpdate(student._id, { status: 'ACTIVE' });
+        }
+      } else {
+        pendingCount++;
       }
     }
 

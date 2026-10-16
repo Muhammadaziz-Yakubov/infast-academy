@@ -55,9 +55,19 @@ export async function GET(request: Request, { params }: { params: { id: string }
       })
       .sort({ createdAt: -1 });
 
+    let effectiveStatus = student.status;
+    if (paymentInfo.paymentStatus === 'OVERDUE' && student.status === 'ACTIVE') {
+      effectiveStatus = 'BLOCKED';
+      await Student.findByIdAndUpdate(student._id, { status: 'BLOCKED' });
+    } else if (paymentInfo.paymentStatus === 'PAID' && (student.status === 'BLOCKED' || student.status === 'BLOCK')) {
+      effectiveStatus = 'ACTIVE';
+      await Student.findByIdAndUpdate(student._id, { status: 'ACTIVE' });
+    }
+
     return NextResponse.json({
       student: {
         ...student.toObject(),
+        status: effectiveStatus,
         currentCourseMonth: monthInfo.label,
         effectiveFee: fee,
         paymentStatus: paymentInfo.paymentStatus,

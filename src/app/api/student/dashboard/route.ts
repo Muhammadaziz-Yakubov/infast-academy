@@ -9,6 +9,7 @@ import { Payment } from '@/models/Payment';
 import { Attendance } from '@/models/Attendance';
 import { Notification } from '@/models/Notification';
 import { getStudentSession } from '@/lib/auth';
+import { calculatePaymentPeriods } from '@/lib/calculations';
 
 export async function GET(request: Request) {
   try {
@@ -80,6 +81,30 @@ export async function GET(request: Request) {
       .limit(5)
       .lean();
 
+    // Calculate payment info and debt
+    const allStudentPayments = await Payment.find({ studentId: student._id }).lean();
+    const totalPaid = allStudentPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+    const fee = student.monthlyFee || (student.courseId as any)?.price || 0;
+    const paymentInfo = calculatePaymentPeriods(
+      student.joinedDate,
+      fee,
+      student.paymentDueDay || 5,
+      totalPaid
+    );
+
+    let effectiveStatus = student.status;
+    if (paymentInfo.paymentStatus === 'OVERDUE' && student.status === 'ACTIVE') {
+      effectiveStatus = 'BLOCKED';
+      await Student.findByIdAndUpdate(student._id, { status: 'BLOCKED' });
+    }
+
+    const isDebtor =
+      effectiveStatus === 'BLOCKED' ||
+      effectiveStatus === 'BLOCK' ||
+      effectiveStatus === 'QARZDOR' ||
+      paymentInfo.paymentStatus === 'OVERDUE' ||
+      (paymentInfo.totalDebt > 0);
+
     // Recent payments summary
     const payments = await Payment.find({ studentId: student._id })
       .sort({ paymentDate: -1 })
@@ -109,9 +134,13 @@ export async function GET(request: Request) {
         group: student.groupId,
         branch: student.branchId,
         joinedDate: student.joinedDate,
-        monthlyFee: student.monthlyFee,
+        monthlyFee: student.monthlyFee || fee,
         paymentDueDay: student.paymentDueDay,
-        status: student.status,
+        status: effectiveStatus,
+        originalStatus: student.status,
+        paymentStatus: paymentInfo.paymentStatus,
+        totalDebt: paymentInfo.totalDebt,
+        isDebtor: isDebtor,
       },
       progress: {
         xp: progress?.xp || 0,

@@ -28,6 +28,8 @@ import {
   KeyRound,
   Check,
   X,
+  AlertTriangle,
+  CreditCard,
 } from 'lucide-react-native';
 
 // Professional developer avatars from DiceBear / Unsplash CDN
@@ -184,10 +186,27 @@ export default function ProfileScreen() {
         <Text style={styles.fullName}>{profile?.firstName} {profile?.lastName}</Text>
         <Text style={styles.studentCodeText}>Talaba ID: {profile?.studentCode || 'INF-STD'}</Text>
 
-        <View style={styles.statusPill}>
-          <ShieldCheck size={12} color="#30D158" />
-          <Text style={styles.statusPillText}>Faol talaba</Text>
-        </View>
+        {(() => {
+          const isOverdue =
+            profile?.paymentStatus === 'OVERDUE' ||
+            profile?.status === 'BLOCKED' ||
+            profile?.status === 'BLOCK' ||
+            profile?.status === 'QARZDOR' ||
+            (profile?.totalDebt && profile.totalDebt > 0);
+
+          return (
+            <View style={[styles.statusPill, isOverdue && { backgroundColor: 'rgba(255, 69, 58, 0.15)', borderColor: 'rgba(255, 69, 58, 0.3)' }]}>
+              {isOverdue ? (
+                <AlertTriangle size={12} color="#FF453A" />
+              ) : (
+                <ShieldCheck size={12} color="#30D158" />
+              )}
+              <Text style={[styles.statusPillText, isOverdue && { color: '#FF453A' }]}>
+                {isOverdue ? 'Bloklangan (Qarzdor)' : 'Faol talaba'}
+              </Text>
+            </View>
+          );
+        })()}
       </View>
 
       {/* Apple Inset Group: O'quv Ma'lumotlari */}
@@ -241,6 +260,59 @@ export default function ProfileScreen() {
             <Text style={styles.rowValue}>{profile?.phone || "+998 90 123 45 67"}</Text>
           </View>
         </View>
+
+        <View style={styles.separator} />
+
+        {(() => {
+          const isOverdue =
+            profile?.paymentStatus === 'OVERDUE' ||
+            profile?.status === 'BLOCKED' ||
+            profile?.status === 'BLOCK' ||
+            profile?.status === 'QARZDOR' ||
+            (profile?.totalDebt && profile.totalDebt > 0);
+
+          const formatMoney = (amount?: number) => {
+            if (!amount || isNaN(amount)) return '';
+            return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " so'm";
+          };
+
+          const debtSum = profile?.totalDebt || 0;
+          const statusText = isOverdue
+            ? debtSum > 0 ? `Qarzdor (${formatMoney(debtSum)})` : "Qarzdor"
+            : profile?.paymentStatus === 'PARTIAL'
+            ? `Kutilmoqda (${formatMoney(debtSum)})`
+            : "Faol (To'langan)";
+
+          const statusColor = isOverdue
+            ? '#FF453A'
+            : profile?.paymentStatus === 'PARTIAL'
+            ? '#FF9500'
+            : '#30D158';
+
+          const iconBg = isOverdue
+            ? 'rgba(255, 69, 58, 0.16)'
+            : profile?.paymentStatus === 'PARTIAL'
+            ? 'rgba(255, 149, 0, 0.16)'
+            : 'rgba(48, 209, 88, 0.16)';
+
+          return (
+            <View style={styles.row}>
+              <View style={[styles.iconBox, { backgroundColor: iconBg }]}>
+                {isOverdue ? (
+                  <AlertTriangle size={18} color={statusColor} />
+                ) : (
+                  <CreditCard size={18} color={statusColor} />
+                )}
+              </View>
+              <View style={styles.rowContent}>
+                <Text style={styles.rowLabel}>To'lov holati</Text>
+                <Text style={[styles.rowValue, { color: statusColor, fontWeight: '700' }]}>
+                  {statusText}
+                </Text>
+              </View>
+            </View>
+          );
+        })()}
       </View>
 
       {/* Apple Inset Group: Xavfsizlik & Parol */}

@@ -4,6 +4,7 @@ import { Payment } from '@/models/Payment';
 import { Student } from '@/models/Student';
 import { Notification } from '@/models/Notification';
 import { formatMoneyUz } from '@/lib/utils';
+import { calculatePaymentPeriods } from '@/lib/calculations';
 
 import { getSession, getBranchFilter } from '@/lib/auth';
 import { Branch } from '@/models/Branch';
@@ -98,6 +99,23 @@ export async function POST(request: Request) {
       paymentMethod: paymentMethod || "CASH",
       notes,
     });
+
+    // If student was BLOCKED or QARZDOR, check if payment clears debt and restore to ACTIVE
+    if (student.status === 'BLOCKED' || student.status === 'BLOCK' || student.status === 'QARZDOR') {
+      const allStudentPayments = await Payment.find({ studentId }).lean();
+      const totalPaid = allStudentPayments.reduce((sum: number, p: any) => sum + (p.amount || 0), 0);
+      const fee = student.monthlyFee || (student.courseId as any)?.price || 0;
+      const paymentInfo = calculatePaymentPeriods(
+        student.joinedDate,
+        fee,
+        student.paymentDueDay || 5,
+        totalPaid
+      );
+      if (paymentInfo.paymentStatus === 'PAID') {
+        student.status = 'ACTIVE';
+        await student.save();
+      }
+    }
 
     // Create Notification in Notification Center
     await Notification.create({

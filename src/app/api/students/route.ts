@@ -68,6 +68,8 @@ export async function GET(request: Request) {
       paidMap.set(sId, (paidMap.get(sId) || 0) + p.amount);
     });
 
+    const statusUpdates: Promise<any>[] = [];
+
     const students = rawStudents.map((s) => {
       const sObj = s.toObject();
       const monthInfo = calculateCourseMonth(s.joinedDate);
@@ -76,8 +78,19 @@ export async function GET(request: Request) {
 
       const paymentInfo = calculatePaymentPeriods(s.joinedDate, fee, s.paymentDueDay || 5, totalPaid);
 
+      let effectiveStatus = s.status;
+      // Agar o'quvchi qarzdor bo'lsa holati ACTIVE dan BLOCKED ga o'tkazilsin
+      if (paymentInfo.paymentStatus === 'OVERDUE' && s.status === 'ACTIVE') {
+        effectiveStatus = 'BLOCKED';
+        statusUpdates.push(Student.findByIdAndUpdate(s._id, { status: 'BLOCKED' }));
+      } else if (paymentInfo.paymentStatus === 'PAID' && (s.status === 'BLOCKED' || s.status === 'BLOCK')) {
+        effectiveStatus = 'ACTIVE';
+        statusUpdates.push(Student.findByIdAndUpdate(s._id, { status: 'ACTIVE' }));
+      }
+
       return {
         ...sObj,
+        status: effectiveStatus,
         currentCourseMonth: monthInfo.label,
         monthNumber: monthInfo.monthNumber,
         effectiveFee: fee,
@@ -87,6 +100,10 @@ export async function GET(request: Request) {
         nextPaymentDueDate: paymentInfo.nextPaymentDueDate,
       };
     });
+
+    if (statusUpdates.length > 0) {
+      await Promise.all(statusUpdates);
+    }
 
     let filteredStudents = students;
     if (paymentStatusFilter) {

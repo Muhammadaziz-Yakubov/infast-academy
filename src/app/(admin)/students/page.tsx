@@ -551,6 +551,21 @@ export default function StudentsPage() {
               ))}
             </select>
 
+            {/* Student Status Filter */}
+            <select
+              value={selectedStatus}
+              onChange={(e) => setSelectedStatus(e.target.value)}
+              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+            >
+              <option value="">Barcha Statuslar</option>
+              <option value="ACTIVE">Faol (ACTIVE)</option>
+              <option value="BLOCKED">Bloklangan (BLOCKED)</option>
+              <option value="PAUSED">Muzlatilgan (PAUSED)</option>
+              <option value="QARZDOR">Qarzdor (QARZDOR)</option>
+              <option value="LEFT">Tark etgan (LEFT)</option>
+              <option value="COMPLETED">Tugatgan (COMPLETED)</option>
+            </select>
+
             {/* Payment Status Filter */}
             <select
               value={selectedPaymentStatus}
@@ -752,9 +767,11 @@ export default function StudentsPage() {
                       <td className="py-3.5 px-4">
                         <span className={`px-2 py-0.5 rounded-md font-semibold text-[10px] ${
                           s.status === 'ACTIVE' ? 'bg-emerald-100 text-emerald-800' :
+                          s.status === 'BLOCKED' || s.status === 'BLOCK' ? 'bg-rose-100 text-rose-800 border border-rose-200 font-bold' :
+                          s.status === 'QARZDOR' ? 'bg-rose-100 text-rose-800 border border-rose-200' :
                           s.status === 'PAUSED' ? 'bg-amber-100 text-amber-800' : 'bg-slate-100 text-slate-700'
                         }`}>
-                          {s.status}
+                          {s.status === 'BLOCKED' || s.status === 'BLOCK' ? 'BLOCKED' : s.status === 'QARZDOR' ? 'QARZDOR' : s.status}
                         </span>
                       </td>
                       <td className="py-3.5 px-4 text-right">
@@ -1065,7 +1082,9 @@ export default function StudentsPage() {
                   className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl font-bold"
                 >
                   <option value="ACTIVE">Faol (ACTIVE)</option>
+                  <option value="BLOCKED">Bloklangan (BLOCKED)</option>
                   <option value="PAUSED">Muzlatilgan (PAUSED)</option>
+                  <option value="QARZDOR">Qarzdor (QARZDOR)</option>
                   <option value="LEFT">Tark etgan (LEFT)</option>
                   <option value="COMPLETED">Tugatgan (COMPLETED)</option>
                 </select>
