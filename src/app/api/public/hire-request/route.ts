@@ -1,9 +1,15 @@
 import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Lead } from '@/models/Lead';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function POST(request: Request) {
   try {
+    const limiter = await rateLimit(request, 10, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
     const body = await request.json();
 
@@ -58,16 +64,17 @@ export async function POST(request: Request) {
           }),
         });
       } catch (tgErr) {
-        console.error("Telegram notification error:", tgErr);
+        console.warn('Telegram send failed:', tgErr);
       }
     }
 
     return NextResponse.json({
       success: true,
-      message: "So'rovingiz muvaffaqiyatli qabul qilindi. Tez orada akademiya HR bo'limi siz bilan bog'lanadi!",
+      message: "So'rovingiz qabul qilindi. Tez orada siz bilan bog'lanamiz!",
       leadId: lead._id,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "So'rovni yuborishda xatolik" }, { status: 500 });
+    console.error("Hire request error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

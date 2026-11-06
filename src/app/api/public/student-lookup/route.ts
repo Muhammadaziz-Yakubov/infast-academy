@@ -2,75 +2,75 @@ import { NextRequest, NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
-import { calculateCourseMonth, calculatePaymentPeriods } from '@/lib/calculations';
+import { calculatePaymentPeriods } from '@/lib/calculations';
 import { rateLimit } from '@/lib/rateLimit';
 import { escapeRegex } from '@/lib/utils';
 
+export const dynamic = 'force-dynamic';
+
+const GENERIC_NOT_FOUND = "Ma'lumot topilmadi";
+
 export async function GET(request: NextRequest) {
   try {
-    const limiter = rateLimit(request, 10, 60 * 1000);
+    const limiter = await rateLimit(request, 10, 60 * 1000);
     if (!limiter.success && limiter.response) {
       return limiter.response;
     }
 
-    await connectToDatabase();
     const { searchParams } = new URL(request.url);
+    const rawCode = (searchParams.get('code') || searchParams.get('studentCode') || '').trim();
+    const phoneLast4 = (searchParams.get('phoneLast4') || '').trim().replace(/\D/g, '');
 
-    const rawCode = searchParams.get('code') || searchParams.get('studentCode') || searchParams.get('query') || '';
-
-    if (!rawCode) {
-      return NextResponse.json({ error: "Talaba kodi (ID) kiritilmadi" }, { status: 400 });
+    // Require BOTH code and phoneLast4 (must be exactly 4 digits)
+    if (!rawCode || rawCode.length > 50 || phoneLast4.length !== 4) {
+      return NextResponse.json({ error: GENERIC_NOT_FOUND }, { status: 404 });
     }
 
-    if (rawCode.length > 100) {
-      return NextResponse.json({ error: "Qidiruv so'rovi juda uzun (max 100 belgi)" }, { status: 400 });
-    }
+    await connectToDatabase();
 
-    const cleanCode = escapeRegex(rawCode.trim().toUpperCase());
-    const numericPart = cleanCode.replace(/\D/g, ''); // e.g. "1001" from "INF-1001"
+    const cleanCode = escapeRegex(rawCode.toUpperCase());
+    const numericPart = cleanCode.replace(/\D/g, '');
 
-    // Search by exact code, or formatted INF-xxx, or regex
     const student = await Student.findOne({
       $or: [
         { studentCode: cleanCode },
         { studentCode: `INF-${cleanCode}` },
-        { studentCode: `INF-${numericPart}` },
-        { phone: cleanCode },
+        ...(numericPart ? [{ studentCode: `INF-${numericPart}` }] : []),
       ],
     })
       .populate('courseId', 'name price')
       .populate('groupId', 'name');
 
     if (!student) {
-      return NextResponse.json({ error: `Code: ${cleanCode} bo'yicha talaba topilmadi` }, { status: 404 });
+      return NextResponse.json({ error: GENERIC_NOT_FOUND }, { status: 404 });
+    }
+
+    // Verify phoneLast4 matches student's phone
+    const studentPhoneDigits = (student.phone || '').replace(/\D/g, '');
+    if (!studentPhoneDigits.endsWith(phoneLast4)) {
+      return NextResponse.json({ error: GENERIC_NOT_FOUND }, { status: 404 });
     }
 
     const payments = await Payment.find({ studentId: student._id });
-    const totalPaid = payments.reduce((acc, p) => acc + p.amount, 0);
-
+    const totalPaid = payments.reduce((acc, p) => acc + (p.amount || 0), 0);
     const fee = student.monthlyFee || (student.courseId as any)?.price || 0;
-    const monthInfo = calculateCourseMonth(student.joinedDate);
     const paymentInfo = calculatePaymentPeriods(student.joinedDate, fee, student.paymentDueDay || 5, totalPaid);
+
+    // Return only: first name + last-name initial, courseName, groupName, paymentStatus
+    const lastNameInitial = student.lastName ? ` ${student.lastName[0]}.` : '';
+    const safeDisplayName = `${student.firstName}${lastNameInitial}`.trim();
 
     return NextResponse.json({
       success: true,
       student: {
-        id: student._id,
-        studentCode: student.studentCode,
-        fullName: `${student.firstName} ${student.lastName}`,
-        firstName: student.firstName,
-        lastName: student.lastName,
-        phone: student.phone,
+        name: safeDisplayName,
         courseName: (student.courseId as any)?.name || '-',
         groupName: (student.groupId as any)?.name || '-',
-        monthlyFee: fee,
         paymentStatus: paymentInfo.paymentStatus,
-        totalDebt: paymentInfo.totalDebt,
-        totalPaid: totalPaid,
-        currentCourseMonth: monthInfo.label,
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik yuz berdi" }, { status: 500 });
+    console.error("Public student lookup error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

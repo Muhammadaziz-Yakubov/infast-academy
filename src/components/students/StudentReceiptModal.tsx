@@ -24,7 +24,7 @@ export function StudentReceiptModal({
   onClose,
   onStudentUpdated,
 }: StudentReceiptModalProps) {
-  const [password, setPassword] = useState('12345678');
+  const [password, setPassword] = useState('');
   const [copied, setCopied] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
@@ -231,16 +231,19 @@ export function StudentReceiptModal({
             <div className="flex items-center gap-1">
               <button
                 type="button"
-                onClick={() => setPassword('12345678')}
+
+                onClick={() => setPassword('')}
                 className="text-[10px] px-2 py-0.5 bg-slate-700 hover:bg-slate-600 rounded text-slate-200 transition-colors font-mono"
               >
-                12345678
+
+                Tozalash
               </button>
               <button
                 type="button"
-                onClick={generateRandomPin}
+
                 className="text-[10px] px-2 py-0.5 bg-slate-700 hover:bg-slate-600 rounded text-slate-200 transition-colors flex items-center gap-1"
                 title="Yangi tasodifiy PIN"
+                onClick={generateRandomPin}
               >
                 <RefreshCw className="w-2.5 h-2.5" /> Tasodifiy
               </button>

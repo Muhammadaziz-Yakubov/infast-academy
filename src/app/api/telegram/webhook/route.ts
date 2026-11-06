@@ -1,7 +1,24 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { sendTelegramMessage } from '@/lib/telegram';
 
+function verifyWebhookSecret(request: Request): boolean {
+  const expectedSecret = process.env.TELEGRAM_WEBHOOK_SECRET;
+  if (!expectedSecret) return false;
+
+  const headerSecret = request.headers.get('x-telegram-bot-api-secret-token');
+  if (!headerSecret) return false;
+
+  const hashA = crypto.createHash('sha256').update(headerSecret).digest();
+  const hashB = crypto.createHash('sha256').update(expectedSecret).digest();
+  return crypto.timingSafeEqual(hashA, hashB);
+}
+
 export async function POST(request: Request) {
+  if (!verifyWebhookSecret(request)) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+
   try {
     const update = await request.json();
 
@@ -21,7 +38,7 @@ export async function POST(request: Request) {
     return NextResponse.json({ status: 'ok' });
   } catch (error: any) {
     console.error('Telegram webhook error:', error);
-    return NextResponse.json({ status: 'error', error: error.message }, { status: 200 });
+    return NextResponse.json({ status: 'error' }, { status: 500 });
   }
 }
 

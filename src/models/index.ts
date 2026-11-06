@@ -26,6 +26,7 @@ import './Module';
 import './Lesson';
 import './StudentProgress';
 import './StudentActivity';
+import './RateLimit';
 
 export { Course } from './Course';
 export { Group } from './Group';
@@ -55,4 +56,5 @@ export { Module } from './Module';
 export { Lesson } from './Lesson';
 export { StudentProgress } from './StudentProgress';
 export { StudentActivity } from './StudentActivity';
+export { RateLimit } from './RateLimit';
 

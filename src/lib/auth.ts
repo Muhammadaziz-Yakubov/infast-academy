@@ -1,4 +1,5 @@
 import jwt from 'jsonwebtoken';
+import crypto from 'crypto';
 import { cookies } from 'next/headers';
 import { NextResponse } from 'next/server';
 import bcrypt from 'bcryptjs';
@@ -7,6 +8,9 @@ function getAuthSecret(): string {
   const secret = process.env.AUTH_SECRET;
   if (!secret) {
     throw new Error('AUTH_SECRET environment variable is missing!');
+  }
+  if (secret.length < 32) {
+    throw new Error('AUTH_SECRET must be at least 32 characters long for security!');
   }
   return secret;
 }
@@ -46,7 +50,15 @@ export function verifyAdminCredentials(loginInput: string, passwordInput: string
 
   if (!loginInput || !passwordInput) return false;
 
-  return loginInput.trim() === envAdminLogin.trim() && passwordInput.trim() === envAdminPassword.trim();
+  const hashLoginInput = crypto.createHash('sha256').update(loginInput.trim()).digest();
+  const hashEnvLogin = crypto.createHash('sha256').update(envAdminLogin.trim()).digest();
+  const hashPasswordInput = crypto.createHash('sha256').update(passwordInput.trim()).digest();
+  const hashEnvPassword = crypto.createHash('sha256').update(envAdminPassword.trim()).digest();
+
+  const isLoginValid = crypto.timingSafeEqual(hashLoginInput, hashEnvLogin);
+  const isPasswordValid = crypto.timingSafeEqual(hashPasswordInput, hashEnvPassword);
+
+  return isLoginValid && isPasswordValid;
 }
 
 /**

@@ -3,9 +3,15 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Exam } from '@/models/Exam';
 import { ExamResult } from '@/models/ExamResult';
 import { Student } from '@/models/Student';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function GET(request: Request, { params }: { params: { publicExamId: string } }) {
   try {
+    const limiter = await rateLimit(request, 20, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
 
     const { searchParams } = new URL(request.url);
@@ -59,6 +65,9 @@ export async function GET(request: Request, { params }: { params: { publicExamId
 
     const existingResult = await ExamResult.findOne({ examId: exam._id, studentId: matchedStudent._id });
 
+    const rawPhone = matchedStudent.phone || '';
+    const maskedPhone = rawPhone.length >= 7 ? `${rawPhone.slice(0, 4)} *** ** ${rawPhone.slice(-2)}` : rawPhone;
+
     return NextResponse.json({
       success: true,
       exam: examInfo,
@@ -66,17 +75,23 @@ export async function GET(request: Request, { params }: { params: { publicExamId
         _id: matchedStudent._id,
         firstName: matchedStudent.firstName,
         lastName: matchedStudent.lastName,
-        phone: matchedStudent.phone,
+        phone: maskedPhone,
       },
       alreadySubmitted: existingResult?.isSubmitted || false,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik yuz berdi" }, { status: 500 });
+    console.error("Take exam error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request, { params }: { params: { publicExamId: string } }) {
   try {
+    const limiter = await rateLimit(request, 20, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { phone, answers } = body;
@@ -110,37 +125,27 @@ export async function POST(request: Request, { params }: { params: { publicExamI
       );
     }
 
-    // Grade student answers
-    const studentAnswersMap = new Map<string, number>();
-    if (Array.isArray(answers)) {
-      answers.forEach((ans: any) => {
-        studentAnswersMap.set(ans.questionId, Number(ans.selectedOption));
-      });
-    }
-
-    let earnedScore = 0;
+    // Auto-calculate score
+    let calculatedScore = 0;
     const questions = exam.questions || [];
 
-    if (questions.length > 0) {
-      questions.forEach((q: any) => {
-        const studentChoice = studentAnswersMap.get(q.id);
-        if (studentChoice !== undefined && studentChoice === q.correctAnswerIndex) {
-          earnedScore += Number(q.points || 10);
-        }
-      });
+    for (const q of questions) {
+      const studentAnswer = answers ? answers[q.id] : undefined;
+      if (studentAnswer !== undefined && studentAnswer === q.correctAnswerIndex) {
+        calculatedScore += q.points || 10;
+      }
     }
 
-    const finalScore = Math.min(earnedScore, exam.maxScore);
-    const status = finalScore >= exam.passingScore ? "PASSED" : "FAILED";
+    const isPassed = calculatedScore >= (exam.passingScore || 60);
 
     await ExamResult.findOneAndUpdate(
       { examId: exam._id, studentId: matchedStudent._id },
       {
-        score: finalScore,
-        status: status,
-        answers: answers || [],
-        submittedAt: new Date(),
+        score: calculatedScore,
+        status: isPassed ? 'PASSED' : 'FAILED',
         isSubmitted: true,
+        submittedAt: new Date(),
+        answers: answers || {},
       },
       { upsert: true, new: true }
     );
@@ -151,6 +156,7 @@ export async function POST(request: Request, { params }: { params: { publicExamI
       isPublished: exam.isPublished,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Testni saqlashda xatolik yuz berdi" }, { status: 500 });
+    console.error("Submit exam error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

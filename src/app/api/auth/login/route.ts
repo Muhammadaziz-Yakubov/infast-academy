@@ -1,8 +1,9 @@
 import { NextResponse } from 'next/server';
 import { verifyAdminCredentials, createAdminSession, createUserSession } from '@/lib/auth';
-import { connectToDatabase } from '@/lib/db';
+import { connectToDatabase } from '@/lib/mongodb';
 import { User } from '@/models/User';
 import { Branch } from '@/models/Branch';
+import { getClientIp, checkRateLimit } from '@/lib/rateLimit';
 import bcrypt from 'bcryptjs';
 
 export async function POST(request: Request) {
@@ -12,6 +13,15 @@ export async function POST(request: Request) {
 
     if (!username || !password) {
       return NextResponse.json({ error: "Login va parolni kiriting" }, { status: 400 });
+    }
+
+    const cleanUsername = username.trim().toLowerCase();
+    const clientIp = getClientIp(request);
+
+    // Rate limiting: 5 attempts / 15 min per IP+username
+    const limitCheck = await checkRateLimit(`login:${clientIp}:${cleanUsername}`, 5, 15 * 60 * 1000);
+    if (!limitCheck.success && limitCheck.response) {
+      return limitCheck.response;
     }
 
     let token: string | null = null;
@@ -91,6 +101,7 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Tizim xatoligi" }, { status: 500 });
+    console.error("Admin login error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

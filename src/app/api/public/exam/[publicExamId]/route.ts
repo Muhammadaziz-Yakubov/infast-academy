@@ -4,9 +4,15 @@ import { Exam } from '@/models/Exam';
 import { ExamResult } from '@/models/ExamResult';
 import { Student } from '@/models/Student';
 import { Course } from '@/models/Course';
+import { rateLimit } from '@/lib/rateLimit';
 
 export async function GET(request: Request, { params }: { params: { publicExamId: string } }) {
   try {
+    const limiter = await rateLimit(request, 20, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
     const exam = await Exam.findOne({ publicExamId: params.publicExamId })
       .populate('courseId', 'name')
@@ -26,12 +32,18 @@ export async function GET(request: Request, { params }: { params: { publicExamId
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik" }, { status: 500 });
+    console.error("Public exam GET error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }
 
 export async function POST(request: Request, { params }: { params: { publicExamId: string } }) {
   try {
+    const limiter = await rateLimit(request, 20, 60 * 1000);
+    if (!limiter.success && limiter.response) {
+      return limiter.response;
+    }
+
     await connectToDatabase();
     const body = await request.json();
     const { phone } = body;
@@ -49,7 +61,6 @@ export async function POST(request: Request, { params }: { params: { publicExamI
     if (!exam.isPublished) {
       return NextResponse.json({ error: "Ushbu imtihon natijalari hali o'qituvchi/administrator tomonidan e'lon qilinmagan.", isPublished: false }, { status: 403 });
     }
-
 
     // Clean phone number for matching
     const cleanInputPhone = phone.replace(/\D/g, '');
@@ -82,6 +93,7 @@ export async function POST(request: Request, { params }: { params: { publicExamI
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Tekshirishda xatolik" }, { status: 500 });
+    console.error("Public exam POST error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

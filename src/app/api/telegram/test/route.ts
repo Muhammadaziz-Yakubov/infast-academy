@@ -1,8 +1,14 @@
 import { NextResponse } from 'next/server';
 import { testTelegramBotConnection, sendTelegramMessage } from '@/lib/telegram';
+import { requireAdminSession } from '@/lib/auth';
 
 export async function POST(request: Request) {
   try {
+    const { session, errorResponse } = requireAdminSession();
+    if (errorResponse) {
+      return errorResponse;
+    }
+
     const body = await request.json().catch(() => ({}));
     const { chatId } = body;
 
@@ -35,6 +41,7 @@ export async function POST(request: Request) {
       message: `Bot muvaffaqiyatli ulandi: @${testRes.botName}`,
     });
   } catch (error: any) {
-    return NextResponse.json({ success: false, error: error.message || "Xatolik" }, { status: 500 });
+    console.error("Telegram test error:", error);
+    return NextResponse.json({ success: false, error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

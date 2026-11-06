@@ -1,4 +1,5 @@
 import { NextResponse } from 'next/server';
+import crypto from 'crypto';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Group, Course } from '@/models';
 import { isGroupScheduledOnDate, getUzbekDayNameForDate } from '@/lib/calculations';
@@ -12,22 +13,20 @@ function verifyCronAuth(request: Request): boolean {
     return true;
   }
 
-  // 2. Check secret token
+  // 2. Check secret token strictly from headers (query string is disallowed to prevent leak in logs)
   const expectedSecret = process.env.CRON_SECRET;
-  const { searchParams } = new URL(request.url);
-  const querySecret = searchParams.get('secret');
+  if (!expectedSecret) return false;
+
   const headerSecret = request.headers.get('x-cron-secret');
   const authHeader = request.headers.get('authorization');
-  const bearerSecret = authHeader?.startsWith('Bearer ') ? authHeader.slice(7) : null;
+  const bearerSecret = authHeader?.startsWith('Bearer ') ? authHeader.slice(7).trim() : null;
 
-  const providedSecret = querySecret || headerSecret || bearerSecret;
+  const providedSecret = headerSecret || bearerSecret;
+  if (!providedSecret) return false;
 
-  if (expectedSecret && providedSecret && providedSecret === expectedSecret) {
-    return true;
-  }
-
-  // If CRON_SECRET is not set in env yet, require ADMIN session
-  return false;
+  const hashProvided = crypto.createHash('sha256').update(providedSecret).digest();
+  const hashExpected = crypto.createHash('sha256').update(expectedSecret).digest();
+  return crypto.timingSafeEqual(hashProvided, hashExpected);
 }
 
 export async function GET(request: Request) {
@@ -98,30 +97,34 @@ async function handleCronNotification(force = false) {
         const courseName = (group.courseId as any)?.name || "Kurs";
         const roomInfo = group.room ? `\n📍 <b>Xona:</b> ${group.room}` : '';
 
-        const messageText = `🔔 <b>BUGUNGI DARS ESLATMASI</b>\n\n` +
+        const messageText = `🔔 <b>DIQQAT, DARS ESLATMASI!</b>\n\n` +
+          `Assalomu alaykum, hurmatli o'quvchilar! Bugun <b>${uzbekDayName}</b> kuni guruhimizda navbatdagi dars bo'lib o'tadi.\n\n` +
           `📚 <b>Kurs:</b> ${courseName}\n` +
-          `👥 <b>Guruh:</b> ${group.name}${roomInfo}\n` +
-          `🗓 <b>Kun:</b> ${uzbekDayName}\n` +
-          `🕐 <b>Vaqt:</b> ${timeStr}\n\n` +
-          `<i>Hurmatli talabalar, bugun darsingiz bor! Darsga o'z vaqtida kelishingizni so'raymiz. 🚀</i>`;
+          `👥 <b>Guruh:</b> ${group.name}\n` +
+          `⏰ <b>Vaqt:</b> ${timeStr}${roomInfo}\n\n` +
+          `⚡️ <i>Iltimos, darsga o'z vaqtida kelishingizni va kerakli o'quv qurollarini olib olishingizni so'raymiz. Kuting, yangi bilimlarni birgalikda o'rganamiz!</i> 🚀`;
 
-        const res = await sendTelegramMessage(group.telegramChatId, messageText);
+        const sendResult = await sendTelegramMessage(group.telegramChatId, messageText);
+
         notificationResults.push({
+          groupId: group._id,
           groupName: group.name,
           chatId: group.telegramChatId,
-          sent: res.success,
-          error: res.error,
+          success: sendResult.success,
+          error: sendResult.error,
         });
       } else {
-        skippedGroups.push({ groupName: group.name, reason: `Bugunga (${uzbekDayName}) dars rejalashtirilmagan` });
+        skippedGroups.push({
+          groupName: group.name,
+          reason: `Bugun (${uzbekDayName}) guruh jadvalida dars yo'q`,
+        });
       }
     }
 
-    const successfulCount = notificationResults.filter((r) => r.sent).length;
+    const successfulCount = notificationResults.filter((r) => r.success).length;
 
     return NextResponse.json({
       success: true,
-      uzbekDayName,
       message: `${successfulCount} ta guruhga bugungi dars xabarnomalari muvaffaqiyatli yuborildi`,
       sentCount: successfulCount,
       totalGroupsProcessed: activeGroups.length,
@@ -129,6 +132,7 @@ async function handleCronNotification(force = false) {
       skipped: skippedGroups,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xabarnoma yuborishda xatolik" }, { status: 500 });
+    console.error("Telegram cron error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

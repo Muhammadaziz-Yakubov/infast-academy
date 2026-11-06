@@ -4,7 +4,10 @@ import { Student } from '@/models/Student';
 import { Payment } from '@/models/Payment';
 import { calculatePaymentPeriods } from '@/lib/calculations';
 import { createStudentSession } from '@/lib/auth';
+import { getClientIp, checkRateLimit } from '@/lib/rateLimit';
 import bcrypt from 'bcryptjs';
+
+const GENERIC_LOGIN_ERROR = "Telefon raqami yoki parol noto'g'ri";
 
 export async function POST(request: Request) {
   try {
@@ -16,10 +19,26 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Telefon raqami (yoki Talaba ID) va parolni kiriting" }, { status: 400 });
     }
 
-    await connectToDatabase();
-
     const cleanIdentifier = rawIdentifier.replace(/\s+/g, '');
     const cleanDigits = cleanIdentifier.replace(/\D/g, '');
+
+    // Rate limiting: 20 per 15 min per IP + 5 per 15 min per IP+identifier
+    const clientIp = getClientIp(request);
+    const ipLimiter = await checkRateLimit(`student-login-ip:${clientIp}`, 20, 15 * 60 * 1000);
+    if (!ipLimiter.success && ipLimiter.response) {
+      return ipLimiter.response;
+    }
+
+    const idLimiter = await checkRateLimit(
+      `student-login-id:${clientIp}:${cleanIdentifier.toLowerCase()}`,
+      5,
+      15 * 60 * 1000
+    );
+    if (!idLimiter.success && idLimiter.response) {
+      return idLimiter.response;
+    }
+
+    await connectToDatabase();
 
     const student = await Student.findOne({
       $or: [
@@ -34,29 +53,17 @@ export async function POST(request: Request) {
       .populate('branchId', 'name code address phone');
 
     if (!student) {
-      return NextResponse.json({ error: "O'quvchi topilmadi yoki hisob faol emas" }, { status: 401 });
+      return NextResponse.json({ error: GENERIC_LOGIN_ERROR }, { status: 401 });
     }
 
-    // Default password '12345678' works automatically for everyone
-    const isGlobalDefaultPassword = password === '12345678';
-    let isPasswordValid = false;
-
-    if (isGlobalDefaultPassword) {
-      isPasswordValid = true;
-    } else if (student.passwordHash) {
-      isPasswordValid = await bcrypt.compare(password, student.passwordHash);
-    } else {
-      const defaultPassword = student.studentCode || cleanIdentifier.slice(-6);
-      isPasswordValid = password === defaultPassword || password === '123456' || password === '12345678';
+    // Login succeeds only if student.passwordHash exists and bcrypt.compare passes
+    if (!student.passwordHash) {
+      return NextResponse.json({ error: GENERIC_LOGIN_ERROR }, { status: 401 });
     }
 
-    if (isPasswordValid && !student.passwordHash) {
-      student.passwordHash = await bcrypt.hash(password, 10);
-      await student.save();
-    }
-
+    const isPasswordValid = await bcrypt.compare(password, student.passwordHash);
     if (!isPasswordValid) {
-      return NextResponse.json({ error: "Telefon raqami yoki parol noto'g'ri" }, { status: 401 });
+      return NextResponse.json({ error: GENERIC_LOGIN_ERROR }, { status: 401 });
     }
 
     const token = createStudentSession({
@@ -122,7 +129,7 @@ export async function POST(request: Request) {
       student: studentProfile,
     });
 
-    // Set HTTP-only cookie for web/browser compatibility as well
+    // Set HTTP-only cookie
     response.cookies.set({
       name: 'infast_student_session',
       value: token,
@@ -135,6 +142,7 @@ export async function POST(request: Request) {
 
     return response;
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Tizimga kirishda xatolik yuz berdi" }, { status: 500 });
+    console.error("Student login error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
   }
 }

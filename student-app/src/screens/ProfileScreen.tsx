@@ -108,8 +108,12 @@ export default function ProfileScreen() {
   };
 
   const handleChangePassword = async () => {
-    if (!newPassword || newPassword.length < 4) {
-      Alert.alert('Xatolik', "Yangi parol kamida 4 ta belgidan iborat bo'lishi kerak.");
+    if (!currentPassword) {
+      Alert.alert('Xatolik', 'Amaldagi parolni kiriting.');
+      return;
+    }
+    if (!newPassword || newPassword.length < 8) {
+      Alert.alert('Xatolik', "Yangi parol kamida 8 ta belgidan iborat bo'lishi kerak.");
       return;
     }
     if (newPassword !== confirmPassword) {
@@ -119,7 +123,7 @@ export default function ProfileScreen() {
 
     try {
       setSavingPassword(true);
-      const res = await apiRequest('/api/student/profile', {
+      const res = await apiRequest('/api/student/change-password', {
         method: 'POST',
         body: { currentPassword, newPassword },
       });
@@ -470,7 +474,7 @@ export default function ProfileScreen() {
               <Text style={styles.inputLabel}>Yangi parol:</Text>
               <TextInput
                 style={styles.modalInput}
-                placeholder="Kamida 4 ta belgi"
+                placeholder="Kamida 8 ta belgi"
                 placeholderTextColor="#636366"
                 secureTextEntry
                 value={newPassword}

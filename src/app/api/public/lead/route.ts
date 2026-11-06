@@ -12,7 +12,7 @@ function sanitizeText(str?: string, maxLen: number = 100): string {
 
 export async function POST(req: NextRequest) {
   try {
-    const limiter = rateLimit(req, 10, 60 * 1000);
+    const limiter = await rateLimit(req, 10, 60 * 1000);
     if (!limiter.success && limiter.response) {
       return limiter.response;
     }

@@ -28,6 +28,8 @@ import {
   Coins,
   Key,
   Lock,
+  Copy,
+  Check,
   X,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -69,6 +71,33 @@ export default function StudentDetailPage() {
   const [showPasswordModal, setShowPasswordModal] = useState(false);
   const [newPassword, setNewPassword] = useState('');
   const [savingPassword, setSavingPassword] = useState(false);
+
+  const [generatedPassword, setGeneratedPassword] = useState<string | null>(null);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
+  const [passwordCopied, setPasswordCopied] = useState(false);
+
+  const handleGeneratePassword = async () => {
+    if (!confirm("Talaba uchun yangi vaqtinchalik parol yaratilsinmi?")) return;
+    setIsResettingPassword(true);
+    try {
+      const res = await fetch('/api/students/' + studentId + '/reset-password', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+      });
+      const json = await res.json();
+      if (res.ok && json.success) {
+        setGeneratedPassword(json.password);
+        setPasswordCopied(false);
+      } else {
+        alert(json.error || "Parol yaratishda xatolik yuz berdi");
+      }
+    } catch (e) {
+      alert("Server xatosi");
+    } finally {
+      setIsResettingPassword(false);
+    }
+  };
+
 
   const handleSavePassword = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -298,8 +327,16 @@ export default function StudentDetailPage() {
               <span>Filialga ko'chirish</span>
             </button>
 
-            <button
-              onClick={() => setShowPasswordModal(true)}
+                        <button
+              onClick={handleGeneratePassword}
+              disabled={isResettingPassword}
+              className="px-3.5 py-1.5 rounded-xl bg-slate-900 hover:bg-black text-white font-bold text-xs shadow-md transition-all flex items-center space-x-1.5 disabled:opacity-50"
+              title="Vaqtinchalik xavfsiz parol yaratish"
+            >
+              <Key className="w-3.5 h-3.5 text-amber-400" />
+              <span>{isResettingPassword ? "Yaratilmoqda..." : "Parol yaratish"}</span>
+            </button>
+            <button onClick={() => setShowPasswordModal(true)}
               className="px-3.5 py-1.5 rounded-xl bg-amber-500 hover:bg-amber-600 text-white font-bold text-xs shadow-md shadow-amber-500/20 transition-all flex items-center space-x-1.5"
               title="Student mobil ilovasi uchun yangi parol o'rnatish"
             >
@@ -902,6 +939,67 @@ export default function StudentDetailPage() {
         )}
 
         {/* Password Modal */}
+                {/* Generated Password Modal */}
+        {generatedPassword && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-sm animate-in fade-in">
+            <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
+              <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+                <div className="flex items-center space-x-2">
+                  <div className="w-8 h-8 rounded-xl bg-amber-500/10 flex items-center justify-center text-amber-600">
+                    <Key className="w-4 h-4" />
+                  </div>
+                  <div>
+                    <h3 className="font-bold text-base text-slate-900">Yangi Vaqtinchalik Parol</h3>
+                    <p className="text-xs text-slate-500">{student.firstName} {student.lastName}</p>
+                  </div>
+                </div>
+                <button
+                  onClick={() => setGeneratedPassword(null)}
+                  className="p-1.5 text-slate-400 hover:text-slate-600 rounded-lg"
+                >
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
+
+              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 text-center space-y-2">
+                <div className="text-xs text-slate-500 font-semibold uppercase tracking-wider">
+                  Student App Paroli
+                </div>
+                <div className="text-2xl font-black font-mono tracking-widest text-slate-900 select-all py-1">
+                  {generatedPassword}
+                </div>
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(generatedPassword);
+                    setPasswordCopied(true);
+                    setTimeout(() => setPasswordCopied(false), 2000);
+                  }}
+                  className="inline-flex items-center gap-1.5 px-3 py-1.5 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl transition-all"
+                >
+                  {passwordCopied ? <Check className="w-3.5 h-3.5 text-emerald-400" /> : <Copy className="w-3.5 h-3.5" />}
+                  <span>{passwordCopied ? "Nusxa olindi!" : "Nusxa olish"}</span>
+                </button>
+              </div>
+
+              <div className="p-3 bg-amber-50 border border-amber-200 rounded-2xl flex items-start gap-2.5">
+                <AlertTriangle className="w-4 h-4 text-amber-600 shrink-0 mt-0.5" />
+                <p className="text-xs font-medium text-amber-900">
+                  <strong>Diqqat:</strong> Parol faqat bir marta ko'rsatiladi. Uni saqlab oling yoki talabaga yuboring.
+                </p>
+              </div>
+
+              <div className="pt-2 flex justify-end">
+                <button
+                  onClick={() => setGeneratedPassword(null)}
+                  className="px-5 py-2 bg-slate-900 hover:bg-black text-white text-xs font-bold rounded-xl"
+                >
+                  Tushundim
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
+
         {showPasswordModal && (
           <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/40 backdrop-blur-sm animate-in fade-in">
             <div className="bg-white w-full max-w-md rounded-3xl p-6 shadow-2xl border border-slate-100 space-y-4">
@@ -931,7 +1029,7 @@ export default function StudentDetailPage() {
                   <input
                     type="text"
                     required
-                    placeholder="Masalan: 123456 yoki yangi parol"
+                    placeholder="Yangi xavfsiz parol kiriting"
                     value={newPassword}
                     onChange={(e) => setNewPassword(e.target.value)}
                     className="w-full p-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm font-mono focus:ring-2 focus:ring-amber-500/20"
