@@ -171,6 +171,6 @@ export async function GET(request: Request) {
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Bosh sahifa ma'lumotlarini olishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

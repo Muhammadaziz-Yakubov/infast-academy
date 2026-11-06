@@ -62,7 +62,7 @@ export async function GET(req: NextRequest) {
   } catch (error: any) {
     console.error('Error fetching graduates:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Server xatosi yuz berdi' },
+      { success: false, error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -163,7 +163,7 @@ export async function POST(req: NextRequest) {
   } catch (error: any) {
     console.error('Error creating graduate:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Saqlashda xatolik yuz berdi' },
+      { success: false, error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

@@ -64,7 +64,7 @@ export async function GET() {
 
     return NextResponse.json({ success: true, landings: landingList });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -99,6 +99,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, landing }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Landing sahifa yaratishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

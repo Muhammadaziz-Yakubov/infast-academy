@@ -133,6 +133,6 @@ async function handleCronNotification(force = false) {
     });
   } catch (error: any) {
     console.error("Telegram cron error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -32,18 +32,9 @@ import {
 import { cn } from '@/lib/utils';
 
 const MARKETING_SUB_ITEMS = [
-  { name: '📊 Marketing boshqaruvi', href: '/marketing' },
-  { name: '📢 Kampaniyalar', href: '/marketing/kampaniyalar' },
-  { name: '💰 Reklama xarajatlari', href: '/marketing/xarajatlar' },
-  { name: '📱 Kanallar', href: '/marketing/kanallar' },
-  { name: '🎯 Lead manbalari', href: '/marketing/lead-manbalari' },
-  { name: '🎨 Kontent rejalashtiruvchi', href: '/marketing/kontent' },
-  { name: '📅 Kontent taqvimi', href: '/marketing/taqvim' },
-  { name: '📝 Kontent kutubxonasi', href: '/marketing/kutubxona' },
-  { name: '🎁 Aksiyalar', href: '/marketing/aksiyalar' },
+  { name: '📋 Bugungi ishlar', href: '/marketing' },
+  { name: '🎯 Leadlar', href: '/marketing/lead-manbalari' },
   { name: '🤝 Tavsiya dasturi', href: '/marketing/tavsiya' },
-  { name: '🧲 Landing sahifalar', href: '/marketing/landing-sahifalar' },
-  { name: '🔗 UTM yaratish', href: '/marketing/utm' },
 ];
 
 const NAV_ITEMS = [

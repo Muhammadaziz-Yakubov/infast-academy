@@ -143,7 +143,7 @@ export default function OgImage() {
               color: '#d4d4d4',
             }}
           >
-            <span>✓ Toshkent & Urganch filiallari</span>
+            <span>✓ Buloqboshi filiali</span>
             <span>✓ 95% Amaliyot</span>
             <span>✓ Sertifikat</span>
           </div>

@@ -28,7 +28,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Admin do'kon ma'lumotlarini olishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -70,7 +70,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Mahsulot yaratishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -137,7 +137,7 @@ export async function PATCH(request: Request) {
     return NextResponse.json({ error: "Parametrlar yetarli emas" }, { status: 400 });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Yangilashda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -167,7 +167,7 @@ export async function DELETE(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Mahsulotni o'chirishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

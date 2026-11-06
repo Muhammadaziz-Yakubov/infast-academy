@@ -81,6 +81,6 @@ export async function POST() {
     });
   } catch (error: any) {
     console.error("Check Payments Error:", error);
-    return NextResponse.json({ error: error.message || "To'lovlarni tekshirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

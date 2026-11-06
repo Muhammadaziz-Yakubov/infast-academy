@@ -54,10 +54,10 @@ export default function MarketingDashboardPage() {
         <div>
           <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
             <span className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-500">📊</span>
-            Marketing boshqaruvi
+            Bugungi ishlar
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Reklama kampaniyalari, leadlar va kelgan daromadning to'liq ROI tahlili
+            Marketing, yangi leadlar va asosiy ko'rsatkichlar tahlili
           </p>
         </div>
 

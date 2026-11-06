@@ -7,7 +7,7 @@ import { Building, Send, CheckCircle2, AlertCircle } from 'lucide-react';
 export default function SettingsPage() {
   const [academyName, setAcademyName] = useState('INFAST IT-ACADEMY');
   const [phone, setPhone] = useState('+998 71 200 00 00');
-  const [address, setAddress] = useState('Toshkent sh., Yunusobod t., 4-mavze');
+  const [address, setAddress] = useState('Buloqboshi tumani, Yangi Hokimiyat');
   const [testChatId, setTestChatId] = useState('');
   const [testingTelegram, setTestingTelegram] = useState(false);
   const [telegramStatus, setTelegramStatus] = useState<any>(null);
@@ -24,7 +24,7 @@ export default function SettingsPage() {
         const data = await res.json();
         setAcademyName(data.academyName || 'INFAST IT-ACADEMY');
         setPhone(data.phone || '+998 71 200 00 00');
-        setAddress(data.address || 'Toshkent sh., Yunusobod t., 4-mavze');
+        setAddress(data.address || 'Buloqboshi tumani, Yangi Hokimiyat');
       }
     } catch (e) {
       console.error(e);

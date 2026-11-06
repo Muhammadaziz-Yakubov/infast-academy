@@ -19,8 +19,8 @@ import { FloatingContact } from '@/components/landing/FloatingContact';
 import { Footer } from '@/components/landing/Footer';
 
 export const metadata: Metadata = {
-  title: 'InFast IT-Academy — Toshkent va Urganchda Zamonaviy IT Kurslari',
-  description: 'InFast IT-Academy — Toshkent hamda Urganchda Frontend, Backend va Cyber Security yo‘nalishlarida real amaliy loyihalar orqali IT mutaxassisi tayyorlovchi zamonaviy akademiya.',
+  title: 'InFast IT-Academy — Buloqboshida Zamonaviy IT Kurslari',
+  description: 'InFast IT-Academy — Buloqboshida Frontend, Backend va Cyber Security yo‘nalishlarida real amaliy loyihalar orqali IT mutaxassisi tayyorlovchi zamonaviy akademiya.',
   alternates: {
     canonical: 'https://infast.uz',
   },

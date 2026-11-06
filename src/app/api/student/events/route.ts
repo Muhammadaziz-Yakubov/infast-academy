@@ -47,7 +47,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Tadbirlarni yuklashda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -118,7 +118,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Tadbirga yozilishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

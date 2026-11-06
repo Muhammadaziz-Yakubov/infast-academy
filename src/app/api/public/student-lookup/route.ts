@@ -71,6 +71,6 @@ export async function GET(request: NextRequest) {
     });
   } catch (error: any) {
     console.error("Public student lookup error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

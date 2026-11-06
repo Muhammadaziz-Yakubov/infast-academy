@@ -17,7 +17,7 @@ export async function GET() {
 
     return NextResponse.json(employees);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xodimlarni yuklashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -78,6 +78,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json(userWithoutPassword, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xodimni yaratishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

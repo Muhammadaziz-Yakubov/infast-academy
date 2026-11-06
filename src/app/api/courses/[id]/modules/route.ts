@@ -37,7 +37,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ success: true, modules: enrichedModules });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Modullarni olishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -79,6 +79,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
 
     return NextResponse.json({ success: true, module: newModule }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Modul yaratishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

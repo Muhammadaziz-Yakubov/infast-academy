@@ -107,7 +107,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Reytingni olishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

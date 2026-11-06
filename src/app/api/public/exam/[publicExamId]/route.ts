@@ -33,7 +33,7 @@ export async function GET(request: Request, { params }: { params: { publicExamId
     });
   } catch (error: any) {
     console.error("Public exam GET error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -94,6 +94,6 @@ export async function POST(request: Request, { params }: { params: { publicExamI
     });
   } catch (error: any) {
     console.error("Public exam POST error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

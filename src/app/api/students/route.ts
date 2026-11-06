@@ -112,7 +112,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ students: filteredStudents });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Talabalarni yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -233,6 +233,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, student: newStudent }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Talaba qo'shishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

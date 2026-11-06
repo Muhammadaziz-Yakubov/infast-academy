@@ -9,14 +9,14 @@ export function JsonLd() {
     url: 'https://infast.uz',
     logo: 'https://infast.uz/icon',
     description: 'InFast IT-Academy — Frontend, Backend va Cyber Security yo‘nalishlarida real amaliy loyihalar orqali yetuk IT mutaxassisi tayyorlovchi zamonaviy akademiya.',
-    telephone: '+998-90-123-45-67',
+    telephone: '+998-90-271-00-27',
     priceRange: '$$',
     address: [
       {
         '@type': 'PostalAddress',
-        streetAddress: 'Toshkent shahri, Yunusobod tumani',
-        addressLocality: 'Toshkent',
-        addressRegion: 'Toshkent shahri',
+        streetAddress: 'Buloqboshi tumani, Yangi Hokimiyat',
+        addressLocality: 'Buloqboshi',
+        addressRegion: 'Andijon viloyati',
         postalCode: '100000',
         addressCountry: 'UZ',
       },

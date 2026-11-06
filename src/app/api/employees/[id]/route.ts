@@ -61,7 +61,7 @@ export async function PUT(
 
     return NextResponse.json(userWithoutPassword);
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xodimni yangilashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -84,6 +84,6 @@ export async function DELETE(
 
     return NextResponse.json({ success: true, message: "Xodim o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xodimni o'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -23,7 +23,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ success: true, lesson });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Darsni olishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -50,7 +50,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ success: true, lesson: updatedLesson });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Darsni yangilashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -70,6 +70,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
 
     return NextResponse.json({ success: true, message: "Dars muvaffaqiyatli o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Darsni o'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

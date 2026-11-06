@@ -66,7 +66,7 @@ export async function GET(req: NextRequest, { params }: { params: { id: string }
       utmLinks,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -85,7 +85,7 @@ export async function PUT(req: NextRequest, { params }: { params: { id: string }
 
     return NextResponse.json({ success: true, campaign: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Tahrirlashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -98,6 +98,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     await MarketingCampaign.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Kampaniya o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "O'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

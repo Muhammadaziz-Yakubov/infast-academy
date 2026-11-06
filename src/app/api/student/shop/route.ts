@@ -96,7 +96,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Do'kon ma'lumotlarini olishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -171,7 +171,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Xarid jarayonida xatolik yuz berdi" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

@@ -42,6 +42,6 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     console.error("Telegram test error:", error);
-    return NextResponse.json({ success: false, error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ success: false, error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

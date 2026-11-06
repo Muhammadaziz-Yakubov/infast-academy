@@ -63,6 +63,6 @@ export async function POST(
     });
   } catch (error: any) {
     console.error("Reset password error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

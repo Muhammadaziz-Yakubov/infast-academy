@@ -263,6 +263,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
         : `Natija: ${correctCount}/${totalQuestions}. O'tish bali: kamida ${passingThreshold} ta. Qayta urinib ko'ring.`,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Testni tekshirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

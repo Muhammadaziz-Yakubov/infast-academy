@@ -52,6 +52,6 @@ export async function GET(
     return NextResponse.json({ success: true, payment });
   } catch (error: any) {
     console.error("Public receipt error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

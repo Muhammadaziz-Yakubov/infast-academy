@@ -108,7 +108,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       isDebtor: asDebtor,
       course: { name: 'Full-Stack Web Development', price: 600000 },
       group: { name: 'FS-24-01' },
-      branch: { name: 'Toshkent Asosiy Filial', phone: '+998 (71) 200-00-00' },
+      branch: { name: 'Buloqboshi Asosiy Filial', phone: '+998 (90) 271-00-27' },
     };
     await AuthStorage.saveToken('demo-jwt-session');
     await AuthStorage.saveProfile(demoStudent);

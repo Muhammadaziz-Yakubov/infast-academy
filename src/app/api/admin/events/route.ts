@@ -33,7 +33,7 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Tadbirlarni olishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -78,7 +78,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Tadbir yaratishda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -173,7 +173,7 @@ export async function PATCH(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Tadbir davomatini belgilashda xatolik" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -206,7 +206,7 @@ export async function PUT(request: Request) {
       event,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -233,6 +233,6 @@ export async function DELETE(request: Request) {
       message: "Tadbir muvaffaqiyatli o'chirildi",
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Tadbirni o'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

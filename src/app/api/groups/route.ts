@@ -45,7 +45,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ groups: result });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Guruhlarni yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -98,6 +98,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, group: newGroup }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Guruh yaratishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

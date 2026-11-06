@@ -87,7 +87,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       exams: examResults,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -145,7 +145,7 @@ export async function PUT(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ success: true, student: updatedStudent });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Tahrirlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -172,6 +172,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     await Student.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Talaba o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "O'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

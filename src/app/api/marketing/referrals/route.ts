@@ -33,7 +33,7 @@ export async function GET() {
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -63,7 +63,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, referral }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Tavsiya kiritishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -83,6 +83,6 @@ export async function PUT(req: NextRequest) {
     const updated = await Referral.findByIdAndUpdate(id, { rewardStatus, notes }, { new: true });
     return NextResponse.json({ success: true, referral: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Tahrirlashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

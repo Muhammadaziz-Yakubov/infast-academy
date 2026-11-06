@@ -26,7 +26,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, assets });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -57,7 +57,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, asset }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Material saqlashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -77,6 +77,6 @@ export async function DELETE(req: NextRequest) {
     await MarketingAsset.findByIdAndDelete(id);
     return NextResponse.json({ success: true, message: "Material o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "O'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

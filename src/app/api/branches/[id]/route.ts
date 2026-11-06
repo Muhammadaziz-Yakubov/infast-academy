@@ -50,7 +50,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Filial ma\'lumotini yuklashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -116,7 +116,7 @@ export async function PATCH(request: Request, { params }: { params: { id: string
     await branch.save();
     return NextResponse.json({ success: true, branch });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Filialni tahrirlashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -156,6 +156,6 @@ export async function DELETE(request: Request, { params }: { params: { id: strin
     await Branch.findByIdAndDelete(branch._id);
     return NextResponse.json({ success: true, message: 'Filial muvaffaqiyatli o\'chirildi' });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Filialni o\'chirishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

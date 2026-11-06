@@ -12,6 +12,6 @@ export async function GET() {
     const data = await getDevSmsBalance();
     return NextResponse.json(data);
   } catch (err: any) {
-    return NextResponse.json({ error: err.message || "Balansni olishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

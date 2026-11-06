@@ -53,6 +53,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
       totalPages: Math.ceil(total / limit) || 1,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Faoliyat tarixini olishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -28,7 +28,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, contents });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, content }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Kontent yaratishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -79,6 +79,6 @@ export async function PUT(req: NextRequest) {
     const updated = await MarketingContent.findByIdAndUpdate(id, updateData, { new: true });
     return NextResponse.json({ success: true, content: updated });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Tahrirlashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

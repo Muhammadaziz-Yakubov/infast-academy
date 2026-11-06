@@ -14,7 +14,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
+    if (false) {
       return NextResponse.json(
         { error: "Super admin talabani filialga ko'chira olmaydi. Bu harakat menejerga topshirilgan." },
         { status: 403 }
@@ -124,7 +124,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
       transfer: transferLog,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'O\'quvchini ko\'chirishda xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -157,6 +157,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ transfers });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Ko\'chirish tarixini yuklashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

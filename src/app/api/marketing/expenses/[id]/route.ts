@@ -12,6 +12,6 @@ export async function DELETE(req: NextRequest, { params }: { params: { id: strin
     await MarketingExpense.findByIdAndDelete(params.id);
     return NextResponse.json({ success: true, message: "Xarajat o'chirildi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "O'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -19,6 +19,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
 
     return NextResponse.json({ users });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Filial xodimlarini yuklashda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

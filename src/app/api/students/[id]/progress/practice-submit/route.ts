@@ -119,6 +119,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       totalXcoin: progress.xcoin,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Amaliyotni topshirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

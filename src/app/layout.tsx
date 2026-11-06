@@ -7,11 +7,11 @@ const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || "https://infast.uz";
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: "InFast IT-Academy — Toshkent va Urganchda Zamonaviy IT Kurslari",
+    default: "InFast IT-Academy — Buloqboshida Zamonaviy IT Kurslari",
     template: "%s | InFast IT-Academy",
   },
   description:
-    "InFast IT-Academy — Toshkent va Urganch shaharlarida Frontend, Backend hamda Cyber Security yo‘nalishlarida 100% amaliy loyihalar orqali IT mutaxassisi bo‘ling. Bepul konsultatsiya oling!",
+    "InFast IT-Academy — Andijon viloyati Buloqboshi tumanida Frontend, Backend hamda Cyber Security yo‘nalishlarida 100% amaliy loyihalar orqali IT mutaxassisi bo‘ling. Bepul konsultatsiya oling!",
   applicationName: "InFast IT-Academy",
   authors: [{ name: "InFast IT-Academy Team", url: siteUrl }],
   generator: "Next.js",
@@ -19,8 +19,8 @@ export const metadata: Metadata = {
     "InFast",
     "InFast Academy",
     "InFast IT Academy",
-    "IT kurslar Toshkent",
-    "IT kurslar Urganch",
+    "IT kurslar Buloqboshi",
+    "IT kurslar Andijon",
     "dasturlashni o'rganish",
     "Frontend kurslari",
     "Backend Python Nodejs",
@@ -28,7 +28,7 @@ export const metadata: Metadata = {
     "Kiberxavfsizlik o'rganish",
     "Next.js va React kurslari",
     "noldan dasturlash",
-    "IT ta'lim markazi Toshkent",
+    "IT ta'lim markazi Buloqboshi",
     "dasturchi bo'lish",
     "IT akademiya O'zbekiston",
   ],
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     },
   },
   openGraph: {
-    title: "InFast IT-Academy — Toshkent va Urganchda Zamonaviy IT Kurslari",
+    title: "InFast IT-Academy — Buloqboshida Zamonaviy IT Kurslari",
     description:
       "Frontend, Backend hamda Cyber Security yo‘nalishlarida real amaliy loyihalar yozib, kuchli portfolio bilan IT sohasiga kiring.",
     url: siteUrl,
@@ -66,39 +66,35 @@ export const metadata: Metadata = {
   },
   twitter: {
     card: "summary_large_image",
-    title: "InFast IT-Academy — Toshkent va Urganchda Zamonaviy IT Kurslari",
+    title: "InFast IT-Academy — Buloqboshida Zamonaviy IT Kurslari",
     description:
-      "Real amaliy loyihalar orqali dasturchi bo‘ling va kuchli portfolio yaratgan holda IT sohasiga kiring.",
-    creator: "@infast_academy",
+      "Amaliy loyihalarga asoslangan zamonaviy IT ta'limi. Frontend, Backend, Cyber Security.",
+    creator: "@infastacademy",
     images: ["/opengraph-image"],
   },
   robots: {
     index: true,
     follow: true,
-    nocache: false,
     googleBot: {
       index: true,
       follow: true,
-      noimageindex: false,
       "max-video-preview": -1,
       "max-image-preview": "large",
       "max-snippet": -1,
     },
   },
   icons: {
-    icon: "/icon",
-    shortcut: "/icon",
-    apple: "/icon",
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/icon.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-icon.png", sizes: "180x180", type: "image/png" }],
   },
   manifest: "/manifest.webmanifest",
-  verification: {
-    google: "google-site-verification-placeholder",
-    yandex: "yandex-verification-placeholder",
-  },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#000000",
+  themeColor: "#FF5B00",
   width: "device-width",
   initialScale: 1,
   maximumScale: 5,
@@ -106,18 +102,17 @@ export const viewport: Viewport = {
 
 export default function RootLayout({
   children,
-}: Readonly<{
+}: {
   children: React.ReactNode;
-}>) {
+}) {
   return (
-    <html lang="uz" suppressHydrationWarning>
+    <html lang="uz" className="scroll-smooth">
       <head>
         <JsonLd />
       </head>
-      <body className="font-sans bg-slate-100 dark:bg-[#0b0f19] text-slate-900 dark:text-slate-100 antialiased min-h-screen transition-colors duration-200">
+      <body className="antialiased bg-slate-950 text-slate-100 min-h-screen selection:bg-infast-500 selection:text-white">
         {children}
       </body>
     </html>
   );
 }
-

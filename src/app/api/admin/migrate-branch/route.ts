@@ -89,7 +89,7 @@ export async function GET(req: NextRequest) {
       },
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -257,6 +257,6 @@ export async function POST(req: NextRequest) {
       message: `Jami ${totalMigrated} ta yozuv ${sourceBranchName} manbasidan ${targetBranch.name} filialiga muvaffaqiyatli ko'chirildi.`,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Migratsiyada xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

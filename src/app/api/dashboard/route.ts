@@ -174,6 +174,6 @@ export async function GET(request: Request) {
     });
   } catch (error: any) {
     console.error("Dashboard API Error:", error);
-    return NextResponse.json({ error: error.message || "Dashboard ma'lumotlarini yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

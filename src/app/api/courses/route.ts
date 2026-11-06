@@ -34,7 +34,7 @@ export async function GET() {
 
     return NextResponse.json({ courses: result });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Kurslarni yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -63,6 +63,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, course: newCourse }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Kurs yaratishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

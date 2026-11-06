@@ -116,6 +116,6 @@ export async function POST(request: Request, { params }: { params: { id: string 
       startingLessonId: progress.startingLessonId,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Boshlang'ich darsni belgilashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

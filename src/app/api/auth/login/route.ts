@@ -102,6 +102,6 @@ export async function POST(request: Request) {
     return response;
   } catch (error: any) {
     console.error("Admin login error:", error);
-    return NextResponse.json({ error: "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -53,7 +53,7 @@ export async function GET(req: NextRequest) {
 
     return NextResponse.json({ success: true, links });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'Xatolik yuz berdi' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -140,6 +140,6 @@ export async function POST(req: NextRequest) {
 
     return NextResponse.json({ success: true, link: newLink }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || 'UTM havola yaratishda xatolik' }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

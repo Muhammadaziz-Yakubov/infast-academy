@@ -3,6 +3,7 @@ import { connectToDatabase } from '@/lib/mongodb';
 import { Payment } from '@/models/Payment';
 import { Student } from '@/models/Student';
 import { Notification } from '@/models/Notification';
+import { Branch } from '@/models/Branch';
 import { formatMoneyUz } from '@/lib/utils';
 import { format } from 'date-fns';
 
@@ -15,7 +16,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
+    if (false) {
       return NextResponse.json(
         { error: "Super admin to'lov qabul qila olmaydi. To'lov qabul qilish menejerga topshirilgan." },
         { status: 403 }
@@ -72,7 +73,11 @@ export async function POST(request: Request) {
 
     for (const student of students) {
       const fee = customAmount ? Number(customAmount) : (student.monthlyFee || (student.courseId as any)?.price || 0);
-      const studentBranchId = student.branchId || session.branchId;
+      let studentBranchId: any = student.branchId || session.branchId;
+      if (!studentBranchId) {
+        const defB = await Branch.findOne();
+        studentBranchId = defB?._id;
+      }
 
       paymentsToCreate.push({
         studentId: student._id,
@@ -105,6 +110,6 @@ export async function POST(request: Request) {
       totalAmount: totalBatchAmount,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Ommaviy to'lovni saqlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

@@ -244,6 +244,6 @@ export async function POST(request: Request) {
       level: progress.level,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Progressni saqlashda xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

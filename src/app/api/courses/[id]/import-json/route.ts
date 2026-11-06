@@ -166,7 +166,7 @@ export async function POST(
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "JSON import qilishda xatolik yuz berdi" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

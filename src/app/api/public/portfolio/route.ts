@@ -72,6 +72,6 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ success: true, count: talents.length, talents });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Xatolik yuz berdi" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

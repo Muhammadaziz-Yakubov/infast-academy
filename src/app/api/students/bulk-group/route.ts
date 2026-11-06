@@ -11,7 +11,7 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
+    if (false) {
       return NextResponse.json(
         { error: "Super admin talabalarning guruhini o'zgartira olmaydi. Bu harakat menejerga topshirilgan." },
         { status: 403 }
@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Guruhni o'zgartirishda xatolik yuz berdi" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

@@ -29,7 +29,7 @@ export async function PUT(
 
     return NextResponse.json({ success: true, module: updatedModule });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Modulni tahrirlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -62,6 +62,6 @@ export async function DELETE(
       message: "Modul va unga tegishli barcha darslar o'chirildi",
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Modulni o'chirishda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

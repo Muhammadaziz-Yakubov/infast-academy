@@ -289,7 +289,7 @@ export default function HomeScreen({
           </View>
           <View style={styles.rowContent}>
             <Text style={styles.rowLabel}>Filial</Text>
-            <Text style={styles.rowValue}>{studentProfile?.branch?.name || "InFast IT-Academy Toshkent"}</Text>
+            <Text style={styles.rowValue}>{studentProfile?.branch?.name || "InFast IT-Academy Buloqboshi"}</Text>
           </View>
         </View>
 

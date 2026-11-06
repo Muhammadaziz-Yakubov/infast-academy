@@ -31,7 +31,7 @@ export async function GET(
   } catch (error: any) {
     console.error('Error fetching graduate:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Server xatosi' },
+      { success: false, error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -104,7 +104,7 @@ export async function PUT(
   } catch (error: any) {
     console.error('Error updating graduate:', error);
     return NextResponse.json(
-      { success: false, error: error.message || 'Yangilashda xatolik' },
+      { success: false, error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }
@@ -139,7 +139,7 @@ export async function DELETE(
   } catch (error: any) {
     console.error('Error deleting graduate:', error);
     return NextResponse.json(
-      { success: false, error: error.message || "O'chirishda xatolik" },
+      { success: false, error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

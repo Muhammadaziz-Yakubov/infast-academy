@@ -20,12 +20,13 @@ export async function GET() {
 
     return NextResponse.json({
       academyName: settingsMap['academyName'] || 'INFAST IT-ACADEMY',
-      phone: settingsMap['phone'] || '+998 71 200 00 00',
-      address: settingsMap['address'] || "Toshkent sh., Yunusobod t., 4-mavze",
+      phone: settingsMap['phone'] || '+998 90 271 00 27',
+      address: settingsMap['address'] || "Buloqboshi tumani, Yangi Hokimiyat",
       telegramBotTokenConfigured: !!process.env.TELEGRAM_BOT_TOKEN,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Sozlamalarni yuklashda xatolik" }, { status: 500 });
+    console.error("Settings GET error:", error);
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -51,6 +52,6 @@ export async function PUT(request: Request) {
 
     return NextResponse.json({ success: true, message: "Sozlamalar saqlandi" });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Saqlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

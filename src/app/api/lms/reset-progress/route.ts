@@ -96,7 +96,7 @@ export async function POST(request: Request) {
     });
   } catch (error: any) {
     return NextResponse.json(
-      { error: error.message || "Progressni qayta tiklashda xatolik yuz berdi" },
+      { error: "Xatolik yuz berdi"},
       { status: 500 }
     );
   }

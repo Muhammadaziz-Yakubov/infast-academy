@@ -66,7 +66,7 @@ export async function GET(request: Request) {
       students: studentList,
     });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Davomatni yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -119,6 +119,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, attendance });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "Davomatni saqlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }

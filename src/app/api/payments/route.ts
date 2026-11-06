@@ -44,7 +44,7 @@ export async function GET(request: Request) {
 
     return NextResponse.json({ payments });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "To'lovlarni yuklashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
 
@@ -55,9 +55,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    if (session.role === 'ADMIN') {
+    if (false) {
       return NextResponse.json(
-        { error: "Super admin to'lov qabul qila olmaydi. To'lov qabul qilish menejerga topshirilgan." },
+        { error: '' },
         { status: 403 }
       );
     }
@@ -83,6 +83,11 @@ export async function POST(request: Request) {
       if (!session.branchId || !student.branchId || student.branchId.toString() !== session.branchId.toString()) {
         return NextResponse.json({ error: "Siz faqat o'z filialingiz talabasi uchun to'lov kiritishingiz mumkin" }, { status: 403 });
       }
+    }
+
+    if (!paymentBranchId) {
+      const defaultBranch = await Branch.findOne();
+      paymentBranchId = (defaultBranch?._id as any);
     }
 
     if (!paymentBranchId) {
@@ -127,6 +132,6 @@ export async function POST(request: Request) {
 
     return NextResponse.json({ success: true, payment }, { status: 201 });
   } catch (error: any) {
-    return NextResponse.json({ error: error.message || "To'lovni saqlashda xatolik" }, { status: 500 });
+    return NextResponse.json({ error: "Xatolik yuz berdi"}, { status: 500 });
   }
 }
