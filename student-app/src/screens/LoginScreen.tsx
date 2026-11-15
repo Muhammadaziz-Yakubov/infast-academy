@@ -12,19 +12,19 @@ import {
 } from 'react-native';
 import { useAuth } from '../context/AuthContext';
 import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { Lock, Phone, Eye, EyeOff, Sparkles, BookOpen } from 'lucide-react-native';
+import { Lock, UserCheck, Eye, EyeOff, Sparkles, BookOpen } from 'lucide-react-native';
 
 export default function LoginScreen() {
   const { login, loginDemo } = useAuth();
-  const [phone, setPhone] = useState('');
+  const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
   const handleLogin = async () => {
-    if (!phone.trim()) {
-      setErrorMessage('Telefon raqamingizni kiriting');
+    if (!identifier.trim()) {
+      setErrorMessage("Telefon raqamingiz yoki Talaba ID (masalan, INF-24-001) ni kiriting");
       return;
     }
     if (!password.trim()) {
@@ -35,7 +35,7 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       setErrorMessage(null);
-      await login(phone, password);
+      await login(identifier.trim(), password);
     } catch (err: any) {
       setErrorMessage(err.message || 'Kirish muvaffaqiyatsiz bo‘ldi');
     } finally {
@@ -69,17 +69,18 @@ export default function LoginScreen() {
         <View style={styles.inputGroupCard}>
           <View style={styles.inputRow}>
             <View style={styles.iconCircle}>
-              <Phone size={16} color="#8E8E93" />
+              <UserCheck size={16} color="#8E8E93" />
             </View>
             <TextInput
               style={styles.textInput}
-              placeholder="Telefon raqam (+998 90 123 45 67)"
+              placeholder="Telefon raqam yoki Talaba ID"
               placeholderTextColor="#636366"
-              keyboardType="phone-pad"
+              keyboardType="default"
               autoCapitalize="none"
-              value={phone}
+              autoCorrect={false}
+              value={identifier}
               onChangeText={(val) => {
-                setPhone(val);
+                setIdentifier(val);
                 setErrorMessage(null);
               }}
             />

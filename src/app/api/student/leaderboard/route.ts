@@ -27,19 +27,21 @@ export async function GET(request: Request) {
     // Scopes: 'group' (Mening guruhim), 'branch' (Mening filialim), 'all' (Hamma filiallar)
     const scope = searchParams.get('scope') || 'group';
 
-    // 1. Fetch matching active students according to requested scope
-    const studentQuery: Record<string, any> = {
-      status: { $in: ['ACTIVE', 'COMPLETED'] },
+    // 1. Fetch matching students according to requested scope (always ensure current student is included)
+    const baseCondition: Record<string, any> = {
+      $or: [
+        { status: { $in: ['ACTIVE', 'COMPLETED'] } },
+        { _id: currentStudent._id },
+      ],
     };
 
     if (scope === 'group' && currentStudent.groupId) {
-      studentQuery.groupId = currentStudent.groupId;
+      baseCondition.groupId = currentStudent.groupId;
     } else if (scope === 'branch' && currentStudent.branchId) {
-      studentQuery.branchId = currentStudent.branchId;
+      baseCondition.branchId = currentStudent.branchId;
     }
-    // scope === 'all' includes all branches
 
-    const matchingStudents = await Student.find(studentQuery)
+    const matchingStudents = await Student.find(baseCondition)
       .select('firstName lastName avatarUrl branchId groupId')
       .populate('branchId', 'name')
       .populate('groupId', 'name')
@@ -63,7 +65,7 @@ export async function GET(request: Request) {
       });
     });
 
-    // 3. Assemble all matching students (every enrolled student in group/branch/all)
+    // 3. Assemble all matching students
     const assembledList = matchingStudents.map((student: any) => {
       const prog = progressMap.get(student._id.toString()) || { xp: 0, xcoin: 0, level: 1 };
       const isCurrentStudent = student._id.toString() === session.id;

@@ -26,17 +26,57 @@ export async function GET(request: Request, { params }: { params: { id: string }
     }
 
     // Verify student belongs to this course
-    if (lesson.courseId._id.toString() !== session.courseId) {
+    const student = await Student.findById(session.id).select('courseId').lean();
+    if (!student) {
+      return NextResponse.json({ error: "O'quvchi topilmadi" }, { status: 404 });
+    }
+
+    const lessonCourseId = (lesson.courseId as any)?._id?.toString() || (lesson.courseId as any)?.toString();
+    const studentCourseId = student.courseId?.toString() || session.courseId;
+
+    if (lessonCourseId !== studentCourseId) {
       return NextResponse.json({ error: "Ushbu dars sizning kursingizga tegishli emas" }, { status: 403 });
     }
 
     // Fetch progress and verify unlock status
-    const progress = await StudentProgress.findOne({
+    let progress = await StudentProgress.findOne({
       studentId: session.id,
-      courseId: session.courseId,
-    }).lean();
+      courseId: studentCourseId,
+    });
 
-    const isUnlocked = (progress?.unlockedLessonIds || []).some(
+    if (!progress) {
+      const allLessons = await Lesson.find({ courseId: studentCourseId, status: 'ACTIVE' })
+        .sort({ moduleId: 1, order: 1 })
+        .lean();
+      const firstLesson = allLessons[0];
+      progress = await StudentProgress.create({
+        studentId: session.id,
+        courseId: studentCourseId,
+        startingLessonId: firstLesson?._id,
+        currentLessonId: firstLesson?._id,
+        unlockedLessonIds: firstLesson ? [firstLesson._id] : [],
+        completedLessonIds: [],
+        lessonStates: firstLesson
+          ? [
+              {
+                lessonId: firstLesson._id,
+                status: 'UNLOCKED',
+                theoryRead: false,
+                testPassed: false,
+                testScore: 0,
+                testAttempts: 0,
+                practiceCompleted: false,
+                updatedAt: new Date(),
+              },
+            ]
+          : [],
+        xp: 0,
+        xcoin: 0,
+        level: 1,
+      });
+    }
+
+    const isUnlocked = (progress.unlockedLessonIds || []).some(
       (id: any) => id.toString() === params.id
     );
 
@@ -47,7 +87,7 @@ export async function GET(request: Request, { params }: { params: { id: string }
       );
     }
 
-    const state = (progress?.lessonStates || []).find(
+    const state = (progress.lessonStates || []).find(
       (st: any) => st.lessonId.toString() === params.id
     );
 

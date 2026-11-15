@@ -6,7 +6,7 @@ Ushbu mobil ilova **InFast IT-Academy CRM** bilan to'liq integratsiyalashgan ras
 
 ## 1. TEXNOLOGIYALAR VA TUZILISH
 
-- **Framework:** React Native + Expo (SDK 57)
+- **Framework:** React Native + Expo (SDK 58)
 - **Til:** TypeScript (Strict mode)
 - **Xavfsiz Autentifikatsiya:** Expo SecureStore + JWT Bearer token
 - **Dizayn tizimi:** InFast to'q sariq (`#F97316`) va toza oq ranglar palitrasi

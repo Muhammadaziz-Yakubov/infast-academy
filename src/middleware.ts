@@ -17,6 +17,10 @@ const PROTECTED_PAGE_PREFIXES = [
   '/notifications',
   '/settings',
   '/employees',
+  '/lms',
+  '/shop',
+  '/events',
+  '/graduates',
 ];
 
 const PROTECTED_API_PREFIXES = [
@@ -34,7 +38,17 @@ const PROTECTED_API_PREFIXES = [
   '/api/notifications',
   '/api/search',
   '/api/employees',
+  '/api/lms',
+  '/api/admin',
+  '/api/graduates',
+  '/api/lessons',
 ];
+
+const CORS_HEADERS = {
+  'Access-Control-Allow-Origin': '*',
+  'Access-Control-Allow-Methods': 'GET, POST, PUT, PATCH, DELETE, OPTIONS',
+  'Access-Control-Allow-Headers': 'Content-Type, Authorization, X-Requested-With',
+};
 
 async function isValidToken(token: string | undefined): Promise<boolean> {
   if (!token) return false;
@@ -51,6 +65,18 @@ async function isValidToken(token: string | undefined): Promise<boolean> {
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
+
+  // Handle CORS for Student App API routes
+  const isStudentApi = pathname.startsWith('/api/student') || pathname.startsWith('/api/auth/student-login');
+  if (isStudentApi) {
+    if (request.method === 'OPTIONS') {
+      return new NextResponse(null, {
+        status: 204,
+        headers: CORS_HEADERS,
+      });
+    }
+  }
+
   const token = request.cookies.get('infast_session')?.value;
 
   const isProtectedApi = PROTECTED_API_PREFIXES.some(
@@ -84,7 +110,14 @@ export async function middleware(request: NextRequest) {
     }
   }
 
-  return NextResponse.next();
+  const response = NextResponse.next();
+  if (isStudentApi) {
+    Object.entries(CORS_HEADERS).forEach(([key, value]) => {
+      response.headers.set(key, value);
+    });
+  }
+
+  return response;
 }
 
 export const config = {
@@ -104,6 +137,10 @@ export const config = {
     '/notifications/:path*',
     '/settings/:path*',
     '/employees/:path*',
+    '/lms/:path*',
+    '/shop/:path*',
+    '/events/:path*',
+    '/graduates/:path*',
     '/api/branches/:path*',
     '/api/marketing/:path*',
     '/api/students/:path*',
@@ -118,5 +155,11 @@ export const config = {
     '/api/notifications/:path*',
     '/api/search/:path*',
     '/api/employees/:path*',
+    '/api/lms/:path*',
+    '/api/admin/:path*',
+    '/api/graduates/:path*',
+    '/api/lessons/:path*',
+    '/api/student/:path*',
+    '/api/auth/student-login',
   ],
 };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { View, StyleSheet, Text, StatusBar } from 'react-native';
+import { View, StyleSheet, Text } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { AuthProvider, useAuth } from './src/context/AuthContext';
 import LoginScreen from './src/screens/LoginScreen';
@@ -31,6 +32,7 @@ function MainAppContent() {
   if (!token) {
     return (
       <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
+        <StatusBar style="light" />
         <LoginScreen />
       </View>
     );
@@ -49,7 +51,7 @@ function MainAppContent() {
   if (isDebtor) {
     return (
       <View style={[styles.mainContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
-        <StatusBar barStyle="light-content" backgroundColor="#000000" />
+        <StatusBar style="light" />
         <DebtLockScreen />
       </View>
     );
@@ -59,6 +61,7 @@ function MainAppContent() {
   if (selectedLessonId) {
     return (
       <View style={[styles.mainContainer, { paddingTop: insets.top, paddingBottom: insets.bottom }]}>
+        <StatusBar style="light" />
         <LessonDetailScreen
           lessonId={selectedLessonId}
           onBack={() => setSelectedLessonId(null)}
@@ -73,7 +76,7 @@ function MainAppContent() {
 
   return (
     <View style={[styles.mainContainer, { paddingTop: insets.top }]}>
-      <StatusBar barStyle="light-content" backgroundColor="#000000" />
+      <StatusBar style="light" />
 
       {/* Main Screen Content */}
       <View style={styles.screenWrapper}>

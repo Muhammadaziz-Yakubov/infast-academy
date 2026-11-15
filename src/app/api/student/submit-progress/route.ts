@@ -29,17 +29,36 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Dars topilmadi" }, { status: 404 });
     }
 
-    if (lesson.courseId.toString() !== session.courseId) {
+    const student = await Student.findById(session.id).select('courseId branchId').lean();
+    if (!student) {
+      return NextResponse.json({ error: "O'quvchi topilmadi" }, { status: 404 });
+    }
+
+    const lessonCourseId = (lesson.courseId as any)?._id?.toString() || (lesson.courseId as any)?.toString();
+    const studentCourseId = student.courseId?.toString() || session.courseId;
+
+    if (lessonCourseId !== studentCourseId) {
       return NextResponse.json({ error: "Dars sizning kursingizga tegishli emas" }, { status: 403 });
     }
 
     let progress = await StudentProgress.findOne({
       studentId: session.id,
-      courseId: session.courseId,
+      courseId: studentCourseId,
     });
 
     if (!progress) {
-      return NextResponse.json({ error: "Progress yozuvi topilmadi" }, { status: 404 });
+      progress = await StudentProgress.create({
+        studentId: session.id,
+        courseId: studentCourseId,
+        startingLessonId: lesson._id,
+        currentLessonId: lesson._id,
+        unlockedLessonIds: [lesson._id],
+        completedLessonIds: [],
+        lessonStates: [],
+        xp: 0,
+        xcoin: 0,
+        level: 1,
+      });
     }
 
     // Check if lesson is unlocked
@@ -102,7 +121,7 @@ export async function POST(request: Request) {
       if (state.status !== 'COMPLETED') state.status = 'IN_PROGRESS';
       await StudentActivity.create({
         studentId: session.id,
-        branchId: session.branchId,
+        branchId: student.branchId || session.branchId,
         type: 'THEORY_READ',
         title: `Nazariya o'qib chiqildi: ${lesson.title}`,
         metadata: { lessonId: lesson._id },
@@ -128,9 +147,6 @@ export async function POST(request: Request) {
         };
       });
 
-      const passingThreshold = 0; // Har qanday natija bilan o'tadi
-      const passed = true; // Javobi to'g'ri bo'lsa ham noto'g'ri bo'lsa ham o'taveradi
-
       state.testAttempts = (state.testAttempts || 0) + 1;
       state.testScore = correctCount;
       state.testAnswers = testAnswers;
@@ -141,8 +157,7 @@ export async function POST(request: Request) {
         details,
       };
 
-      // Proportional XP calculation: correctCount ga qarab XP ko'p yoki kam beriladi
-      // Masalan, 9 ta savoldan 9 ta to'g'ri = 100% XP (masalan 60 XP), 5 ta to'g'ri = 33 XP va hk.
+      // Proportional XP calculation
       const baseXp = lesson.xpReward || 50;
       const calculatedXp = Math.round((correctCount / totalQuestions) * baseXp);
       const earnedXp = Math.max(5, calculatedXp); // Kamida 5 XP rag'batlantirish uchun
@@ -156,10 +171,12 @@ export async function POST(request: Request) {
 
         await StudentActivity.create({
           studentId: session.id,
-          branchId: session.branchId,
+          branchId: student.branchId || session.branchId,
           type: 'TEST_PASSED',
           title: `Test topshirildi: ${correctCount}/${totalQuestions}`,
           description: `"${lesson.title}" darsi testi yakunlandi. To'plangan ball: ${correctCount}/${totalQuestions} (+${earnedXp} XP).`,
+          rewardXP: earnedXp,
+          rewardXCoin: earnedXcoin,
           metadata: { lessonId: lesson._id, score: correctCount, xpEarned: earnedXp, xcoinEarned: earnedXcoin },
         });
       }
@@ -215,10 +232,11 @@ export async function POST(request: Request) {
 
         await StudentActivity.create({
           studentId: session.id,
-          branchId: session.branchId,
+          branchId: student.branchId || session.branchId,
           type: 'LESSON_COMPLETED',
           title: `Dars to'liq yakunlandi: ${lesson.title}`,
-          description: `Barcha 3 bosqich (Nazariya, Test, Mashg'ulot) bajarildi!`,
+          description: `Barcha 3 bosqich (Nazariya, Test, Mashg'ulot) bajarildi! (+${bonusXp} XP)`,
+          rewardXP: bonusXp,
           metadata: { lessonId: lesson._id, bonusXp },
         });
       }

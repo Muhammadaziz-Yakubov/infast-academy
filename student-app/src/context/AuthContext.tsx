@@ -60,15 +60,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
       if (savedToken && savedProfile) {
         setToken(savedToken);
         setStudent(savedProfile);
-        // Verify token with backend silently
-        try {
-          const res = await apiRequest('/api/student/dashboard');
-          if (res.student) {
-            setStudent(res.student);
-            await AuthStorage.saveProfile(res.student);
+        // Verify token with backend silently if not demo session
+        if (savedToken !== 'demo-jwt-session') {
+          try {
+            const res = await apiRequest('/api/student/dashboard');
+            if (res.student) {
+              setStudent(res.student);
+              await AuthStorage.saveProfile(res.student);
+            }
+          } catch (e) {
+            // Token might be expired or server unreachable
           }
-        } catch (e) {
-          // Token might be expired or server unreachable
         }
       }
     } catch (e) {
@@ -124,6 +126,18 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
   const refreshProfile = async () => {
     try {
+      if (student?.id === 'demo-student-id') {
+        const updatedStudent: StudentProfile = {
+          ...student,
+          status: 'ACTIVE',
+          paymentStatus: 'PAID',
+          totalDebt: 0,
+          isDebtor: false,
+        };
+        await AuthStorage.saveProfile(updatedStudent);
+        setStudent(updatedStudent);
+        return;
+      }
       const res = await apiRequest('/api/student/dashboard');
       if (res.student) {
         setStudent(res.student);

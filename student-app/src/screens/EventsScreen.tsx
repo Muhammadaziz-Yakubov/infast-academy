@@ -189,6 +189,7 @@ export default function EventsScreen({ onBack }: EventsScreenProps) {
           const isRegistered = evt.isRegistered;
           const isProcessing = processingId === evt._id;
           const dateObj = new Date(evt.date);
+          const isPast = dateObj.getTime() < Date.now() || evt.status === 'COMPLETED';
           const dateFormatted = dateObj.toLocaleDateString('uz-UZ', {
             timeZone: 'Asia/Tashkent',
             weekday: 'short',
@@ -242,26 +243,48 @@ export default function EventsScreen({ onBack }: EventsScreenProps) {
                     </Text>
                   </View>
 
-                  <TouchableOpacity
-                    style={[
-                      styles.actionButton,
-                      isRegistered && styles.actionButtonRegistered,
-                    ]}
-                    onPress={() => handleRegister(evt)}
-                    disabled={isProcessing}
-                    activeOpacity={0.8}
-                  >
-                    {isProcessing ? (
-                      <ActivityIndicator size="small" color="#FFFFFF" />
-                    ) : (
-                      <>
-                        {isRegistered && <CheckCircle2 size={14} color="#FFFFFF" style={{ marginRight: 4 }} />}
-                        <Text style={styles.actionButtonText}>
-                          {isRegistered ? "Yozilgansiz" : "Yozilish"}
-                        </Text>
-                      </>
-                    )}
-                  </TouchableOpacity>
+                  {evt.myAttendanceStatus === 'ATTENDED' ? (
+                    <View style={[styles.actionButton, { backgroundColor: 'rgba(48, 209, 88, 0.2)', borderWidth: 1, borderColor: '#30D158' }]}>
+                      <CheckCircle2 size={14} color="#30D158" style={{ marginRight: 4 }} />
+                      <Text style={[styles.actionButtonText, { color: '#30D158' }]}>
+                        Qatnashdingiz (+{evt.coinReward} XCoin)
+                      </Text>
+                    </View>
+                  ) : evt.myAttendanceStatus === 'ABSENT' ? (
+                    <View style={[styles.actionButton, { backgroundColor: 'rgba(255, 69, 58, 0.2)', borderWidth: 1, borderColor: '#FF453A' }]}>
+                      <AlertTriangle size={14} color="#FF453A" style={{ marginRight: 4 }} />
+                      <Text style={[styles.actionButtonText, { color: '#FF453A' }]}>
+                        Kelmagansiz (-{evt.coinPenalty} XCoin)
+                      </Text>
+                    </View>
+                  ) : isPast ? (
+                    <View style={[styles.actionButton, { backgroundColor: '#2C2C2E' }]}>
+                      <Text style={[styles.actionButtonText, { color: '#8E8E93' }]}>
+                        Tadbir yakunlandi
+                      </Text>
+                    </View>
+                  ) : (
+                    <TouchableOpacity
+                      style={[
+                        styles.actionButton,
+                        isRegistered && styles.actionButtonRegistered,
+                      ]}
+                      onPress={() => handleRegister(evt)}
+                      disabled={isProcessing}
+                      activeOpacity={0.8}
+                    >
+                      {isProcessing ? (
+                        <ActivityIndicator size="small" color="#FFFFFF" />
+                      ) : (
+                        <>
+                          {isRegistered && <CheckCircle2 size={14} color="#FFFFFF" style={{ marginRight: 4 }} />}
+                          <Text style={styles.actionButtonText}>
+                            {isRegistered ? "Yozilgansiz (Chiqish)" : "Yozilish"}
+                          </Text>
+                        </>
+                      )}
+                    </TouchableOpacity>
+                  )}
                 </View>
               </View>
             </View>
@@ -364,27 +387,40 @@ const styles = StyleSheet.create({
     marginBottom: 10,
   },
   sectionTitle: {
-    fontSize: 13,
+    fontSize: 12,
     fontWeight: '700',
     color: '#8E8E93',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  emptyCard: {
+    backgroundColor: '#1C1C1E',
+    marginHorizontal: 16,
+    padding: 30,
+    borderRadius: 18,
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  emptyText: {
+    color: '#8E8E93',
+    fontSize: 14,
+    fontWeight: '500',
   },
   eventCard: {
     backgroundColor: '#1C1C1E',
-    borderRadius: 22,
+    borderRadius: 20,
     marginHorizontal: 16,
-    marginBottom: 18,
+    marginBottom: 16,
     overflow: 'hidden',
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
     ...APPLE_SHADOW,
   },
   eventImageContainer: {
+    height: 140,
     width: '100%',
-    height: 150,
-    backgroundColor: '#2C2C2E',
     position: 'relative',
+    backgroundColor: '#2C2C2E',
   },
   eventImage: {
     width: '100%',
@@ -401,16 +437,16 @@ const styles = StyleSheet.create({
     top: 12,
     right: 12,
     backgroundColor: '#FFD60A',
-    paddingHorizontal: 10,
-    paddingVertical: 4,
-    borderRadius: 10,
     flexDirection: 'row',
     alignItems: 'center',
     gap: 4,
+    paddingHorizontal: 10,
+    paddingVertical: 5,
+    borderRadius: 10,
   },
   rewardFloatText: {
     color: '#000000',
-    fontSize: 11,
+    fontSize: 12,
     fontWeight: '800',
   },
   eventBody: {
@@ -418,28 +454,28 @@ const styles = StyleSheet.create({
   },
   eventTitle: {
     fontSize: 18,
-    fontWeight: '700',
+    fontWeight: '800',
     color: '#FFFFFF',
     letterSpacing: -0.3,
     marginBottom: 4,
   },
   eventDesc: {
-    fontSize: 12,
+    fontSize: 13,
     color: '#8E8E93',
-    lineHeight: 17,
+    lineHeight: 18,
     marginBottom: 12,
   },
   metaRow: {
-    gap: 6,
-    marginBottom: 14,
-    paddingBottom: 12,
-    borderBottomWidth: StyleSheet.hairlineWidth,
-    borderBottomColor: 'rgba(255, 255, 255, 0.08)',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 16,
+    marginBottom: 16,
+    flexWrap: 'wrap',
   },
   metaItem: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
+    gap: 6,
   },
   metaText: {
     fontSize: 12,
@@ -450,6 +486,9 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
+    paddingTop: 12,
+    borderTopWidth: StyleSheet.hairlineWidth,
+    borderTopColor: 'rgba(255, 255, 255, 0.08)',
   },
   participantsBadge: {
     flexDirection: 'row',
@@ -459,37 +498,24 @@ const styles = StyleSheet.create({
   participantsText: {
     fontSize: 12,
     color: '#8E8E93',
-    fontWeight: '600',
+    fontWeight: '500',
   },
   actionButton: {
+    backgroundColor: '#0A84FF',
+    paddingHorizontal: 16,
+    paddingVertical: 9,
+    borderRadius: 12,
     flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: '#FF9500',
-    paddingHorizontal: 18,
-    paddingVertical: 10,
-    borderRadius: 12,
   },
   actionButtonRegistered: {
-    backgroundColor: '#30D158',
+    backgroundColor: 'rgba(10, 132, 255, 0.25)',
+    borderWidth: 1,
+    borderColor: '#0A84FF',
   },
   actionButtonText: {
     color: '#FFFFFF',
     fontSize: 13,
     fontWeight: '700',
-  },
-  emptyCard: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
-    marginHorizontal: 16,
-    padding: 30,
-    alignItems: 'center',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-  },
-  emptyText: {
-    fontSize: 14,
-    color: '#8E8E93',
-    fontWeight: '500',
   },
 });

@@ -43,6 +43,7 @@ export async function GET(request: Request) {
       courseId: student.courseId,
       status: 'ACTIVE',
     })
+      .populate('moduleId', 'title order')
       .sort({ moduleId: 1, order: 1 })
       .lean();
 
@@ -153,7 +154,8 @@ export async function GET(request: Request) {
         currentLesson: currentLesson
           ? {
               _id: currentLesson._id,
-              moduleId: currentLesson.moduleId,
+              moduleId: (currentLesson.moduleId as any)?._id || currentLesson.moduleId,
+              module: (currentLesson.moduleId && typeof currentLesson.moduleId === 'object') ? currentLesson.moduleId : undefined,
               title: currentLesson.title,
               order: currentLesson.order,
               xpReward: currentLesson.xpReward,

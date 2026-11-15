@@ -1,8 +1,8 @@
 import { AuthStorage } from './storage';
 import { Platform } from 'react-native';
 
-// Production InFast Academy backend domain
-const PRODUCTION_API_URL = 'https://www.infastacademy.uz';
+// Production InFast Academy backend domain (Vercel deployment)
+const PRODUCTION_API_URL = 'https://infast-academy.vercel.app';
 
 const getBaseUrl = (): string => {
   // If EXPO_PUBLIC_API_URL is explicitly provided in environment, prioritize it
@@ -11,15 +11,18 @@ const getBaseUrl = (): string => {
     return envUrl.trim().replace(/\/+$/, '');
   }
 
-  // Local development fallback only when explicitly enabled via flag
+  // Local development fallback ONLY when explicitly requested via EXPO_PUBLIC_USE_LOCALHOST=true
   if (typeof __DEV__ !== 'undefined' && __DEV__ && process.env.EXPO_PUBLIC_USE_LOCALHOST === 'true') {
     if (Platform.OS === 'android') {
       return 'http://10.0.2.2:3000';
     }
+    if (Platform.OS === 'web' && typeof window !== 'undefined' && window.location?.origin) {
+      return window.location.origin.includes('3000') ? window.location.origin : 'http://localhost:3000';
+    }
     return 'http://localhost:3000';
   }
 
-  // Default to live production server
+  // Default to live production server on Vercel
   return PRODUCTION_API_URL;
 };
 
@@ -40,7 +43,7 @@ export async function apiRequest<T = any>(
     ...(options.headers || {}),
   };
 
-  if (token) {
+  if (token && token !== 'demo-jwt-session') {
     headers['Authorization'] = `Bearer ${token}`;
   }
 

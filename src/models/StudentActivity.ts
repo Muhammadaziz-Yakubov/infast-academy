@@ -11,7 +11,10 @@ export type StudentActivityType =
   | "COIN_EARNED"
   | "PAYMENT_MADE"
   | "BRANCH_TRANSFERRED"
-  | "ATTENDANCE_MARKED";
+  | "ATTENDANCE_MARKED"
+  | "SHOP_PURCHASE"
+  | "EVENT_ATTENDED"
+  | "EVENT_ABSENT";
 
 export interface IStudentActivity extends Document {
   studentId: mongoose.Types.ObjectId;
@@ -19,6 +22,8 @@ export interface IStudentActivity extends Document {
   type: StudentActivityType;
   title: string;
   description?: string;
+  rewardXCoin?: number;
+  rewardXP?: number;
   metadata?: Record<string, any>;
   createdAt: Date;
   updatedAt: Date;
@@ -43,11 +48,16 @@ const StudentActivitySchema: Schema<IStudentActivity> = new Schema(
         "PAYMENT_MADE",
         "BRANCH_TRANSFERRED",
         "ATTENDANCE_MARKED",
+        "SHOP_PURCHASE",
+        "EVENT_ATTENDED",
+        "EVENT_ABSENT",
       ],
       index: true,
     },
     title: { type: String, required: true },
     description: { type: String },
+    rewardXCoin: { type: Number },
+    rewardXP: { type: Number },
     metadata: { type: Schema.Types.Mixed },
   },
   { timestamps: true }
