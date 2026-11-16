@@ -9,8 +9,8 @@ import {
   RefreshControl,
   Image,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { apiRequest } from '../services/api';
-import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import { Trophy, Flame, Users, Building2, Globe } from 'lucide-react-native';
 
 type LeaderboardScope = 'group' | 'branch' | 'all';
@@ -43,7 +43,7 @@ export default function LeaderboardScreen() {
   if (loading && !data) {
     return (
       <View style={styles.centerContainer}>
-        <ActivityIndicator size="small" color={COLORS.primary} />
+        <ActivityIndicator size="small" color="#FF9500" />
         <Text style={styles.loadingText}>Reyting yuklanmoqda...</Text>
       </View>
     );
@@ -52,180 +52,186 @@ export default function LeaderboardScreen() {
   const leaderboard = data?.leaderboard || [];
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.contentContainer}
-      showsVerticalScrollIndicator={false}
-      refreshControl={
-        <RefreshControl
-          refreshing={refreshing}
-          onRefresh={() => {
-            setRefreshing(true);
-            fetchLeaderboard();
-          }}
-          tintColor={COLORS.primary}
-        />
-      }
-    >
-      {/* Apple Large Title Header */}
-      <View style={styles.header}>
-        <Text style={styles.categoryLabel}>PESHQADAMLAR</Text>
-        <Text style={styles.largeTitle}>Reyting</Text>
-      </View>
-
-      {/* Apple iOS 3-Segment Control (Guruhim, Filialim, Hamma filiallar) */}
-      <View style={styles.segmentedControlContainer}>
-        <View style={styles.segmentedControl}>
-          <TouchableOpacity
-            style={[styles.segmentBtn, scope === 'group' && styles.segmentBtnActive]}
-            onPress={() => setScope('group')}
-            activeOpacity={0.8}
-          >
-            <Users size={14} color={scope === 'group' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
-            <Text style={[styles.segmentText, scope === 'group' && styles.segmentTextActive]}>
-              Guruhim
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.segmentBtn, scope === 'branch' && styles.segmentBtnActive]}
-            onPress={() => setScope('branch')}
-            activeOpacity={0.8}
-          >
-            <Building2 size={14} color={scope === 'branch' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
-            <Text style={[styles.segmentText, scope === 'branch' && styles.segmentTextActive]}>
-              Filialim
-            </Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[styles.segmentBtn, scope === 'all' && styles.segmentBtnActive]}
-            onPress={() => setScope('all')}
-            activeOpacity={0.8}
-          >
-            <Globe size={14} color={scope === 'all' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 4 }} />
-            <Text style={[styles.segmentText, scope === 'all' && styles.segmentTextActive]}>
-              Hamma filiallar
-            </Text>
-          </TouchableOpacity>
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      <ScrollView
+        contentContainerStyle={styles.contentContainer}
+        showsVerticalScrollIndicator={false}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={() => {
+              setRefreshing(true);
+              fetchLeaderboard();
+            }}
+            tintColor="#FF9500"
+          />
+        }
+      >
+        {/* Apple Large Title Header */}
+        <View style={styles.header}>
+          <Text style={styles.categoryLabel}>PESHQADAMLAR</Text>
+          <Text style={styles.largeTitle}>Reyting</Text>
         </View>
-      </View>
 
-      {/* User's Current Rank Card */}
-      <View style={styles.myRankCard}>
-        <View style={styles.myRankLeft}>
-          <View style={styles.myRankBadge}>
-            <Trophy size={20} color="#FF9500" strokeWidth={2.4} />
-          </View>
-          <View>
-            <Text style={styles.myRankLabel}>Sizning o'rningiz</Text>
-            <Text style={styles.myRankSub}>
-              {scope === 'group' ? "Guruhdagi barcha o'quvchilar orasida" : scope === 'branch' ? "Filialdagi o'quvchilar orasida" : "Akademiya bo'yicha jami o'quvchilar orasida"}
-            </Text>
+        {/* Apple 3-Segment Control (Guruhim, Filialim, Hamma) */}
+        <View style={styles.segmentedControlContainer}>
+          <View style={styles.segmentedControl}>
+            <TouchableOpacity
+              style={[styles.segmentBtn, scope === 'group' && styles.segmentBtnActive]}
+              onPress={() => setScope('group')}
+              activeOpacity={0.8}
+            >
+              <Users size={13} color={scope === 'group' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 5 }} />
+              <Text style={[styles.segmentText, scope === 'group' && styles.segmentTextActive]}>
+                Guruhim
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.segmentBtn, scope === 'branch' && styles.segmentBtnActive]}
+              onPress={() => setScope('branch')}
+              activeOpacity={0.8}
+            >
+              <Building2 size={13} color={scope === 'branch' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 5 }} />
+              <Text style={[styles.segmentText, scope === 'branch' && styles.segmentTextActive]}>
+                Filialim
+              </Text>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              style={[styles.segmentBtn, scope === 'all' && styles.segmentBtnActive]}
+              onPress={() => setScope('all')}
+              activeOpacity={0.8}
+            >
+              <Globe size={13} color={scope === 'all' ? '#FFFFFF' : '#8E8E93'} style={{ marginRight: 5 }} />
+              <Text style={[styles.segmentText, scope === 'all' && styles.segmentTextActive]}>
+                Barcha
+              </Text>
+            </TouchableOpacity>
           </View>
         </View>
-        <Text style={styles.myRankValue}>#{data?.myRank || 1}</Text>
-      </View>
 
-      {/* Leaderboard Inset Grouped Table */}
-      <View style={styles.sectionHeader}>
-        <Text style={styles.sectionTitle}>
-          PESHQADAMLAR RO'YXATI ({leaderboard.length} TA O'QUVCHI)
-        </Text>
-      </View>
-
-      <View style={styles.groupedCard}>
-        {leaderboard.length === 0 ? (
-          <View style={styles.emptyContainer}>
-            <Text style={styles.emptyText}>Ushbu bo'limda o'quvchilar topilmadi</Text>
+        {/* User's Current Rank Card */}
+        <View style={styles.myRankCard}>
+          <View style={styles.myRankLeft}>
+            <View style={styles.myRankBadge}>
+              <Trophy size={18} color="#FF9500" strokeWidth={2.4} />
+            </View>
+            <View>
+              <Text style={styles.myRankLabel}>Sizning o'rningiz</Text>
+              <Text style={styles.myRankSub}>
+                {scope === 'group'
+                  ? "Guruhdagi o'quvchilar orasida"
+                  : scope === 'branch'
+                  ? "Filialdagi o'quvchilar orasida"
+                  : "Akademiya bo'yicha jami o'quvchilar orasida"}
+              </Text>
+            </View>
           </View>
-        ) : (
-          leaderboard.map((item: any, idx: number) => {
-            const isTop1 = item.rank === 1;
-            const isTop2 = item.rank === 2;
-            const isTop3 = item.rank === 3;
+          <Text style={styles.myRankValue}>#{data?.myRank || 1}</Text>
+        </View>
 
-            return (
-              <React.Fragment key={item._id || idx}>
-                {idx > 0 && <View style={styles.separator} />}
+        {/* Leaderboard Grouped List */}
+        <View style={styles.sectionHeader}>
+          <Text style={styles.sectionTitle}>
+            RO'YXAT ({leaderboard.length} TA O'QUVCHI)
+          </Text>
+        </View>
 
-                <View style={[styles.rankRow, item.isCurrentStudent && styles.rankRowCurrent]}>
-                  {/* Rank Badge */}
-                  <View
-                    style={[
-                      styles.rankNumberBox,
-                      isTop1 && styles.rankGold,
-                      isTop2 && styles.rankSilver,
-                      isTop3 && styles.rankBronze,
-                    ]}
-                  >
-                    <Text
+        <View style={styles.groupedCard}>
+          {leaderboard.length === 0 ? (
+            <View style={styles.emptyContainer}>
+              <Text style={styles.emptyText}>Ushbu bo'limda o'quvchilar topilmadi</Text>
+            </View>
+          ) : (
+            leaderboard.map((item: any, idx: number) => {
+              const isTop1 = item.rank === 1;
+              const isTop2 = item.rank === 2;
+              const isTop3 = item.rank === 3;
+
+              return (
+                <React.Fragment key={item._id || idx}>
+                  {idx > 0 && <View style={styles.separator} />}
+
+                  <View style={[styles.rankRow, item.isCurrentStudent && styles.rankRowCurrent]}>
+                    {/* Rank Badge */}
+                    <View
                       style={[
-                        styles.rankNumberText,
-                        (isTop1 || isTop2 || isTop3) && styles.rankTopText,
+                        styles.rankNumberBox,
+                        isTop1 && styles.rankGold,
+                        isTop2 && styles.rankSilver,
+                        isTop3 && styles.rankBronze,
                       ]}
                     >
-                      {item.rank}
-                    </Text>
-                  </View>
-
-                  {/* Avatar (Image or Initial) */}
-                  <View
-                    style={[
-                      styles.avatar,
-                      isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: 'rgba(255, 255, 255, 0.12)' },
-                    ]}
-                  >
-                    {item.avatarUrl ? (
-                      <Image source={{ uri: item.avatarUrl }} style={styles.avatarImage} />
-                    ) : (
                       <Text
                         style={[
-                          styles.avatarText,
-                          isTop1 ? { color: '#FFFFFF' } : { color: '#EBEBF5' },
+                          styles.rankNumberText,
+                          (isTop1 || isTop2 || isTop3) && styles.rankTopText,
                         ]}
                       >
-                        {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
+                        {item.rank}
                       </Text>
-                    )}
-                  </View>
+                    </View>
 
-                  {/* Name and Group */}
-                  <View style={styles.nameCol}>
-                    <Text style={styles.studentName} numberOfLines={1}>
-                      {item.firstName} {item.lastName}
-                      {item.isCurrentStudent && " (Siz)"}
-                    </Text>
-                    <Text style={styles.groupMeta} numberOfLines={1}>
-                      {scope === 'all' ? `${item.branchName} • ${item.groupName}` : item.groupName || item.branchName}
-                    </Text>
-                  </View>
+                    {/* Avatar */}
+                    <View
+                      style={[
+                        styles.avatar,
+                        isTop1 ? { backgroundColor: '#FF9500' } : { backgroundColor: 'rgba(255, 255, 255, 0.1)' },
+                      ]}
+                    >
+                      {item.avatarUrl ? (
+                        <Image source={{ uri: item.avatarUrl }} style={styles.avatarImage} />
+                      ) : (
+                        <Text
+                          style={[
+                            styles.avatarText,
+                            isTop1 ? { color: '#FFFFFF' } : { color: '#EBEBF5' },
+                          ]}
+                        >
+                          {item.firstName?.[0] || 'O'}{item.lastName?.[0] || 'Q'}
+                        </Text>
+                      )}
+                    </View>
 
-                  {/* XP Capsule */}
-                  <View style={styles.xpCapsule}>
-                    <Flame size={13} color="#FF9500" />
-                    <Text style={styles.xpText}>{item.xp || 0} XP</Text>
-                  </View>
-                </View>
-              </React.Fragment>
-            );
-          })
-        )}
-      </View>
+                    {/* Name and Group */}
+                    <View style={styles.nameCol}>
+                      <Text style={styles.studentName} numberOfLines={1}>
+                        {item.firstName} {item.lastName}
+                        {item.isCurrentStudent && " (Siz)"}
+                      </Text>
+                      <Text style={styles.groupMeta} numberOfLines={1}>
+                        {scope === 'all' ? `${item.branchName} • ${item.groupName}` : item.groupName || item.branchName}
+                      </Text>
+                    </View>
 
-      <View style={{ height: 40 }} />
-    </ScrollView>
+                    {/* XP Pill */}
+                    <View style={styles.xpCapsule}>
+                      <Flame size={12} color="#FF9500" />
+                      <Text style={styles.xpText}>{item.xp || 0} XP</Text>
+                    </View>
+                  </View>
+                </React.Fragment>
+              );
+            })
+          )}
+        </View>
+
+        <View style={{ height: 32 }} />
+      </ScrollView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000', // Apple OLED True Black
+    backgroundColor: '#000000',
   },
   contentContainer: {
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 95,
   },
   centerContainer: {
     flex: 1,
@@ -235,9 +241,8 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     marginTop: 8,
-    fontSize: 14,
+    fontSize: 13,
     color: '#8E8E93',
-    fontWeight: '500',
   },
   header: {
     paddingHorizontal: 20,
@@ -245,66 +250,61 @@ const styles = StyleSheet.create({
     paddingBottom: 14,
   },
   categoryLabel: {
-    fontSize: 12,
+    fontSize: 11,
     fontWeight: '600',
     color: '#8E8E93',
     letterSpacing: 0.5,
     marginBottom: 2,
   },
   largeTitle: {
-    fontSize: 34,
-    fontWeight: '800',
+    fontSize: 32,
+    fontWeight: '700',
     color: '#FFFFFF',
     letterSpacing: -0.6,
   },
   segmentedControlContainer: {
-    paddingHorizontal: 16,
+    paddingHorizontal: 18,
     marginBottom: 16,
   },
   segmentedControl: {
     flexDirection: 'row',
-    backgroundColor: '#1C1C1E',
+    backgroundColor: '#161618',
     borderRadius: 12,
     padding: 3,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
+    borderColor: 'rgba(255, 255, 255, 0.07)',
   },
   segmentBtn: {
     flex: 1,
     flexDirection: 'row',
-    paddingVertical: 8,
+    paddingVertical: 7,
     alignItems: 'center',
     justifyContent: 'center',
-    borderRadius: 10,
+    borderRadius: 9,
   },
   segmentBtnActive: {
     backgroundColor: '#2C2C2E',
-    shadowColor: '#000000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.4,
-    shadowRadius: 3,
-    elevation: 3,
   },
   segmentText: {
     fontSize: 12,
-    fontWeight: '600',
+    fontWeight: '500',
     color: '#8E8E93',
   },
   segmentTextActive: {
     color: '#FFFFFF',
+    fontWeight: '600',
   },
   myRankCard: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
-    marginHorizontal: 16,
-    padding: 18,
+    backgroundColor: '#161618',
+    borderRadius: 18,
+    marginHorizontal: 18,
+    padding: 16,
     marginBottom: 20,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    ...APPLE_SHADOW,
+    borderColor: 'rgba(255, 255, 255, 0.07)',
   },
   myRankLeft: {
     flexDirection: 'row',
@@ -312,17 +312,17 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   myRankBadge: {
-    width: 42,
-    height: 42,
-    borderRadius: 14,
-    backgroundColor: 'rgba(255, 149, 0, 0.16)',
+    width: 38,
+    height: 38,
+    borderRadius: 12,
+    backgroundColor: 'rgba(255, 149, 0, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 14,
+    marginRight: 12,
   },
   myRankLabel: {
-    fontSize: 15,
-    fontWeight: '700',
+    fontSize: 14,
+    fontWeight: '600',
     color: '#FFFFFF',
     letterSpacing: -0.2,
   },
@@ -330,51 +330,48 @@ const styles = StyleSheet.create({
     fontSize: 11,
     color: '#8E8E93',
     marginTop: 2,
-    paddingRight: 6,
   },
   myRankValue: {
-    fontSize: 26,
-    fontWeight: '800',
+    fontSize: 24,
+    fontWeight: '700',
     color: '#FF9500',
-    letterSpacing: -0.5,
+    letterSpacing: -0.4,
     marginLeft: 10,
   },
   sectionHeader: {
     paddingHorizontal: 20,
-    marginBottom: 10,
+    marginBottom: 8,
   },
   sectionTitle: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: '#8E8E93',
-    letterSpacing: 0.4,
-    textTransform: 'uppercase',
+    letterSpacing: 0.5,
   },
   groupedCard: {
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
-    marginHorizontal: 16,
+    backgroundColor: '#161618',
+    borderRadius: 18,
+    marginHorizontal: 18,
     overflow: 'hidden',
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.08)',
-    ...APPLE_SHADOW,
+    borderColor: 'rgba(255, 255, 255, 0.07)',
   },
   rankRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    paddingVertical: 14,
-    paddingHorizontal: 16,
+    paddingVertical: 12,
+    paddingHorizontal: 14,
   },
   rankRowCurrent: {
-    backgroundColor: 'rgba(255, 149, 0, 0.12)',
+    backgroundColor: 'rgba(255, 149, 0, 0.08)',
   },
   rankNumberBox: {
-    width: 26,
-    height: 26,
-    borderRadius: 13,
+    width: 24,
+    height: 24,
+    borderRadius: 12,
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 12,
+    marginRight: 10,
     backgroundColor: 'rgba(255, 255, 255, 0.06)',
   },
   rankGold: {
@@ -387,17 +384,17 @@ const styles = StyleSheet.create({
     backgroundColor: '#CD7F32',
   },
   rankNumberText: {
-    fontSize: 12,
-    fontWeight: '800',
+    fontSize: 11,
+    fontWeight: '700',
     color: '#8E8E93',
   },
   rankTopText: {
     color: '#000000',
   },
   avatar: {
-    width: 38,
-    height: 38,
-    borderRadius: 19,
+    width: 36,
+    height: 36,
+    borderRadius: 18,
     alignItems: 'center',
     justifyContent: 'center',
     marginRight: 12,
@@ -406,11 +403,11 @@ const styles = StyleSheet.create({
   avatarImage: {
     width: '100%',
     height: '100%',
-    borderRadius: 19,
+    borderRadius: 18,
   },
   avatarText: {
-    fontSize: 13,
-    fontWeight: '800',
+    fontSize: 12,
+    fontWeight: '700',
   },
   nameCol: {
     flex: 1,
@@ -418,41 +415,40 @@ const styles = StyleSheet.create({
   },
   studentName: {
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
     color: '#FFFFFF',
     letterSpacing: -0.2,
   },
   groupMeta: {
-    fontSize: 12,
+    fontSize: 11,
     color: '#8E8E93',
     marginTop: 2,
   },
   xpCapsule: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255, 149, 0, 0.15)',
+    backgroundColor: 'rgba(255, 149, 0, 0.12)',
     paddingHorizontal: 8,
-    paddingVertical: 4,
-    borderRadius: 10,
+    paddingVertical: 3,
+    borderRadius: 8,
     gap: 4,
   },
   xpText: {
-    fontSize: 12,
-    fontWeight: '700',
+    fontSize: 11,
+    fontWeight: '600',
     color: '#FF9500',
   },
   separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginLeft: 66,
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    marginLeft: 62,
   },
   emptyContainer: {
     padding: 32,
     alignItems: 'center',
   },
   emptyText: {
-    fontSize: 14,
+    fontSize: 13,
     color: '#8E8E93',
-    fontWeight: '500',
   },
 });

@@ -304,7 +304,7 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 95,
   },
   centerContainer: {
     flex: 1,
@@ -321,7 +321,7 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 16,
+    paddingBottom: 95,
   },
   backButton: {
     flexDirection: 'row',

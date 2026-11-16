@@ -63,13 +63,56 @@ export async function GET(request: Request) {
       }
     }
 
-    // Find student's ranking in branch or course
+    // Find student's ranking in their group (exact match with Leaderboard 'group' scope)
+    let groupRank = 1;
+    if (student.groupId) {
+      const groupStudents = await Student.find({
+        groupId: student.groupId,
+        $or: [
+          { status: { $in: ['ACTIVE', 'COMPLETED'] } },
+          { _id: student._id },
+        ],
+      })
+        .select('_id')
+        .lean();
+
+      const groupStudentIds = groupStudents.map((s: any) => s._id);
+      const groupProgressList = await StudentProgress.find({
+        studentId: { $in: groupStudentIds },
+      })
+        .select('studentId xp xcoin')
+        .lean();
+
+      const progressMap = new Map<string, { xp: number; xcoin: number }>();
+      groupProgressList.forEach((p: any) => {
+        progressMap.set(p.studentId.toString(), {
+          xp: p.xp || 0,
+          xcoin: p.xcoin || 0,
+        });
+      });
+
+      const sortedGroup = groupStudents
+        .map((s: any) => {
+          const pr = progressMap.get(s._id.toString()) || { xp: 0, xcoin: 0 };
+          return { id: s._id.toString(), xp: pr.xp, xcoin: pr.xcoin };
+        })
+        .sort((a, b) => {
+          if (b.xp !== a.xp) return b.xp - a.xp;
+          return b.xcoin - a.xcoin;
+        });
+
+      const foundIndex = sortedGroup.findIndex((entry) => entry.id === student._id.toString());
+      groupRank = foundIndex !== -1 ? foundIndex + 1 : 1;
+    }
+
+    // Overall course ranking
     const allProgressInCourse = await StudentProgress.find({ courseId: student.courseId })
-      .sort({ xp: -1 })
+      .sort({ xp: -1, xcoin: -1 })
       .select('studentId xp level')
       .lean();
 
-    const rank = allProgressInCourse.findIndex((p: any) => p.studentId.toString() === student._id.toString()) + 1 || 1;
+    const courseRank = allProgressInCourse.findIndex((p: any) => p.studentId.toString() === student._id.toString()) + 1 || 1;
+    const rank = groupRank;
 
     // Recent notifications / announcements
     const announcements = await Notification.find({
@@ -151,6 +194,8 @@ export async function GET(request: Request) {
         totalLessonsCount,
         percent: totalLessonsCount > 0 ? Math.round((completedLessonIds.length / totalLessonsCount) * 100) : 0,
         rank,
+        groupRank,
+        courseRank,
         currentLesson: currentLesson
           ? {
               _id: currentLesson._id,

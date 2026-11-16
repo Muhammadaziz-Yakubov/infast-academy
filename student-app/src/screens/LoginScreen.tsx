@@ -10,12 +10,12 @@ import {
   Platform,
   ScrollView,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
-import { Lock, UserCheck, Eye, EyeOff, Sparkles, BookOpen } from 'lucide-react-native';
+import { Lock, User, Eye, EyeOff, GraduationCap, ArrowRight } from 'lucide-react-native';
 
 export default function LoginScreen() {
-  const { login, loginDemo } = useAuth();
+  const { login } = useAuth();
   const [identifier, setIdentifier] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
@@ -24,11 +24,11 @@ export default function LoginScreen() {
 
   const handleLogin = async () => {
     if (!identifier.trim()) {
-      setErrorMessage("Telefon raqamingiz yoki Talaba ID (masalan, INF-24-001) ni kiriting");
+      setErrorMessage("Telefon raqamingiz yoki Talaba ID raqamingizni kiriting");
       return;
     }
     if (!password.trim()) {
-      setErrorMessage('Parolni kiriting');
+      setErrorMessage('Parolingizni kiriting');
       return;
     }
 
@@ -48,128 +48,109 @@ export default function LoginScreen() {
       behavior={Platform.OS === 'ios' ? 'padding' : undefined}
       style={styles.container}
     >
-      <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
-        {/* Apple Branding Header */}
+      <StatusBar style="light" />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+        keyboardShouldPersistTaps="handled"
+      >
+        {/* Brand Header */}
         <View style={styles.header}>
-          <View style={styles.logoBadge}>
-            <BookOpen size={36} color="#FFFFFF" strokeWidth={2.4} />
+          <View style={styles.logoContainer}>
+            <View style={styles.logoBadge}>
+              <GraduationCap size={32} color="#FFFFFF" strokeWidth={2.2} />
+            </View>
           </View>
           <Text style={styles.brandTitle}>InFast Academy</Text>
-          <Text style={styles.brandSubtitle}>O'quvchi shaxsiy portali</Text>
+          <Text style={styles.brandSubtitle}>Talabalar ta'lim portali</Text>
         </View>
 
-        {/* Error Notification */}
+        {/* Error notification */}
         {errorMessage && (
           <View style={styles.errorBanner}>
             <Text style={styles.errorText}>{errorMessage}</Text>
           </View>
         )}
 
-        {/* Apple Inset Grouped Inputs */}
-        <View style={styles.inputGroupCard}>
+        {/* Input Card Container */}
+        <View style={styles.formCard}>
           <View style={styles.inputRow}>
-            <View style={styles.iconCircle}>
-              <UserCheck size={16} color="#8E8E93" />
+            <View style={styles.iconBox}>
+              <User size={18} color="#8E8E93" strokeWidth={2} />
             </View>
-            <TextInput
-              style={styles.textInput}
-              placeholder="Telefon raqam yoki Talaba ID"
-              placeholderTextColor="#636366"
-              keyboardType="default"
-              autoCapitalize="none"
-              autoCorrect={false}
-              value={identifier}
-              onChangeText={(val) => {
-                setIdentifier(val);
-                setErrorMessage(null);
-              }}
-            />
+            <View style={styles.inputWrapper}>
+              <Text style={styles.fieldLabel}>TALABA ID YOKI TELEFON</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="INF-24-001 yoki +998..."
+                placeholderTextColor="#545458"
+                autoCapitalize="none"
+                autoCorrect={false}
+                value={identifier}
+                onChangeText={(val) => {
+                  setIdentifier(val);
+                  if (errorMessage) setErrorMessage(null);
+                }}
+              />
+            </View>
           </View>
 
-          <View style={styles.separator} />
+          <View style={styles.divider} />
 
           <View style={styles.inputRow}>
-            <View style={styles.iconCircle}>
-              <Lock size={16} color="#8E8E93" />
+            <View style={styles.iconBox}>
+              <Lock size={18} color="#8E8E93" strokeWidth={2} />
             </View>
-            <TextInput
-              style={[styles.textInput, { flex: 1 }]}
-              placeholder="Parol"
-              placeholderTextColor="#636366"
-              secureTextEntry={!showPassword}
-              value={password}
-              onChangeText={(val) => {
-                setPassword(val);
-                setErrorMessage(null);
-              }}
-            />
+            <View style={styles.inputWrapper}>
+              <Text style={styles.fieldLabel}>PAROL</Text>
+              <TextInput
+                style={styles.textInput}
+                placeholder="Parolingizni kiriting"
+                placeholderTextColor="#545458"
+                secureTextEntry={!showPassword}
+                value={password}
+                onChangeText={(val) => {
+                  setPassword(val);
+                  if (errorMessage) setErrorMessage(null);
+                }}
+              />
+            </View>
             <TouchableOpacity
               onPress={() => setShowPassword(!showPassword)}
-              style={styles.eyeButton}
+              style={styles.eyeBtn}
               activeOpacity={0.6}
+              hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}
             >
               {showPassword ? (
-                <EyeOff size={18} color="#8E8E93" />
+                <EyeOff size={18} color="#8E8E93" strokeWidth={2} />
               ) : (
-                <Eye size={18} color="#8E8E93" />
+                <Eye size={18} color="#8E8E93" strokeWidth={2} />
               )}
             </TouchableOpacity>
           </View>
         </View>
 
-        {/* Apple Solid CTA Button */}
+        {/* Primary Login Button */}
         <TouchableOpacity
           style={[styles.primaryButton, loading && styles.buttonDisabled]}
           onPress={handleLogin}
           disabled={loading}
-          activeOpacity={0.8}
+          activeOpacity={0.85}
         >
           {loading ? (
-            <ActivityIndicator color="#FFFFFF" />
+            <ActivityIndicator color="#FFFFFF" size="small" />
           ) : (
-            <Text style={styles.primaryButtonText}>Kirish</Text>
+            <View style={styles.buttonInner}>
+              <Text style={styles.primaryButtonText}>Tizimga kirish</Text>
+              <ArrowRight size={18} color="#FFFFFF" strokeWidth={2.4} />
+            </View>
           )}
         </TouchableOpacity>
 
-        {/* Apple Secondary Demo Button */}
-        <TouchableOpacity
-          style={styles.demoButton}
-          onPress={async () => {
-            try {
-              setLoading(true);
-              await loginDemo(false);
-            } finally {
-              setLoading(false);
-            }
-          }}
-          disabled={loading}
-          activeOpacity={0.7}
-        >
-          <Sparkles size={16} color="#FF9500" />
-          <Text style={styles.demoButtonText}>Ilovani sinab ko'rish (Demo rejim)</Text>
-        </TouchableOpacity>
-
-        {/* Debtor Test Button */}
-        <TouchableOpacity
-          style={[styles.demoButton, { borderColor: 'rgba(255, 69, 58, 0.35)', backgroundColor: 'rgba(255, 69, 58, 0.08)', marginTop: 8 }]}
-          onPress={async () => {
-            try {
-              setLoading(true);
-              await loginDemo(true);
-            } finally {
-              setLoading(false);
-            }
-          }}
-          disabled={loading}
-          activeOpacity={0.7}
-        >
-          <Lock size={15} color="#FF453A" />
-          <Text style={[styles.demoButtonText, { color: '#FF453A' }]}>Qarzdor holatini sinab ko'rish</Text>
-        </TouchableOpacity>
-
-        <View style={styles.footerNote}>
-          <Text style={styles.footerNoteText}>
-            Parolingiz yo'qmi? Administratoringizdan parolni so'rang yoki demo rejim orqali barcha sahifalarni sinab ko'ring.
+        {/* Minimal Footer */}
+        <View style={styles.footer}>
+          <Text style={styles.footerText}>
+            Hisob ma'lumotlaringiz mavjud bo'lmasa, akademiyangiz ma'muriyatiga murojaat qiling.
           </Text>
         </View>
       </ScrollView>
@@ -180,49 +161,51 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#000000', // Apple OLED True Black
+    backgroundColor: '#000000',
   },
   scrollContent: {
     flexGrow: 1,
     justifyContent: 'center',
-    paddingHorizontal: 20,
-    paddingVertical: 30,
+    paddingHorizontal: 24,
+    paddingVertical: 40,
   },
   header: {
     alignItems: 'center',
-    marginBottom: 32,
+    marginBottom: 36,
+  },
+  logoContainer: {
+    marginBottom: 20,
+    shadowColor: '#FF9500',
+    shadowOffset: { width: 0, height: 8 },
+    shadowOpacity: 0.25,
+    shadowRadius: 16,
+    elevation: 8,
   },
   logoBadge: {
-    width: 72,
-    height: 72,
-    borderRadius: 22,
+    width: 68,
+    height: 68,
+    borderRadius: 20,
     backgroundColor: '#FF9500',
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 16,
-    shadowColor: '#FF9500',
-    shadowOffset: { width: 0, height: 4 },
-    shadowOpacity: 0.35,
-    shadowRadius: 10,
-    elevation: 5,
   },
   brandTitle: {
-    fontSize: 28,
-    fontWeight: '800',
+    fontSize: 26,
+    fontWeight: '700',
     color: '#FFFFFF',
-    letterSpacing: -0.5,
+    letterSpacing: -0.6,
   },
   brandSubtitle: {
     fontSize: 14,
     color: '#8E8E93',
-    fontWeight: '500',
-    marginTop: 4,
+    marginTop: 6,
+    fontWeight: '400',
   },
   errorBanner: {
-    backgroundColor: 'rgba(255, 69, 58, 0.16)',
+    backgroundColor: 'rgba(255, 69, 58, 0.12)',
     paddingHorizontal: 16,
     paddingVertical: 12,
-    borderRadius: 14,
+    borderRadius: 12,
     marginBottom: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 69, 58, 0.25)',
@@ -230,89 +213,90 @@ const styles = StyleSheet.create({
   errorText: {
     color: '#FF453A',
     fontSize: 13,
-    fontWeight: '600',
+    fontWeight: '500',
     textAlign: 'center',
   },
-  inputGroupCard: {
-    backgroundColor: '#1C1C1E',
+  formCard: {
+    backgroundColor: '#161618',
     borderRadius: 18,
-    overflow: 'hidden',
-    marginBottom: 20,
     borderWidth: 1,
     borderColor: 'rgba(255, 255, 255, 0.08)',
-    ...APPLE_SHADOW,
+    overflow: 'hidden',
+    marginBottom: 24,
   },
   inputRow: {
     flexDirection: 'row',
     alignItems: 'center',
     paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingVertical: 12,
   },
-  iconCircle: {
-    width: 28,
+  iconBox: {
+    width: 32,
+    height: 32,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
     alignItems: 'center',
     justifyContent: 'center',
-    marginRight: 10,
+    marginRight: 12,
+  },
+  inputWrapper: {
+    flex: 1,
+  },
+  fieldLabel: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.5,
+    marginBottom: 2,
   },
   textInput: {
-    flex: 1,
     fontSize: 15,
     color: '#FFFFFF',
-    paddingVertical: 0,
+    paddingVertical: 4,
   },
-  eyeButton: {
-    padding: 6,
+  eyeBtn: {
+    padding: 8,
+    marginLeft: 6,
   },
-  separator: {
-    height: StyleSheet.hairlineWidth,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginLeft: 54,
+  divider: {
+    height: 1,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    marginLeft: 60,
   },
   primaryButton: {
     backgroundColor: '#FF9500',
-    paddingVertical: 15,
+    height: 52,
     borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    marginBottom: 12,
     shadowColor: '#FF9500',
     shadowOffset: { width: 0, height: 4 },
     shadowOpacity: 0.3,
-    shadowRadius: 8,
+    shadowRadius: 10,
     elevation: 4,
   },
   buttonDisabled: {
-    opacity: 0.5,
+    opacity: 0.6,
+  },
+  buttonInner: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
   },
   primaryButtonText: {
     color: '#FFFFFF',
     fontSize: 16,
-    fontWeight: '700',
+    fontWeight: '600',
     letterSpacing: -0.2,
   },
-  demoButton: {
-    flexDirection: 'row',
+  footer: {
+    marginTop: 32,
     alignItems: 'center',
-    justifyContent: 'center',
-    backgroundColor: 'rgba(255, 149, 0, 0.12)',
-    paddingVertical: 14,
-    borderRadius: 14,
-    gap: 8,
-    borderWidth: 1,
-    borderColor: 'rgba(255, 149, 0, 0.25)',
-  },
-  demoButtonText: {
-    color: '#FF9500',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  footerNote: {
-    marginTop: 28,
     paddingHorizontal: 16,
   },
-  footerNoteText: {
+  footerText: {
     fontSize: 12,
-    color: '#8E8E93',
+    color: '#636366',
     textAlign: 'center',
     lineHeight: 18,
   },

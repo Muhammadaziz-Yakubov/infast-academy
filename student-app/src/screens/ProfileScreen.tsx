@@ -517,12 +517,12 @@ const styles = StyleSheet.create({
   },
   contentContainer: {
     paddingTop: 8,
-    paddingBottom: 40,
+    paddingBottom: 95,
   },
   header: {
     paddingHorizontal: 20,
     paddingTop: 12,
-    paddingBottom: 16,
+    paddingBottom: 95,
   },
   categoryLabel: {
     fontSize: 12,

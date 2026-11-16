@@ -7,38 +7,35 @@ import {
   ActivityIndicator,
   ScrollView,
   Linking,
-  Platform,
 } from 'react-native';
+import { StatusBar } from 'expo-status-bar';
 import { useAuth } from '../context/AuthContext';
-import { COLORS, SPACING, APPLE_SHADOW } from '../constants/theme';
 import {
   Lock,
-  AlertTriangle,
   RefreshCw,
   LogOut,
   Phone,
-  CreditCard,
-  User,
+  AlertCircle,
+  Building2,
+  Users,
   GraduationCap,
-  Building,
 } from 'lucide-react-native';
 
 export default function DebtLockScreen() {
   const { student, logout, refreshProfile } = useAuth();
   const [checking, setChecking] = useState(false);
-  const [checkMessage, setCheckMessage] = useState<string | null>(null);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   const handleRefresh = async () => {
     try {
       setChecking(true);
-      setCheckMessage(null);
+      setFeedback(null);
       await refreshProfile();
-      // Brief feedback delay
       setTimeout(() => {
-        setCheckMessage("To'lov holati qayta tekshirildi. Agar to'lov qilgan bo'lsangiz va status o'zgarmasa, iltimos ma'muriyatga murojaat qiling.");
-      }, 600);
-    } catch (e: any) {
-      setCheckMessage("Tekshirishda xatolik yuz berdi. Internet aloqasini tekshiring.");
+        setFeedback("To'lov holati yangilandi. Agar to'lov qilgan bo'lsangiz, ma'muriyat tez orada tasdiqlaydi.");
+      }, 500);
+    } catch {
+      setFeedback("Tarmoq xatosi. Internet aloqasini tekshiring.");
     } finally {
       setChecking(false);
     }
@@ -46,7 +43,7 @@ export default function DebtLockScreen() {
 
   const formatMoney = (amount?: number) => {
     if (!amount || isNaN(amount)) return null;
-    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, '.') + " so'm";
+    return amount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ' ') + " so'm";
   };
 
   const branchPhone = student?.branch?.phone || '+998 (71) 200-00-00';
@@ -58,159 +55,131 @@ export default function DebtLockScreen() {
   };
 
   return (
-    <ScrollView
-      style={styles.container}
-      contentContainerStyle={styles.scrollContent}
-      showsVerticalScrollIndicator={false}
-    >
-      {/* Lock Visual Badge */}
-      <View style={styles.badgeContainer}>
-        <View style={styles.outerGlow}>
-          <View style={styles.innerGlow}>
-            <View style={styles.iconCircle}>
-              <Lock size={44} color="#FF453A" strokeWidth={2.4} />
-            </View>
+    <View style={styles.container}>
+      <StatusBar style="light" />
+      <ScrollView
+        contentContainerStyle={styles.scrollContent}
+        showsVerticalScrollIndicator={false}
+      >
+        {/* Minimal Lock Icon */}
+        <View style={styles.iconContainer}>
+          <View style={styles.iconCircle}>
+            <Lock size={28} color="#FF9500" strokeWidth={2.2} />
           </View>
         </View>
-      </View>
 
-      {/* Main Requirement Headline */}
-      <View style={styles.header}>
-        <View style={styles.statusPill}>
-          <AlertTriangle size={14} color="#FF453A" strokeWidth={2.5} />
-          <Text style={styles.statusPillText}>
-            Holat: {student?.status === 'BLOCKED' || student?.status === 'BLOCK' ? 'Bloklangan (Qarzdor)' : 'Qarzdor'}
-          </Text>
-        </View>
-
-        <Text style={styles.mainTitle}>
-          Oylik to'lov qiling{'\n'}keyin ochiladi student app
-        </Text>
-
+        {/* Headings */}
+        <Text style={styles.title}>To'lov kutilmoqda</Text>
         <Text style={styles.subtitle}>
-          Hurmatli talaba, hisobingizda oylik to'lov bo'yicha qarzdorlik mavjudligi sababli dastur imkoniyatlari vaqtincha cheklangan.
+          Darslar va topshiriqlarni davom ettirish uchun to'lovni amalga oshirishingiz lozim.
         </Text>
-      </View>
 
-      {/* Debt & Student Details Card */}
-      <View style={styles.detailsCard}>
-        <View style={styles.cardHeader}>
-          <CreditCard size={18} color="#FF9500" strokeWidth={2.2} />
-          <Text style={styles.cardTitle}>To'lov va Talaba Ma'lumotlari</Text>
-        </View>
-
-        <View style={styles.divider} />
-
-        <View style={styles.infoRow}>
-          <View style={styles.infoLabelGroup}>
-            <User size={15} color="#8E8E93" />
-            <Text style={styles.infoLabel}>Talaba</Text>
-          </View>
-          <Text style={styles.infoValue}>
-            {student?.firstName} {student?.lastName}
-          </Text>
-        </View>
-
-        {student?.studentCode && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabelSub}>Talaba ID:</Text>
-            <Text style={styles.infoBadge}>{student.studentCode}</Text>
-          </View>
-        )}
-
-        {student?.course?.name && (
-          <View style={styles.infoRow}>
-            <View style={styles.infoLabelGroup}>
-              <GraduationCap size={15} color="#8E8E93" />
-              <Text style={styles.infoLabel}>Kurs</Text>
-            </View>
-            <Text style={styles.infoValue} numberOfLines={1}>
-              {student.course.name}
-            </Text>
-          </View>
-        )}
-
-        {student?.group?.name && (
-          <View style={styles.infoRow}>
-            <Text style={styles.infoLabelSub}>Guruh:</Text>
-            <Text style={styles.infoValue}>{student.group.name}</Text>
-          </View>
-        )}
-
-        {student?.branch?.name && (
-          <View style={styles.infoRow}>
-            <View style={styles.infoLabelGroup}>
-              <Building size={15} color="#8E8E93" />
-              <Text style={styles.infoLabel}>Filial</Text>
-            </View>
-            <Text style={styles.infoValue} numberOfLines={1}>
-              {student.branch.name}
-            </Text>
-          </View>
-        )}
-
+        {/* Debt Amount Display */}
         {debtAmount && (
-          <View style={[styles.infoRow, styles.debtHighlightRow]}>
-            <Text style={styles.debtLabel}>Qarzdorlik summasi:</Text>
+          <View style={styles.debtCard}>
+            <Text style={styles.debtLabel}>QARZDORLIK SUMMASI</Text>
             <Text style={styles.debtValue}>{debtAmount}</Text>
           </View>
         )}
-      </View>
 
-      {/* Check Result Message */}
-      {checkMessage && (
-        <View style={styles.checkMessageBox}>
-          <Text style={styles.checkMessageText}>{checkMessage}</Text>
-        </View>
-      )}
+        {/* Student & Course Details */}
+        <View style={styles.detailsCard}>
+          <View style={styles.detailRow}>
+            <View style={styles.detailIconBox}>
+              <GraduationCap size={16} color="#8E8E93" />
+            </View>
+            <View style={styles.detailTextBox}>
+              <Text style={styles.detailLabel}>Talaba</Text>
+              <Text style={styles.detailValue}>
+                {student?.firstName} {student?.lastName}
+              </Text>
+            </View>
+            {student?.studentCode && (
+              <View style={styles.codeBadge}>
+                <Text style={styles.codeBadgeText}>{student.studentCode}</Text>
+              </View>
+            )}
+          </View>
 
-      {/* Action Buttons */}
-      <View style={styles.actions}>
-        <TouchableOpacity
-          style={styles.refreshButton}
-          onPress={handleRefresh}
-          disabled={checking}
-          activeOpacity={0.8}
-        >
-          {checking ? (
-            <ActivityIndicator size="small" color="#000000" />
-          ) : (
-            <RefreshCw size={19} color="#000000" strokeWidth={2.4} />
+          {student?.group?.name && (
+            <>
+              <View style={styles.divider} />
+              <View style={styles.detailRow}>
+                <View style={styles.detailIconBox}>
+                  <Users size={16} color="#8E8E93" />
+                </View>
+                <View style={styles.detailTextBox}>
+                  <Text style={styles.detailLabel}>Guruh</Text>
+                  <Text style={styles.detailValue}>{student.group.name}</Text>
+                </View>
+              </View>
+            </>
           )}
-          <Text style={styles.refreshButtonText}>
-            {checking ? "Tekshirilmoqda..." : "To'lovni tekshirish"}
-          </Text>
-        </TouchableOpacity>
 
-        <TouchableOpacity
-          style={styles.supportButton}
-          onPress={handleCallSupport}
-          activeOpacity={0.8}
-        >
-          <Phone size={18} color="#FF9500" strokeWidth={2.2} />
-          <Text style={styles.supportButtonText}>
-            Ma'muriyat bilan bog'lanish ({branchPhone})
-          </Text>
-        </TouchableOpacity>
+          {student?.branch?.name && (
+            <>
+              <View style={styles.divider} />
+              <View style={styles.detailRow}>
+                <View style={styles.detailIconBox}>
+                  <Building2 size={16} color="#8E8E93" />
+                </View>
+                <View style={styles.detailTextBox}>
+                  <Text style={styles.detailLabel}>Filial</Text>
+                  <Text style={styles.detailValue}>{student.branch.name}</Text>
+                </View>
+              </View>
+            </>
+          )}
+        </View>
 
-        <TouchableOpacity
-          style={styles.logoutButton}
-          onPress={logout}
-          activeOpacity={0.7}
-        >
-          <LogOut size={16} color="#8E8E93" strokeWidth={2} />
-          <Text style={styles.logoutButtonText}>Hisobdan chiqish</Text>
-        </TouchableOpacity>
-      </View>
+        {/* Status Feedback Banner */}
+        {feedback && (
+          <View style={styles.feedbackBanner}>
+            <AlertCircle size={16} color="#8E8E93" />
+            <Text style={styles.feedbackText}>{feedback}</Text>
+          </View>
+        )}
 
-      {/* Footer Branding Note */}
-      <View style={styles.footer}>
-        <Text style={styles.footerNote}>
-          To'lov tasdiqlangandan so'ng, "To'lovni tekshirish" tugmasini bosing yoki ilovani qayta oching. Tizim darhol ochiladi.
-        </Text>
-        <Text style={styles.footerBrand}>InFast IT-Academy LMS</Text>
-      </View>
-    </ScrollView>
+        {/* Action Buttons */}
+        <View style={styles.actions}>
+          <TouchableOpacity
+            style={[styles.primaryButton, checking && styles.buttonDisabled]}
+            onPress={handleRefresh}
+            disabled={checking}
+            activeOpacity={0.85}
+          >
+            {checking ? (
+              <ActivityIndicator color="#000000" size="small" />
+            ) : (
+              <View style={styles.buttonContent}>
+                <RefreshCw size={17} color="#000000" strokeWidth={2.4} />
+                <Text style={styles.primaryButtonText}>To'lovni tekshirish</Text>
+              </View>
+            )}
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.secondaryButton}
+            onPress={handleCallSupport}
+            activeOpacity={0.75}
+          >
+            <Phone size={16} color="#FFFFFF" strokeWidth={2.2} />
+            <Text style={styles.secondaryButtonText}>
+              Ma'muriyat bilan bog'lanish ({branchPhone})
+            </Text>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            style={styles.textButton}
+            onPress={logout}
+            activeOpacity={0.6}
+          >
+            <LogOut size={15} color="#8E8E93" />
+            <Text style={styles.textButtonText}>Chiqish</Text>
+          </TouchableOpacity>
+        </View>
+      </ScrollView>
+    </View>
   );
 }
 
@@ -220,245 +189,183 @@ const styles = StyleSheet.create({
     backgroundColor: '#000000',
   },
   scrollContent: {
-    paddingHorizontal: SPACING.xl,
-    paddingTop: SPACING.xxl,
-    paddingBottom: SPACING.huge * 1.5,
-    alignItems: 'center',
-  },
-  badgeContainer: {
-    marginTop: SPACING.xl,
-    marginBottom: SPACING.lg,
-    alignItems: 'center',
+    flexGrow: 1,
     justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingVertical: 48,
   },
-  outerGlow: {
-    width: 120,
-    height: 120,
-    borderRadius: 60,
-    backgroundColor: 'rgba(255, 69, 58, 0.08)',
+  iconContainer: {
     alignItems: 'center',
-    justifyContent: 'center',
-  },
-  innerGlow: {
-    width: 96,
-    height: 96,
-    borderRadius: 48,
-    backgroundColor: 'rgba(255, 69, 58, 0.16)',
-    alignItems: 'center',
-    justifyContent: 'center',
+    marginBottom: 20,
   },
   iconCircle: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: '#1C1C1E',
-    borderWidth: 1.5,
-    borderColor: 'rgba(255, 69, 58, 0.4)',
+    width: 64,
+    height: 64,
+    borderRadius: 32,
+    backgroundColor: 'rgba(255, 149, 0, 0.12)',
     alignItems: 'center',
     justifyContent: 'center',
-    ...APPLE_SHADOW,
-  },
-  header: {
-    alignItems: 'center',
-    marginBottom: SPACING.xl,
-    width: '100%',
-  },
-  statusPill: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    backgroundColor: 'rgba(255, 69, 58, 0.15)',
-    paddingHorizontal: SPACING.md,
-    paddingVertical: 6,
-    borderRadius: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255, 69, 58, 0.3)',
-    gap: 6,
-    marginBottom: SPACING.md,
+    borderColor: 'rgba(255, 149, 0, 0.25)',
   },
-  statusPillText: {
-    color: '#FF453A',
-    fontSize: 13,
+  title: {
+    fontSize: 24,
     fontWeight: '700',
-    letterSpacing: 0.3,
-  },
-  mainTitle: {
     color: '#FFFFFF',
-    fontSize: 22,
-    fontWeight: '800',
     textAlign: 'center',
-    lineHeight: 30,
-    letterSpacing: -0.3,
-    marginBottom: SPACING.sm,
+    letterSpacing: -0.5,
   },
   subtitle: {
-    color: '#8E8E93',
     fontSize: 14,
-    lineHeight: 20,
+    color: '#8E8E93',
     textAlign: 'center',
-    paddingHorizontal: SPACING.sm,
+    marginTop: 8,
+    lineHeight: 20,
+    paddingHorizontal: 12,
+  },
+  debtCard: {
+    backgroundColor: '#161618',
+    borderRadius: 16,
+    paddingVertical: 18,
+    paddingHorizontal: 20,
+    alignItems: 'center',
+    marginTop: 24,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+  },
+  debtLabel: {
+    fontSize: 11,
+    fontWeight: '600',
+    color: '#8E8E93',
+    letterSpacing: 0.6,
+  },
+  debtValue: {
+    fontSize: 26,
+    fontWeight: '700',
+    color: '#FFFFFF',
+    marginTop: 4,
+    letterSpacing: -0.4,
   },
   detailsCard: {
-    width: '100%',
-    backgroundColor: '#1C1C1E',
-    borderRadius: 20,
+    backgroundColor: '#161618',
+    borderRadius: 16,
+    marginTop: 16,
     borderWidth: 1,
-    borderColor: 'rgba(255, 255, 255, 0.1)',
-    padding: SPACING.lg,
-    marginBottom: SPACING.lg,
-    ...APPLE_SHADOW,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
+    overflow: 'hidden',
   },
-  cardHeader: {
+  detailRow: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 8,
-    marginBottom: SPACING.sm,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
   },
-  cardTitle: {
+  detailIconBox: {
+    width: 30,
+    height: 30,
+    borderRadius: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.05)',
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+  },
+  detailTextBox: {
+    flex: 1,
+  },
+  detailLabel: {
+    fontSize: 11,
+    color: '#8E8E93',
+    fontWeight: '500',
+  },
+  detailValue: {
+    fontSize: 14,
     color: '#FFFFFF',
-    fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
+    marginTop: 2,
+  },
+  codeBadge: {
+    backgroundColor: 'rgba(255, 255, 255, 0.08)',
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 6,
+  },
+  codeBadgeText: {
+    fontSize: 11,
+    color: '#8E8E93',
+    fontWeight: '600',
   },
   divider: {
     height: 1,
-    backgroundColor: 'rgba(255, 255, 255, 0.08)',
-    marginVertical: SPACING.sm,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
+    marginLeft: 58,
   },
-  infoRow: {
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingVertical: 7,
-  },
-  infoLabelGroup: {
+  feedbackBanner: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 7,
-  },
-  infoLabel: {
-    color: '#8E8E93',
-    fontSize: 13,
-    fontWeight: '500',
-  },
-  infoLabelSub: {
-    color: '#8E8E93',
-    fontSize: 13,
-    fontWeight: '500',
-    paddingLeft: 22,
-  },
-  infoValue: {
-    color: '#FFFFFF',
-    fontSize: 13,
-    fontWeight: '600',
-    maxWidth: '55%',
-    textAlign: 'right',
-  },
-  infoBadge: {
-    color: '#FF9500',
-    fontSize: 12,
-    fontWeight: '700',
-    backgroundColor: 'rgba(255, 149, 0, 0.12)',
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 6,
-  },
-  debtHighlightRow: {
-    marginTop: 8,
-    paddingTop: 12,
-    borderTopWidth: 1,
-    borderTopColor: 'rgba(255, 69, 58, 0.2)',
-    backgroundColor: 'rgba(255, 69, 58, 0.08)',
-    paddingHorizontal: SPACING.sm,
-    borderRadius: 10,
-  },
-  debtLabel: {
-    color: '#FF453A',
-    fontSize: 14,
-    fontWeight: '700',
-  },
-  debtValue: {
-    color: '#FF453A',
-    fontSize: 16,
-    fontWeight: '800',
-  },
-  checkMessageBox: {
-    width: '100%',
-    backgroundColor: 'rgba(255, 149, 0, 0.12)',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 149, 0, 0.3)',
+    gap: 8,
+    backgroundColor: 'rgba(255, 255, 255, 0.06)',
     borderRadius: 12,
-    padding: SPACING.md,
-    marginBottom: SPACING.md,
+    paddingHorizontal: 14,
+    paddingVertical: 10,
+    marginTop: 16,
   },
-  checkMessageText: {
-    color: '#FFD60A',
-    fontSize: 13,
-    lineHeight: 18,
-    textAlign: 'center',
+  feedbackText: {
+    fontSize: 12,
+    color: '#8E8E93',
+    flex: 1,
+    lineHeight: 16,
   },
   actions: {
-    width: '100%',
-    gap: SPACING.md,
-    marginBottom: SPACING.xl,
+    marginTop: 28,
+    gap: 12,
   },
-  refreshButton: {
-    backgroundColor: '#FF9500',
-    flexDirection: 'row',
+  primaryButton: {
+    backgroundColor: '#FFFFFF',
+    height: 50,
+    borderRadius: 14,
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 15,
-    borderRadius: 14,
-    gap: 8,
-    ...APPLE_SHADOW,
   },
-  refreshButtonText: {
+  buttonDisabled: {
+    opacity: 0.6,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 8,
+  },
+  primaryButtonText: {
     color: '#000000',
     fontSize: 15,
-    fontWeight: '700',
+    fontWeight: '600',
   },
-  supportButton: {
-    backgroundColor: '#2C2C2E',
-    borderWidth: 1,
-    borderColor: 'rgba(255, 149, 0, 0.25)',
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingVertical: 13,
+  secondaryButton: {
+    backgroundColor: '#1C1C1E',
+    height: 50,
     borderRadius: 14,
-    gap: 8,
-  },
-  supportButtonText: {
-    color: '#FF9500',
-    fontSize: 13,
-    fontWeight: '600',
-  },
-  logoutButton: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    paddingVertical: 12,
-    gap: 6,
+    gap: 8,
+    borderWidth: 1,
+    borderColor: 'rgba(255, 255, 255, 0.08)',
   },
-  logoutButtonText: {
-    color: '#8E8E93',
+  secondaryButtonText: {
+    color: '#FFFFFF',
     fontSize: 14,
-    fontWeight: '600',
+    fontWeight: '500',
   },
-  footer: {
-    width: '100%',
+  textButton: {
+    flexDirection: 'row',
     alignItems: 'center',
-    paddingHorizontal: SPACING.md,
+    justifyContent: 'center',
+    gap: 6,
+    paddingVertical: 10,
+    marginTop: 4,
   },
-  footerNote: {
-    color: '#636366',
-    fontSize: 11,
-    lineHeight: 16,
-    textAlign: 'center',
-    marginBottom: SPACING.sm,
-  },
-  footerBrand: {
-    color: '#48484A',
-    fontSize: 11,
-    fontWeight: '700',
-    letterSpacing: 0.5,
+  textButtonText: {
+    color: '#8E8E93',
+    fontSize: 13,
+    fontWeight: '500',
   },
 });
