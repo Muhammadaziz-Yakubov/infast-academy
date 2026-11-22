@@ -229,6 +229,7 @@ export async function POST(request: Request) {
       paymentDueDay: paymentDueDay ? Number(paymentDueDay) : 5,
       status: status || "ACTIVE",
       passwordHash,
+      plainPassword: initialPassword,
     });
 
     return NextResponse.json({ success: true, student: newStudent }, { status: 201 });

@@ -23,6 +23,7 @@ export interface IStudent extends Document {
   paymentDueDay: number;
   status: "ACTIVE" | "PAUSED" | "LEFT" | "COMPLETED" | "QARZDOR" | "BLOCKED" | "BLOCK";
   passwordHash?: string;
+  plainPassword?: string;
 
   // Portfolio & Resume fields
   slug?: string;
@@ -75,6 +76,7 @@ const StudentSchema: Schema<IStudent> = new Schema(
     paymentDueDay: { type: Number, required: true, default: 5 },
     status: { type: String, enum: ["ACTIVE", "PAUSED", "LEFT", "COMPLETED", "QARZDOR", "BLOCKED", "BLOCK"], default: "ACTIVE", index: true },
     passwordHash: { type: String },
+    plainPassword: { type: String },
 
     // Portfolio fields
     slug: { type: String, unique: true, sparse: true, index: true },

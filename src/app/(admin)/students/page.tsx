@@ -29,6 +29,7 @@ import {
   Loader2,
   ShieldCheck,
   Receipt,
+  KeyRound,
 } from 'lucide-react';
 import * as XLSX from 'xlsx';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -65,6 +66,7 @@ export default function StudentsPage() {
   });
   const [submittingBulk, setSubmittingBulk] = useState(false);
   const [checkingPayments, setCheckingPayments] = useState(false);
+  const [generatingPasswords, setGeneratingPasswords] = useState(false);
 
   // Bulk Group State
   const [showBulkGroupModal, setShowBulkGroupModal] = useState(false);
@@ -148,6 +150,32 @@ export default function StudentsPage() {
       alert("Xatolik: " + e.message);
     } finally {
       setCheckingPayments(false);
+    }
+  };
+
+  const handleGenerateAllPasswords = async () => {
+    const confirmed = window.confirm(
+      "Barcha o'quvchilar uchun tasodifiy 8 xonali yangi parol generatsiya qilinsinmi?\n\nBu har bir o'quvchiga yangi 8 xonali parol o'rnatadi va talaba cheki chiqarilganda ushbu yangi parol avtomatik chekda aks etadi."
+    );
+    if (!confirmed) return;
+
+    setGeneratingPasswords(true);
+    try {
+      const res = await fetch('/api/students/generate-passwords', {
+        method: 'POST',
+      });
+      const data = await res.json();
+      if (res.ok && data.success) {
+        alert(data.message || "Barcha o'quvchilar uchun 8 xonali parollar muvaffaqiyatli yaratildi!");
+        fetchStudents();
+      } else {
+        alert(data.error || "Parollarni generatsiya qilishda xatolik yuz berdi");
+      }
+    } catch (e: any) {
+      console.error(e);
+      alert("Xatolik: " + (e.message || "Server bilan bog'lanishda xato"));
+    } finally {
+      setGeneratingPasswords(false);
     }
   };
 
@@ -581,6 +609,16 @@ export default function StudentsPage() {
 
           {/* Action Buttons */}
           <div className="flex items-center space-x-2 shrink-0">
+            <button
+              onClick={handleGenerateAllPasswords}
+              disabled={generatingPasswords}
+              className="px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-amber-500/20 flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              title="Barcha o'quvchilar uchun tasodifiy 8 xonali yangi parol generatsiya qilish"
+            >
+              <KeyRound className={`w-4 h-4 ${generatingPasswords ? 'animate-spin' : ''}`} />
+              <span>{generatingPasswords ? "Generatsiya qilinmoqda..." : "Barcha o'quvchi uchun parol generatsiya qilish"}</span>
+            </button>
+
             <button
               onClick={handleCheckPayments}
               disabled={checkingPayments}

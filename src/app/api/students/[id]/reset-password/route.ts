@@ -53,6 +53,7 @@ export async function POST(
     const passwordHash = await bcrypt.hash(plainPassword, 10);
 
     student.passwordHash = passwordHash;
+    student.plainPassword = plainPassword;
     await student.save();
 
     // Plain password returned ONCE in response

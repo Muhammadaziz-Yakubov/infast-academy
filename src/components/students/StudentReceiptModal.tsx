@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { StudentReceiptCard } from './StudentReceiptCard';
 import {
   X,
@@ -24,10 +24,16 @@ export function StudentReceiptModal({
   onClose,
   onStudentUpdated,
 }: StudentReceiptModalProps) {
-  const [password, setPassword] = useState('');
+  const [password, setPassword] = useState(student?.plainPassword || student?.password || '');
   const [copied, setCopied] = useState(false);
   const [savingPassword, setSavingPassword] = useState(false);
   const [savedSuccess, setSavedSuccess] = useState(false);
+
+  useEffect(() => {
+    if (student) {
+      setPassword(student.plainPassword || student.password || '');
+    }
+  }, [student]);
 
   if (!student) return null;
 
@@ -166,6 +172,7 @@ export function StudentReceiptModal({
         body: JSON.stringify({ password: password.trim() }),
       });
       if (res.ok) {
+        student.plainPassword = password.trim();
         setSavedSuccess(true);
         setTimeout(() => setSavedSuccess(false), 3000);
         if (onStudentUpdated) onStudentUpdated();
@@ -193,9 +200,9 @@ export function StudentReceiptModal({
     setTimeout(() => setCopied(false), 2000);
   };
 
-  // Tasodifiy 6 xonali PIN
+  // Tasodifiy 8 xonali PIN
   const generateRandomPin = () => {
-    const pin = Math.floor(100000 + Math.random() * 900000).toString();
+    const pin = Math.floor(10000000 + Math.random() * 90000000).toString();
     setPassword(pin);
   };
 

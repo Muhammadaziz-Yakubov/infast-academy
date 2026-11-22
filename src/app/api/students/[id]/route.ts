@@ -125,7 +125,9 @@ export async function PUT(request: Request, { params }: { params: { id: string }
     delete updateData.branchId;
 
     if (body.password && typeof body.password === 'string' && body.password.trim().length > 0) {
-      updateData.passwordHash = await bcrypt.hash(body.password.trim(), 10);
+      const trimmedPassword = body.password.trim();
+      updateData.passwordHash = await bcrypt.hash(trimmedPassword, 10);
+      updateData.plainPassword = trimmedPassword;
     }
     delete updateData.password;
 
