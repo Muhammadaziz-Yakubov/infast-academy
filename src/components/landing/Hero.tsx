@@ -34,9 +34,10 @@ api.post('/checkout', async (req, res) => {
   };
 
   return (
-    <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-black text-white">
-      {/* Subtle Ambient Apple Glow */}
-      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[450px] bg-white/5 rounded-full blur-[140px] pointer-events-none" />
+    <section className="relative pt-32 pb-20 md:pt-44 md:pb-32 overflow-hidden bg-[#050508] text-white font-sans">
+      {/* GTA VI Sunset Neon Ambient Glows */}
+      <div className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[850px] h-[500px] bg-gradient-to-r from-[#FF2A85]/15 via-[#FF7A00]/12 to-[#00F0FF]/15 rounded-full blur-[160px] pointer-events-none" />
+      <div className="absolute top-10 right-10 w-80 h-80 bg-[#FF2A85]/10 rounded-full blur-[140px] pointer-events-none" />
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 lg:gap-8 items-center">
@@ -48,26 +49,26 @@ api.post('/checkout', async (req, res) => {
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5 }}
-              className="inline-flex items-center space-x-2.5 bg-white/5 border border-white/10 px-4 py-1.5 rounded-full backdrop-blur-xl"
+              className="inline-flex items-center space-x-2.5 bg-gradient-to-r from-[#FF2A85]/15 via-white/[0.04] to-[#00F0FF]/15 border border-[#FF2A85]/30 px-4 py-1.5 rounded-full backdrop-blur-xl shadow-[0_0_20px_rgba(255,42,133,0.2)]"
             >
               <span className="flex h-2 w-2 relative">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-emerald-500"></span>
+                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#00F0FF] opacity-75"></span>
+                <span className="relative inline-flex rounded-full h-2 w-2 bg-[#00F0FF]"></span>
               </span>
-              <span className="text-xs font-medium tracking-wide text-neutral-300">
-                InFast Academy — Amaliy IT Ta'limi
+              <span className="text-xs font-bold tracking-wide text-neutral-200 uppercase tracking-widest text-[11px]">
+                InFast Academy — Zamonaviy IT Ta'limi
               </span>
             </motion.div>
 
-            {/* Giant Apple Title */}
+            {/* Giant Apple + GTA VI Title */}
             <motion.h1
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.5, delay: 0.1 }}
-              className="text-4xl sm:text-6xl lg:text-7xl font-extrabold tracking-tight leading-[1.08]"
+              className="text-4xl sm:text-6xl lg:text-7xl font-black tracking-tight leading-[1.06]"
             >
               IT kelajagingizni <br />
-              <span className="text-neutral-400 font-normal">
+              <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF]">
                 bugundan boshlang.
               </span>
             </motion.h1>
@@ -79,10 +80,10 @@ api.post('/checkout', async (req, res) => {
               transition={{ duration: 0.5, delay: 0.2 }}
               className="text-base sm:text-lg text-neutral-400 max-w-xl mx-auto lg:mx-0 font-normal leading-relaxed"
             >
-              Zamonaviy IT kasblarini real amaliy loyihalar yozish orqali o‘rganing. Quruq nazariyadan xoli, 100% amaliyot va portfolio.
+              Zamonaviy IT kasblarini real amaliy loyihalar yozish orqali o‘rganing. Quruq nazariyadan xoli, 100% amaliyot, portfolio va kafolatlangan natija.
             </motion.p>
 
-            {/* Apple Pill CTA Buttons */}
+            {/* Apple Pill CTA Buttons with GTA VI Neon Highlights */}
             <motion.div
               initial={{ opacity: 0, y: 15 }}
               animate={{ opacity: 1, y: 0 }}
@@ -91,13 +92,19 @@ api.post('/checkout', async (req, res) => {
             >
               <Link
                 href="/#ariza"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-full text-xs font-semibold text-black bg-white hover:bg-neutral-200 active:scale-95 transition-all shadow-xl shadow-white/10"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 rounded-full text-xs sm:text-sm font-black text-white bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] hover:scale-[1.02] active:scale-[0.98] transition-all shadow-xl shadow-[#FF2A85]/25"
               >
                 <span>Bepul konsultatsiya olish</span>
                 <ArrowRight className="w-4 h-4 ml-2" />
               </Link>
 
               <Link
+                href="/student-app"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 rounded-full text-xs sm:text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 active:scale-[0.98] transition-all backdrop-blur-xl"
+              >
+                <span>📱 Student App ilova</span>
+              </Link>
+            </motion.div>
                 href="/#kurslar"
                 className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-full text-xs font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition-all backdrop-blur-xl"
               >

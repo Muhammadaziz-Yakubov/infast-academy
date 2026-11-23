@@ -64,14 +64,18 @@ export default function StudentAppDownloadPage() {
       <div className="absolute top-[800px] right-0 w-[500px] h-[500px] bg-blue-600/10 blur-[180px] pointer-events-none" />
 
       {/* Top Header Navbar */}
-      <header className="sticky top-0 z-50 backdrop-blur-2xl bg-black/60 border-b border-white/[0.08]">
+      <header className="sticky top-0 z-50 backdrop-blur-2xl bg-black/70 border-b border-white/[0.08]">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-infast-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-infast-500/20 group-hover:scale-105 transition-transform">
-              <Zap className="w-4 h-4 fill-white" />
+            <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+              <img
+                src="/logo-icon.png"
+                alt="InFast Logo"
+                className="w-9 h-9 object-contain drop-shadow-[0_0_10px_rgba(255,42,133,0.4)]"
+              />
             </div>
-            <span className="font-bold text-sm tracking-tight text-white">
-              InFast <span className="text-neutral-400 font-normal text-xs ml-1">IT Academy</span>
+            <span className="font-extrabold text-sm tracking-tight text-white">
+              InFast <span className="text-neutral-400 font-medium text-xs ml-1">IT Academy</span>
             </span>
           </Link>
 
@@ -123,7 +127,7 @@ export default function StudentAppDownloadPage() {
             className="text-3xl sm:text-5xl lg:text-6xl font-black text-white tracking-tight leading-[1.1] max-w-4xl mx-auto"
           >
             O'qishni yangi darajaga olib chiqing.{' '}
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-infast-400">
+            <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF]">
               Shaxsiy Mobil Ilovangiz.
             </span>
           </motion.h1>
@@ -147,7 +151,7 @@ export default function StudentAppDownloadPage() {
           >
             <button
               onClick={handleDownloadClick}
-              className="w-full sm:w-auto px-7 py-4 rounded-2xl bg-gradient-to-r from-infast-600 via-amber-500 to-orange-500 text-white font-extrabold text-sm shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2.5 group"
+              className="w-full sm:w-auto px-8 py-4 rounded-2xl bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] text-white font-black text-sm shadow-xl shadow-[#FF2A85]/25 hover:shadow-[#FF2A85]/40 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center justify-center space-x-2.5 group"
             >
               <Download className="w-5 h-5 group-hover:-translate-y-0.5 transition-transform" />
               <span>Android (.APK) Yuklab Olish</span>

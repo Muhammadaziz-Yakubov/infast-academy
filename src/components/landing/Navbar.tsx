@@ -33,17 +33,21 @@ export function Navbar() {
       <div
         className={`max-w-6xl mx-auto flex items-center justify-between px-6 py-3 rounded-full transition-all duration-300 ${
           scrolled
-            ? 'bg-black/80 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-black/90'
-            : 'bg-black/40 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/50'
+            ? 'bg-black/85 backdrop-blur-2xl border border-white/15 shadow-2xl shadow-pink-500/5'
+            : 'bg-black/50 backdrop-blur-xl border border-white/10 shadow-lg shadow-black/50'
         }`}
       >
-        {/* Brand Logo */}
+        {/* Brand Logo with Real Removed-BG Logo Icon */}
         <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="w-8 h-8 rounded-full bg-white text-black font-extrabold text-sm flex items-center justify-center shadow-md group-hover:scale-105 transition-transform">
-            ⚡
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+            <img
+              src="/logo-icon.png"
+              alt="InFast Logo"
+              className="w-9 h-9 object-contain drop-shadow-[0_0_10px_rgba(255,42,133,0.4)]"
+            />
           </div>
-          <span className="font-semibold text-sm tracking-tight text-white flex items-center">
-            InFast <span className="text-neutral-400 font-normal text-xs ml-1.5">IT Academy</span>
+          <span className="font-extrabold text-sm tracking-tight text-white flex items-center">
+            InFast <span className="text-neutral-400 font-medium text-xs ml-1.5">IT Academy</span>
           </span>
         </Link>
 

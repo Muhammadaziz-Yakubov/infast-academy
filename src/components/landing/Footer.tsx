@@ -10,14 +10,16 @@ export function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Col */}
           <div className="space-y-3 md:col-span-1">
-            <Link href="/" className="flex items-center space-x-2">
-              <div className="w-7 h-7 rounded-full bg-white text-black font-extrabold text-xs flex items-center justify-center">
-                ⚡
-              </div>
-              <span className="font-bold text-sm tracking-tight text-white">InFast Academy</span>
+            <Link href="/" className="flex items-center space-x-2.5">
+              <img
+                src="/logo-icon.png"
+                alt="InFast Logo"
+                className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(255,42,133,0.4)]"
+              />
+              <span className="font-extrabold text-sm tracking-tight text-white">InFast Academy</span>
             </Link>
             <p className="text-xs text-neutral-400 leading-relaxed font-normal">
-              Zamonaviy amaliy IT ta'lim akademiyasi. Real loyihalar va kuchli portfolio.
+              Zamonaviy amaliy IT ta'lim akademiyasi. Real loyihalar, kuchli portfolio va rasmiy kafolat.
             </p>
           </div>
 

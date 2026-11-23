@@ -153,17 +153,21 @@ export default function PublicUTMLandingPage() {
   return (
     <div className="min-h-screen bg-[#000000] text-[#F5F5F7] flex flex-col items-center justify-between p-4 sm:p-8 relative overflow-hidden font-sans selection:bg-amber-500 selection:text-black">
       {/* Background Glowing Mesh */}
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[450px] bg-gradient-to-b from-amber-500/15 via-infast-600/10 to-transparent blur-[160px] pointer-events-none" />
-      <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-blue-600/10 blur-[180px] pointer-events-none" />
+      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[750px] h-[450px] bg-gradient-to-b from-[#FF2A85]/15 via-[#FF7A00]/10 to-[#00F0FF]/15 blur-[160px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-[450px] h-[450px] bg-[#00F0FF]/10 blur-[180px] pointer-events-none" />
 
       {/* Top Branding Pill */}
       <header className="w-full max-w-xl mx-auto flex items-center justify-between py-2 relative z-10">
         <Link href="/" className="flex items-center space-x-2.5 group">
-          <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-infast-600 to-amber-500 flex items-center justify-center text-white shadow-md shadow-infast-500/20 group-hover:scale-105 transition-transform">
-            <Zap className="w-4 h-4 fill-white" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center group-hover:scale-105 transition-transform">
+            <img
+              src="/logo-icon.png"
+              alt="InFast Logo"
+              className="w-9 h-9 object-contain drop-shadow-[0_0_10px_rgba(255,42,133,0.4)]"
+            />
           </div>
-          <span className="font-bold text-sm tracking-tight text-white">
-            InFast <span className="text-neutral-400 font-normal text-xs ml-1">IT Academy</span>
+          <span className="font-extrabold text-sm tracking-tight text-white">
+            InFast <span className="text-neutral-400 font-medium text-xs ml-1">IT Academy</span>
           </span>
         </Link>
 
@@ -381,7 +385,7 @@ export default function PublicUTMLandingPage() {
               <button
                 type="submit"
                 disabled={submitting}
-                className="w-full py-4 rounded-2xl bg-gradient-to-r from-infast-600 via-amber-500 to-orange-500 text-white font-black text-sm shadow-xl shadow-amber-500/25 hover:shadow-amber-500/40 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 pt-2"
+                className="w-full py-4 rounded-2xl bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] text-white font-black text-sm shadow-xl shadow-[#FF2A85]/25 hover:shadow-[#FF2A85]/40 hover:scale-[1.01] active:scale-[0.99] transition-all flex items-center justify-center space-x-2 pt-2"
               >
                 {submitting ? (
                   <>
