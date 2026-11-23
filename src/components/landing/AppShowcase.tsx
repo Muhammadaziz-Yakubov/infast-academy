@@ -17,24 +17,24 @@ import { motion } from 'framer-motion';
 
 export function AppShowcase() {
   return (
-    <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden">
+    <section className="py-20 px-4 sm:px-6 lg:px-8 relative overflow-hidden font-sans">
       <div className="max-w-6xl mx-auto">
-        <div className="relative rounded-[36px] sm:rounded-[44px] p-8 sm:p-12 lg:p-16 bg-gradient-to-br from-neutral-900/90 via-black to-neutral-950 border border-white/10 shadow-2xl overflow-hidden">
-          {/* Ambient Lighting */}
-          <div className="absolute -top-24 -right-24 w-96 h-96 bg-amber-500/15 rounded-full blur-[120px] pointer-events-none" />
-          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-infast-600/15 rounded-full blur-[120px] pointer-events-none" />
+        <div className="relative rounded-[36px] sm:rounded-[44px] p-8 sm:p-12 lg:p-16 bg-gradient-to-br from-neutral-900/90 via-black to-[#090714] border border-white/10 shadow-2xl overflow-hidden">
+          {/* GTA VI Ambient Lighting */}
+          <div className="absolute -top-24 -right-24 w-96 h-96 bg-[#FF2A85]/15 rounded-full blur-[140px] pointer-events-none" />
+          <div className="absolute -bottom-24 -left-24 w-96 h-96 bg-[#00F0FF]/15 rounded-full blur-[140px] pointer-events-none" />
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-center relative z-10">
             {/* Left Content */}
             <div className="lg:col-span-7 space-y-6 text-left">
-              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/25 text-amber-400 text-xs font-bold">
-                <Smartphone className="w-3.5 h-3.5" />
-                <span>InFast Student App • v1.0.0</span>
+              <div className="inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-full bg-gradient-to-r from-[#FF2A85]/15 via-[#FF7A00]/15 to-[#00F0FF]/15 border border-[#FF2A85]/30 text-white text-xs font-bold shadow-[0_0_20px_rgba(255,42,133,0.2)]">
+                <Smartphone className="w-3.5 h-3.5 text-[#FF2A85]" />
+                <span className="uppercase tracking-widest text-[11px]">InFast Student App • v1.0.0</span>
               </div>
 
               <h2 className="text-3xl sm:text-4xl lg:text-5xl font-black text-white tracking-tight leading-[1.15]">
                 Darslar, testlar va XP ballar endi{' '}
-                <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 via-orange-400 to-infast-400">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF]">
                   cho'ntagingizda.
                 </span>
               </h2>
@@ -46,15 +46,15 @@ export function AppShowcase() {
               {/* Bullet Features */}
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-1 text-xs text-neutral-300 font-medium">
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#00F0FF] shrink-0" />
                   <span>3x3 = 9 talik qat'iy test sinovi</span>
                 </div>
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#FF7A00] shrink-0" />
                   <span>XP va XCoin gamifikatsiyasi</span>
                 </div>
                 <div className="flex items-center space-x-2.5">
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                  <CheckCircle2 className="w-4 h-4 text-[#FF2A85] shrink-0" />
                   <span>Shaxsiy o'quv xaritasi & progress</span>
                 </div>
                 <div className="flex items-center space-x-2.5">
@@ -67,7 +67,7 @@ export function AppShowcase() {
               <div className="pt-3 flex flex-wrap items-center gap-3">
                 <Link
                   href="/student-app"
-                  className="px-6 py-3.5 rounded-2xl bg-gradient-to-r from-infast-600 via-amber-500 to-orange-500 text-white font-extrabold text-xs sm:text-sm shadow-xl shadow-amber-500/20 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center space-x-2"
+                  className="px-7 py-4 rounded-2xl bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] text-white font-black text-xs sm:text-sm shadow-xl shadow-[#FF2A85]/25 hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center space-x-2"
                 >
                   <Download className="w-4 h-4" />
                   <span>Android (.APK) Yuklab Olish</span>
@@ -75,7 +75,7 @@ export function AppShowcase() {
 
                 <Link
                   href="/student-app"
-                  className="px-5 py-3.5 rounded-2xl bg-white/[0.06] hover:bg-white/[0.1] border border-white/[0.1] text-white font-semibold text-xs sm:text-sm transition-all flex items-center space-x-1.5"
+                  className="px-5 py-4 rounded-2xl bg-white/[0.06] hover:bg-white/[0.12] border border-white/[0.1] text-white font-semibold text-xs sm:text-sm transition-all flex items-center space-x-1.5"
                 >
                   <span>Batafsil ma'lumot</span>
                   <ArrowRight className="w-3.5 h-3.5 text-neutral-400" />
@@ -95,21 +95,25 @@ export function AppShowcase() {
 
             {/* Right Phone Visual Mockup */}
             <div className="lg:col-span-5 flex justify-center">
-              <div className="relative w-full max-w-[280px] rounded-[38px] p-3 bg-gradient-to-b from-neutral-800 to-black border-2 border-neutral-700 shadow-2xl shadow-amber-500/20">
+              <div className="relative w-full max-w-[280px] rounded-[38px] p-3 bg-gradient-to-b from-neutral-800 to-black border-2 border-[#FF2A85]/30 shadow-2xl shadow-[#FF2A85]/20">
                 <div className="w-20 h-3 bg-neutral-900 rounded-full mx-auto mb-2" />
 
                 <div className="rounded-[28px] bg-[#0c0c12] border border-white/10 p-3.5 text-white space-y-3">
                   <div className="flex items-center justify-between pb-2 border-b border-white/[0.06]">
                     <div className="flex items-center space-x-2">
-                      <div className="w-7 h-7 rounded-lg bg-infast-500 text-white font-bold text-[10px] flex items-center justify-center">
-                        IA
+                      <div className="w-8 h-8 rounded-lg flex items-center justify-center">
+                        <img
+                          src="/logo-icon.png"
+                          alt="Logo"
+                          className="w-8 h-8 object-contain drop-shadow-[0_0_6px_rgba(255,42,133,0.5)]"
+                        />
                       </div>
                       <div>
                         <div className="text-[11px] font-bold text-white">Ali Valiyev</div>
                         <div className="text-[9px] text-neutral-400">Frontend Dasturlash</div>
                       </div>
                     </div>
-                    <span className="px-1.5 py-0.5 rounded bg-amber-500/15 text-amber-400 text-[9px] font-black">
+                    <span className="px-2 py-0.5 rounded bg-amber-500/15 text-amber-400 text-[9px] font-black">
                       Lv. 3
                     </span>
                   </div>

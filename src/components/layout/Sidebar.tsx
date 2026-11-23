@@ -106,8 +106,12 @@ export function Sidebar() {
       {/* Brand Header */}
       <div className="flex items-center justify-between p-4 border-b border-black/[0.06] dark:border-white/[0.08] h-16">
         <div className="flex items-center space-x-3 overflow-hidden">
-          <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-infast-600 to-infast-500 flex items-center justify-center text-white font-black shrink-0 shadow-sm">
-            <Zap className="w-5 h-5 fill-white" />
+          <div className="w-9 h-9 rounded-xl flex items-center justify-center shrink-0">
+            <img
+              src="/logo-icon.png"
+              alt="InFast Logo"
+              className="w-9 h-9 object-contain drop-shadow-[0_0_8px_rgba(255,42,133,0.3)]"
+            />
           </div>
           {!collapsed && (
             <div className="flex flex-col">

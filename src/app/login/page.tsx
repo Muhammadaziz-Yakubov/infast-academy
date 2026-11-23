@@ -87,13 +87,18 @@ export default function LoginPage() {
       >
         {/* Brand Header */}
         <div className="text-center mb-8">
-          <div className="w-14 h-14 rounded-2xl bg-gradient-to-tr from-infast-600 to-infast-500 mx-auto flex items-center justify-center text-white shadow-lg shadow-infast-500/25 mb-4.5">
-            <Zap className="w-7 h-7 fill-white" />
+          <div className="w-16 h-16 mx-auto mb-3.5 flex items-center justify-center relative">
+            <div className="absolute inset-0 bg-gradient-to-tr from-[#FF2A85]/30 to-[#00F0FF]/30 rounded-2xl blur-xl" />
+            <img
+              src="/logo-icon.png"
+              alt="InFast Logo"
+              className="w-14 h-14 object-contain relative z-10 drop-shadow-[0_0_16px_rgba(255,42,133,0.4)]"
+            />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">
-            INFAST IT-ACADEMY
+          <h1 className="text-2xl font-black tracking-tight text-slate-900 dark:text-white">
+            INFAST <span className="bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] bg-clip-text text-transparent">IT-ACADEMY</span>
           </h1>
-          <p className="text-xs font-medium text-slate-500 dark:text-slate-400 mt-1.5 tracking-tight">
+          <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1.5 tracking-tight">
             Ma'muriyat va CRM Tizimiga Kirish
           </p>
         </div>
@@ -147,7 +152,7 @@ export default function LoginPage() {
           <button
             type="submit"
             disabled={loading}
-            className="w-full py-3.5 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold rounded-2xl shadow-md shadow-infast-500/20 flex items-center justify-center space-x-2 transition-all active:scale-[0.98] disabled:opacity-50 mt-6 text-sm tracking-tight"
+            className="w-full py-3.5 bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#FF2A85] bg-[length:200%_auto] hover:bg-right transition-all duration-300 text-white font-bold rounded-2xl shadow-lg shadow-[#FF2A85]/20 flex items-center justify-center space-x-2 active:scale-[0.98] disabled:opacity-50 mt-6 text-sm tracking-tight"
           >
             {loading ? (
               <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
