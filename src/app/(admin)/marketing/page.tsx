@@ -62,7 +62,7 @@ export default function MarketingDashboardPage() {
         </div>
 
         <div className="flex items-center space-x-3">
-          <div className="flex items-center bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl p-1 shadow-sm">
+          <div className="flex items-center bg-black/[0.04] dark:bg-white/[0.06] rounded-xl p-1">
             {[
               { id: '7days', label: '7 kun' },
               { id: '30days', label: '30 kun' },
@@ -72,9 +72,9 @@ export default function MarketingDashboardPage() {
               <button
                 key={tab.id}
                 onClick={() => setTimeRange(tab.id)}
-                className={`px-3 py-1.5 rounded-lg text-xs font-bold transition-colors ${
+                className={`px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   timeRange === tab.id
-                    ? 'bg-amber-500 text-white shadow-sm'
+                    ? 'bg-white dark:bg-[#181820] text-infast-600 dark:text-infast-400 shadow-sm'
                     : 'text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white'
                 }`}
               >
@@ -85,7 +85,7 @@ export default function MarketingDashboardPage() {
 
           <button
             onClick={fetchDashboardData}
-            className="p-2.5 rounded-xl border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 text-slate-600 dark:text-slate-300 hover:bg-slate-50 dark:hover:bg-slate-800 transition-colors shadow-sm"
+            className="p-2.5 rounded-xl border border-black/[0.06] dark:border-white/[0.08] bg-black/[0.02] dark:bg-white/[0.04] text-slate-600 dark:text-slate-300 hover:bg-black/[0.05] dark:hover:bg-white/[0.08] transition-all shadow-sm active:scale-95"
             title="Yangilash"
           >
             <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin' : ''}`} />
@@ -96,85 +96,85 @@ export default function MarketingDashboardPage() {
       {/* KPI Cards Grid */}
       <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
         {/* KPI 1 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Jami Kampaniyalar</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jami Kampaniyalar</span>
             <Megaphone className="w-4 h-4 text-amber-500" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-slate-900 dark:text-white">{kpis.totalCampaigns || 0}</span>
-            <span className="text-xs font-bold text-emerald-600 bg-emerald-50 dark:bg-emerald-950/30 px-2 py-0.5 rounded-md">
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{kpis.totalCampaigns || 0}</span>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md">
               {kpis.activeCampaigns || 0} Faol
             </span>
           </div>
         </div>
 
         {/* KPI 2 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Jami Leadlar</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jami Leadlar</span>
             <Users className="w-4 h-4 text-blue-500" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-slate-900 dark:text-white">{kpis.totalLeads || 0}</span>
-            <span className="text-xs font-bold text-blue-600 bg-blue-50 dark:bg-blue-950/30 px-2 py-0.5 rounded-md">
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{kpis.totalLeads || 0}</span>
+            <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 bg-blue-500/10 px-2 py-0.5 rounded-md">
               {kpis.newLeads || 0} Yangi
             </span>
           </div>
         </div>
 
         {/* KPI 3 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Yangi O'quvchilar</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Yangi O'quvchilar</span>
             <UserCheck className="w-4 h-4 text-emerald-500" />
           </div>
           <div className="flex items-baseline justify-between">
-            <span className="text-2xl font-black text-slate-900 dark:text-white">{kpis.newStudentsCount || 0}</span>
-            <span className="text-xs font-bold text-emerald-600">Student bo'ldi</span>
+            <span className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white">{kpis.newStudentsCount || 0}</span>
+            <span className="text-xs font-semibold text-emerald-600 dark:text-emerald-400">Student bo'ldi</span>
           </div>
         </div>
 
         {/* KPI 4 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Reklama Xarajati</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Reklama Xarajati</span>
             <DollarSign className="w-4 h-4 text-rose-500" />
           </div>
-          <div className="text-xl font-black text-rose-600 dark:text-rose-400">
+          <div className="text-xl font-bold tracking-tight text-rose-600 dark:text-rose-400">
             {formatMoneyUz(kpis.totalSpend || 0)}
           </div>
         </div>
 
         {/* KPI 5 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">Tushgan Daromad</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Tushgan Daromad</span>
             <TrendingUp className="w-4 h-4 text-emerald-500" />
           </div>
-          <div className="text-xl font-black text-emerald-600 dark:text-emerald-400">
+          <div className="text-xl font-bold tracking-tight text-emerald-600 dark:text-emerald-400">
             {formatMoneyUz(kpis.totalRevenue || 0)}
           </div>
         </div>
 
         {/* KPI 6 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">CPL (Lead Narxi)</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">CPL (Lead Narxi)</span>
             <Target className="w-4 h-4 text-violet-500" />
           </div>
-          <div className="text-xl font-black text-slate-900 dark:text-white">
+          <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             {formatMoneyUz(kpis.cpl || 0)}
           </div>
         </div>
 
         {/* KPI 7 */}
-        <div className="p-5 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-2">
+        <div className="p-5 apple-card space-y-2">
           <div className="flex items-center justify-between text-slate-500">
-            <span className="text-xs font-semibold uppercase tracking-wider">CAC (Student Narxi)</span>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">CAC (Student Narxi)</span>
             <Target className="w-4 h-4 text-amber-500" />
           </div>
-          <div className="text-xl font-black text-slate-900 dark:text-white">
+          <div className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">
             {formatMoneyUz(kpis.cac || 0)}
           </div>
         </div>
@@ -195,10 +195,10 @@ export default function MarketingDashboardPage() {
       </div>
 
       {/* Marketing Funnel */}
-      <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+      <div className="p-6 apple-card space-y-6">
         <div className="flex items-center justify-between">
           <div>
-            <h3 className="text-lg font-bold text-slate-900 dark:text-white flex items-center gap-2">
+            <h3 className="text-base font-semibold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
               <Layers className="w-5 h-5 text-amber-500" />
               Marketing & Sotuv Voronkasi (Funnel)
             </h3>
@@ -217,7 +217,7 @@ export default function MarketingDashboardPage() {
                   {item.count} ta <span className="text-slate-400">({item.percentage}%)</span>
                 </span>
               </div>
-              <div className="w-full h-3 rounded-full bg-slate-100 dark:bg-slate-800 overflow-hidden">
+              <div className="w-full h-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.08] overflow-hidden">
                 <div
                   className="h-full rounded-full bg-gradient-to-r from-amber-500 to-orange-500 transition-all duration-500"
                   style={{ width: `${Math.max(item.percentage, 4)}%` }}
@@ -231,8 +231,8 @@ export default function MarketingDashboardPage() {
       {/* Top Campaigns & Channels Tables */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         {/* Top Campaigns */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center justify-between">
+        <div className="p-6 apple-card space-y-4">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 dark:text-white flex items-center justify-between">
             <span>📢 Top Kampaniyalar</span>
             <span className="text-xs font-normal text-slate-500">ROI bo'yicha</span>
           </h3>
@@ -240,7 +240,7 @@ export default function MarketingDashboardPage() {
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="text-[11px] font-bold uppercase tracking-wider text-slate-400 border-b border-slate-100 dark:border-slate-800">
+                <tr className="text-[11px] font-semibold uppercase tracking-wider text-slate-400 dark:text-slate-500 border-b border-black/[0.06] dark:border-white/[0.08]">
                   <th className="pb-3">Kampaniya</th>
                   <th className="pb-3 text-center">Lead</th>
                   <th className="pb-3 text-center">Student</th>
@@ -278,8 +278,8 @@ export default function MarketingDashboardPage() {
         </div>
 
         {/* Top Channels */}
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-4">
-          <h3 className="text-base font-bold text-slate-900 dark:text-white flex items-center justify-between">
+        <div className="p-6 apple-card space-y-4">
+          <h3 className="text-base font-semibold tracking-tight text-slate-900 dark:text-white flex items-center justify-between">
             <span>📱 Top Kanallar</span>
             <span className="text-xs font-normal text-slate-500">Manba bo'yicha</span>
           </h3>
