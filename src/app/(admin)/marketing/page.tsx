@@ -66,10 +66,10 @@ export default function MarketingDashboardPage() {
           🎯 Leadlar & Arizalar
         </Link>
         <Link
-          href="/marketing/tavsiya"
+          href="/marketing/formalar"
           className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
         >
-          🤝 Tavsiya & Aksiyalar
+          📝 Formalar & Havolalar
         </Link>
       </div>
 

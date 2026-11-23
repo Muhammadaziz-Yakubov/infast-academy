@@ -184,10 +184,10 @@ export default function LeadManbalariPage() {
           🎯 Leadlar & Arizalar
         </Link>
         <Link
-          href="/marketing/tavsiya"
+          href="/marketing/formalar"
           className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
         >
-          🤝 Tavsiya & Aksiyalar
+          📝 Formalar & Havolalar
         </Link>
       </div>
 
@@ -331,6 +331,11 @@ export default function LeadManbalariPage() {
                   <tr key={lead._id} className="hover:bg-slate-50/80 dark:hover:bg-slate-800/40 transition-colors">
                     <td className="p-4 font-bold text-slate-900 dark:text-white">
                       <div>{lead.fullName}</div>
+                      {lead.notes && (
+                        <div className="text-[10px] text-slate-500 dark:text-slate-400 font-medium mt-0.5 max-w-xs truncate" title={lead.notes}>
+                          📝 {lead.notes}
+                        </div>
+                      )}
                       {lead.email && <div className="text-[10px] text-slate-400 font-normal">{lead.email}</div>}
                     </td>
                     <td className="p-4 font-semibold text-slate-700 dark:text-slate-300">

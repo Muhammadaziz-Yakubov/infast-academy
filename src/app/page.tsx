@@ -13,6 +13,7 @@ import { LearningExperience } from '@/components/landing/LearningExperience';
 import { Mentors } from '@/components/landing/Mentors';
 import { InfastExperience } from '@/components/landing/InfastExperience';
 import { Branches } from '@/components/landing/Branches';
+import { AppShowcase } from '@/components/landing/AppShowcase';
 import { FAQ } from '@/components/landing/FAQ';
 import { LeadForm } from '@/components/landing/LeadForm';
 import { FloatingContact } from '@/components/landing/FloatingContact';
@@ -61,6 +62,9 @@ export default function LandingHomePage() {
 
         {/* Featured Courses Showcase */}
         <Courses />
+
+        {/* Mobile Student App Showcase */}
+        <AppShowcase />
 
         {/* Academy Branch Location */}
         <Branches />

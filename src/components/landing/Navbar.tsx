@@ -22,8 +22,9 @@ export function Navbar() {
   const navLinks = [
     { name: 'Kurslar', href: '/#kurslar' },
     { name: 'Kalkulyator', href: '/#kalkulyator' },
+    { name: '📱 Student App', href: '/student-app' },
     { name: 'Nega InFast?', href: '/#nega-infast' },
-    { name: 'Loyiha Portfolio', href: '/#portfolio' },
+    { name: 'Portfolio', href: '/#portfolio' },
     { name: 'FAQ', href: '/#faq' },
   ];
 

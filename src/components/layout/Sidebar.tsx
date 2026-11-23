@@ -34,7 +34,7 @@ import { cn } from '@/lib/utils';
 const MARKETING_SUB_ITEMS = [
   { name: '📊 Voronka & Natijalar', href: '/marketing' },
   { name: '🎯 Leadlar & Arizalar', href: '/marketing/lead-manbalari' },
-  { name: '🤝 Tavsiya & Aksiyalar', href: '/marketing/tavsiya' },
+  { name: '📝 Formalar & Havolalar', href: '/marketing/formalar' },
 ];
 
 const NAV_ITEMS = [
