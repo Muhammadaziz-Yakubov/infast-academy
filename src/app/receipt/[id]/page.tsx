@@ -160,10 +160,10 @@ export default function PublicReceiptPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
+      <div className="min-h-screen bg-[#000000] text-[#F5F5F7] flex items-center justify-center p-4">
         <div className="text-center space-y-4">
-          <div className="w-12 h-12 border-4 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
-          <p className="text-xs font-bold text-slate-400 font-sans tracking-wide uppercase">
+          <div className="w-10 h-10 border-2 border-emerald-500 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-xs font-semibold text-slate-400 font-sans tracking-wide uppercase">
             Rasmiy Kvitansiya Yuklanmoqda...
           </p>
         </div>
@@ -173,13 +173,13 @@ export default function PublicReceiptPage() {
 
   if (error || !payment) {
     return (
-      <div className="min-h-screen bg-slate-950 text-slate-100 flex items-center justify-center p-4">
-        <div className="max-w-md w-full bg-slate-900 rounded-3xl p-8 shadow-2xl text-center space-y-5 border border-slate-800">
-          <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mx-auto border border-rose-500/20 shadow-inner">
+      <div className="min-h-screen bg-[#000000] text-[#F5F5F7] flex items-center justify-center p-4">
+        <div className="max-w-md w-full apple-card p-8 text-center space-y-5">
+          <div className="w-16 h-16 bg-rose-500/10 text-rose-500 rounded-2xl flex items-center justify-center mx-auto border border-rose-500/20">
             <AlertCircle className="w-8 h-8" />
           </div>
           <div className="space-y-2">
-            <h2 className="text-xl font-extrabold text-white font-sans">Kvitansiya Topilmadi</h2>
+            <h2 className="text-xl font-bold text-white font-sans">Kvitansiya Topilmadi</h2>
             <p className="text-xs text-slate-400 leading-relaxed font-sans">
               {error || "Kiritilgan ID bo'yicha to'lov ma'lumotlari tizimda mavjud emas yoki o'chirilgan."}
             </p>
@@ -187,7 +187,7 @@ export default function PublicReceiptPage() {
           <div className="pt-2">
             <Link
               href="/login"
-              className="inline-flex items-center space-x-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-emerald-600/20 transition-all font-sans"
+              className="inline-flex items-center space-x-2 px-5 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white rounded-xl text-xs font-semibold shadow-sm transition-all font-sans"
             >
               <ArrowLeft className="w-4 h-4" />
               <span>Tizimga Kirish</span>
@@ -199,7 +199,7 @@ export default function PublicReceiptPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 p-4 md:p-8 flex flex-col items-center justify-center print:bg-white print:p-0">
+    <div className="min-h-screen bg-[#000000] text-[#F5F5F7] p-4 md:p-8 flex flex-col items-center justify-center print:bg-white print:p-0">
       <style jsx global>{`
         @media print {
           @page {

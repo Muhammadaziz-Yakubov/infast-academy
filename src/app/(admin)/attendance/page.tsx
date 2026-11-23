@@ -132,23 +132,23 @@ export default function AttendancePage() {
 
       <main className="p-6 space-y-6 max-w-4xl mx-auto">
         {/* Date & Group Selector Card */}
-        <div className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex flex-col sm:flex-row items-center justify-between gap-4">
+        <div className="apple-card p-5 flex flex-col sm:flex-row items-center justify-between gap-4">
           <div className="flex items-center space-x-3 w-full sm:w-auto">
             <CalendarIcon className="w-5 h-5 text-infast-500 shrink-0" />
             <input
               type="date"
               value={selectedDate}
               onChange={(e) => setSelectedDate(e.target.value)}
-              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
+              className="px-3.5 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             />
           </div>
 
           <div className="flex items-center space-x-3 w-full sm:w-auto">
-            <span className="text-xs font-bold text-slate-500 shrink-0">Guruh:</span>
+            <span className="text-xs font-semibold text-slate-500 dark:text-slate-400 shrink-0">Guruh:</span>
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="w-full sm:w-auto px-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-bold text-slate-800 focus:outline-none"
+              className="w-full sm:w-auto px-4 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-semibold text-slate-800 dark:text-slate-100 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             >
               {groups.map((g) => (
                 <option key={g._id} value={g._id}>{g.name} ({g.courseId?.name})</option>
@@ -178,7 +178,7 @@ export default function AttendancePage() {
         )}
 
         {/* Touch-Friendly Circular Attendance Control Grid */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-card p-6 space-y-4">
+        <div className="apple-card p-6 space-y-4">
           <div className="flex items-center justify-between pb-3 border-b border-slate-100">
             <h3 className="font-bold text-sm text-slate-900">Talabalar Davomati</h3>
             <span className="text-xs text-slate-400 font-medium">Bosing: PRESENT (✓) / ABSENT (✕)</span>

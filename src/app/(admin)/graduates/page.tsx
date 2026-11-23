@@ -313,7 +313,7 @@ export default function GraduatesPage() {
 
           <button
             onClick={handleOpenAdd}
-            className="inline-flex items-center justify-center space-x-2 px-5 py-3 bg-infast-500 hover:bg-infast-600 active:scale-[0.98] text-white font-bold text-xs uppercase tracking-wider rounded-2xl shadow-md shadow-infast-500/20 transition-all shrink-0"
+            className="inline-flex items-center justify-center space-x-2 px-5 py-2.5 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 active:scale-[0.98] text-white font-semibold text-xs rounded-2xl shadow-sm transition-all shrink-0"
           >
             <Plus className="w-4 h-4" />
             <span>+ Bitiruvchi qo‘shish</span>
@@ -322,40 +322,40 @@ export default function GraduatesPage() {
 
         {/* 4 Sleek Stat Cards */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="apple-card p-5">
+            <div className="flex items-center justify-between text-slate-400 dark:text-slate-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
               <span>Bitiruvchilar</span>
               <Users className="w-4 h-4 text-infast-500" />
             </div>
             <div className="text-3xl font-black text-slate-900 dark:text-white">
               {stats.totalGraduates}
             </div>
-            <span className="text-[11px] text-slate-400 font-medium">Jami ro‘yxatdagilar</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Jami ro‘yxatdagilar</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="apple-card p-5">
+            <div className="flex items-center justify-between text-slate-400 dark:text-slate-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
               <span>Sertifikatlar</span>
               <FileCheck className="w-4 h-4 text-emerald-500" />
             </div>
             <div className="text-3xl font-black text-emerald-600 dark:text-emerald-400">
               {stats.activeCertificates}
             </div>
-            <span className="text-[11px] text-slate-400 font-medium">Faol asosiy sertifikatlar</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Faol asosiy sertifikatlar</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
-            <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
+          <div className="apple-card p-5">
+            <div className="flex items-center justify-between text-slate-400 dark:text-slate-500 text-[11px] font-semibold uppercase tracking-wider mb-2">
               <span>Nominatsiyalar</span>
               <Sparkles className="w-4 h-4 text-amber-500" />
             </div>
             <div className="text-3xl font-black text-amber-500">
               {stats.totalNominations}
             </div>
-            <span className="text-[11px] text-slate-400 font-medium">Maxsus mukofotlar</span>
+            <span className="text-[11px] text-slate-400 dark:text-slate-500 font-medium">Maxsus mukofotlar</span>
           </div>
 
-          <div className="bg-white dark:bg-slate-900 border border-slate-200/80 dark:border-slate-800 p-5 rounded-[22px] shadow-sm">
+          <div className="apple-card p-5">
             <div className="flex items-center justify-between text-slate-400 text-xs font-bold uppercase tracking-wider mb-2">
               <span>Bekor qilingan</span>
               <Ban className="w-4 h-4 text-rose-500" />

@@ -219,7 +219,7 @@ export default function BranchesPage() {
 
         <button
           onClick={handleOpenCreateModal}
-          className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-lg shadow-infast-500/20 transition-all flex items-center justify-center gap-2"
+          className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm transition-all flex items-center justify-center gap-2 active:scale-[0.98]"
         >
           <Plus className="w-4 h-4" />
           <span>Yangi Filial Qo'shish</span>
@@ -228,33 +228,33 @@ export default function BranchesPage() {
 
       {/* Summary KPI Cards */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-blue-50 dark:bg-blue-950/50 text-blue-600 flex items-center justify-center shrink-0">
+        <div className="p-5 apple-card flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-blue-500/10 text-blue-600 dark:text-blue-400 flex items-center justify-center shrink-0">
             <Building2 className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400">Jami Filiallar</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white">{branches.length} ta</p>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Jami Filiallar</span>
+            <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{branches.length} ta</p>
           </div>
         </div>
 
-        <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-emerald-50 dark:bg-emerald-950/50 text-emerald-600 flex items-center justify-center shrink-0">
+        <div className="p-5 apple-card flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
             <Users className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400">Jami Aktiv O'quvchilar</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white">{totalActiveStudents} nafar</p>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Aktiv O'quvchilar</span>
+            <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{totalActiveStudents} nafar</p>
           </div>
         </div>
 
-        <div className="p-4 bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl shadow-sm flex items-center gap-4">
-          <div className="w-12 h-12 rounded-xl bg-purple-50 dark:bg-purple-950/50 text-purple-600 flex items-center justify-center shrink-0">
+        <div className="p-5 apple-card flex items-center gap-4">
+          <div className="w-12 h-12 rounded-2xl bg-purple-500/10 text-purple-600 dark:text-purple-400 flex items-center justify-center shrink-0">
             <FolderCheck className="w-6 h-6" />
           </div>
           <div>
-            <span className="text-xs font-semibold text-slate-400">Faol Guruhlar</span>
-            <p className="text-xl font-black text-slate-900 dark:text-white">{totalActiveGroups} ta</p>
+            <span className="text-[11px] font-semibold text-slate-400 dark:text-slate-500 uppercase tracking-wider">Faol Guruhlar</span>
+            <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">{totalActiveGroups} ta</p>
           </div>
         </div>
 

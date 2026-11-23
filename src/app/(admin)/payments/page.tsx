@@ -144,11 +144,11 @@ export default function PaymentsPage() {
       <Header title="To'lovlar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-100 shadow-card">
-          <h2 className="font-bold text-base text-slate-900">Barcha Qabul Qilingan To'lovlar</h2>
+        <div className="flex justify-between items-center apple-card p-4">
+          <h2 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Barcha Qabul Qilingan To'lovlar</h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5"
+            className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
             <span>To'lov Qabul Qilish</span>
@@ -156,9 +156,9 @@ export default function PaymentsPage() {
         </div>
 
         {/* Payments Table */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-card overflow-hidden">
+        <div className="apple-card overflow-hidden">
           <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-100 font-bold text-slate-400 uppercase">
+            <thead className="bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.06] dark:border-white/[0.08] font-semibold text-slate-500 dark:text-slate-400 uppercase text-[11px] tracking-wider">
               <tr>
                 <th className="p-3.5">Talaba</th>
                 <th className="p-3.5">Guruh / Kurs</th>

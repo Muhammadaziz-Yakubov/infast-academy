@@ -200,40 +200,40 @@ export default function AdminShopPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 apple-card p-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <ShoppingBag className="w-7 h-7 text-amber-500" />
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <ShoppingBag className="w-6 h-6 text-amber-500" />
             XCoin Sovg'alar Do'koni Boshqaruvi
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Talabalar yig'gan XCoin tangalariga sovg'alar buyurtmasini qabul qilish va yangi mahsulotlar kiritish
           </p>
         </div>
 
         <button
           onClick={() => setIsModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-medium rounded-xl shadow-sm transition-all"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98]"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Yangi Mahsulot Qo'shish
         </button>
       </div>
 
       {/* Tabs */}
-      <div className="flex border-b border-gray-200 gap-4">
+      <div className="flex border-b border-black/[0.06] dark:border-white/[0.08] gap-4">
         <button
           onClick={() => setActiveTab('orders')}
-          className={`pb-3 font-semibold text-sm flex items-center gap-2 border-b-2 transition-all ${
+          className={`pb-3 font-semibold text-xs flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'orders'
-              ? 'border-amber-500 text-amber-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
           }`}
         >
           <Clock className="w-4 h-4" />
           Talabalar Buyurtmalari
           {pendingOrdersCount > 0 && (
-            <span className="px-2 py-0.5 text-xs bg-red-100 text-red-600 rounded-full font-bold">
+            <span className="px-2 py-0.5 text-[10px] bg-rose-500/15 text-rose-600 dark:text-rose-400 border border-rose-500/20 rounded-full font-bold">
               {pendingOrdersCount} yangi
             </span>
           )}
@@ -241,10 +241,10 @@ export default function AdminShopPage() {
 
         <button
           onClick={() => setActiveTab('products')}
-          className={`pb-3 font-semibold text-sm flex items-center gap-2 border-b-2 transition-all ${
+          className={`pb-3 font-semibold text-xs flex items-center gap-2 border-b-2 transition-all ${
             activeTab === 'products'
-              ? 'border-amber-500 text-amber-600'
-              : 'border-transparent text-gray-500 hover:text-gray-700'
+              ? 'border-amber-500 text-amber-600 dark:text-amber-400'
+              : 'border-transparent text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
           }`}
         >
           <Package className="w-4 h-4" />

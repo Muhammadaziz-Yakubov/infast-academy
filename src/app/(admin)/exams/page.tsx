@@ -302,11 +302,11 @@ export default function ExamsPage() {
       <Header title="Imtihonlar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-100 shadow-card">
-          <h2 className="font-bold text-base text-slate-900">Imtihonlar va Natijalar Boshqaruvi</h2>
+        <div className="flex justify-between items-center apple-card p-4">
+          <h2 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Imtihonlar va Natijalar Boshqaruvi</h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5"
+            className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
             <span>Imtihon Yaratish</span>
@@ -316,12 +316,12 @@ export default function ExamsPage() {
         {/* Exams List */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {loading ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Yuklanmoqda...</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Yuklanmoqda...</div>
           ) : exams.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Hali imtihonlar mavjud emas</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Hali imtihonlar mavjud emas</div>
           ) : (
             exams.map((exam) => (
-              <div key={exam._id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4 flex flex-col justify-between">
+              <div key={exam._id} className="apple-card p-6 space-y-4 flex flex-col justify-between hover:shadow-apple-lg transition-all">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-infast-600 bg-infast-50 px-3 py-1 rounded-xl">

@@ -74,7 +74,7 @@ export default function BranchSelect({
         value={isManager && managerBranchId ? managerBranchId : selectedBranchId}
         onChange={(e) => !isManager && onChange(e.target.value)}
         disabled={loading || isManager}
-        className="pl-9 pr-8 py-1.5 text-xs font-semibold bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-xl text-slate-700 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500 appearance-none shadow-sm cursor-pointer disabled:opacity-80"
+        className="pl-9 pr-8 py-2 text-xs font-semibold bg-black/[0.04] dark:bg-white/[0.07] border border-black/[0.06] dark:border-white/[0.08] rounded-xl text-slate-800 dark:text-slate-100 hover:bg-black/[0.06] dark:hover:bg-white/[0.1] focus:outline-none focus:ring-2 focus:ring-infast-500/20 focus:border-infast-500 appearance-none transition-all cursor-pointer disabled:opacity-75"
       >
         {!isManager && showAllOption && (
           <option value="ALL">🌐 Barcha filiallar (Super Admin)</option>

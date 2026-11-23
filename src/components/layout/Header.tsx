@@ -79,21 +79,22 @@ export function Header({ title, children }: HeaderProps) {
   };
 
   return (
-    <header className="h-16 w-full bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 px-6 flex items-center justify-between sticky top-0 z-20 transition-colors duration-200">
+    <header className="h-16 w-full sticky top-0 z-20 backdrop-blur-xl bg-white/75 dark:bg-[#121216]/80 border-b border-black/[0.06] dark:border-white/[0.08] px-6 flex items-center justify-between transition-colors duration-200">
       <div className="flex items-center space-x-6">
-        <h1 className="text-xl font-bold text-slate-900 dark:text-white">{title}</h1>
+        <h1 className="text-lg font-semibold tracking-tight text-slate-900 dark:text-white">{title}</h1>
         {/* Apple Spotlight Global Search Trigger */}
         <GlobalSearch />
       </div>
 
-      <div className="flex items-center space-x-3">
+      <div className="flex items-center space-x-2.5">
         {children}
 
-        {/* Dark Mode Toggle Button */}
+        {/* Apple-style Dark Mode Toggle Button */}
         <button
           onClick={toggleDarkMode}
-          className="p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
-          title={darkMode ? "Yorug' rejim" : "Tungi rejim"}
+          className="w-9 h-9 rounded-xl flex items-center justify-center bg-black/[0.04] dark:bg-white/[0.07] border border-black/[0.05] dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:bg-black/[0.07] dark:hover:bg-white/[0.12] transition-all active:scale-95"
+          title={darkMode ? "Yorug' rejim (Light Mode)" : "Tungi rejim (Dark Mode)"}
+          aria-label="Toggle Theme"
         >
           {darkMode ? (
             <Sun className="w-4 h-4 text-amber-400" />
@@ -106,7 +107,7 @@ export function Header({ title, children }: HeaderProps) {
         <div className="relative">
           <button
             onClick={() => setShowNotifications(!showNotifications)}
-            className="relative p-2 rounded-xl border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-200 hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
+            className="w-9 h-9 rounded-xl flex items-center justify-center bg-black/[0.04] dark:bg-white/[0.07] border border-black/[0.05] dark:border-white/[0.08] text-slate-700 dark:text-slate-200 hover:bg-black/[0.07] dark:hover:bg-white/[0.12] transition-all active:scale-95 relative"
           >
             <Bell className="w-4 h-4" />
             {unreadCount > 0 && (

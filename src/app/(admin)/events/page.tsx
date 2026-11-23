@@ -287,22 +287,22 @@ export default function AdminEventsPage() {
   return (
     <div className="p-6 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+      <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 apple-card p-5">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <Calendar className="w-7 h-7 text-indigo-600" />
+          <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white flex items-center gap-2">
+            <Calendar className="w-6 h-6 text-infast-500" />
             Tadbirlar & Qatnashuv Davomati Boshqaruvi
           </h1>
-          <p className="text-sm text-gray-500">
+          <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
             Tadbirlar e'lon qilish, talabalar ro'yxatini ko'rish, keldi (+500 XCoin) yoki kelmadi (-500 XCoin) davomatini belgilash
           </p>
         </div>
 
         <button
           onClick={() => setIsCreateModalOpen(true)}
-          className="flex items-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white font-medium rounded-xl shadow-sm transition-all"
+          className="flex items-center gap-2 px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98]"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
           Yangi Tadbir E'lon Qilish
         </button>
       </div>
@@ -312,16 +312,16 @@ export default function AdminEventsPage() {
         {/* Left Column: Events selector */}
         <div className="space-y-4 lg:col-span-1">
           {/* Active vs Archive Tab Buttons */}
-          <div className="flex bg-gray-100 p-1 rounded-xl">
+          <div className="flex bg-black/[0.04] dark:bg-white/[0.06] p-1 rounded-xl">
             <button
               onClick={() => {
                 setEventFilter('UPCOMING');
                 if (activeEvents.length > 0) setSelectedEvent(activeEvents[0]);
               }}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 eventFilter === 'UPCOMING'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-[#181820] text-infast-600 dark:text-infast-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <Calendar className="w-3.5 h-3.5" />
@@ -332,10 +332,10 @@ export default function AdminEventsPage() {
                 setEventFilter('COMPLETED');
                 if (archivedEvents.length > 0) setSelectedEvent(archivedEvents[0]);
               }}
-              className={`flex-1 py-1.5 text-xs font-bold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
+              className={`flex-1 py-1.5 text-xs font-semibold rounded-lg transition-all flex items-center justify-center gap-1.5 ${
                 eventFilter === 'COMPLETED'
-                  ? 'bg-white text-indigo-600 shadow-sm'
-                  : 'text-gray-500 hover:text-gray-700'
+                  ? 'bg-white dark:bg-[#181820] text-infast-600 dark:text-infast-400 shadow-sm'
+                  : 'text-slate-500 dark:text-slate-400 hover:text-slate-700 dark:hover:text-slate-200'
               }`}
             >
               <Archive className="w-3.5 h-3.5" />

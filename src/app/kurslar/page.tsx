@@ -13,7 +13,7 @@ export const metadata: Metadata = {
 
 export default function KurslarPage() {
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#000000] text-[#F5F5F7] font-sans">
       <Navbar />
 
       <main className="pt-28">

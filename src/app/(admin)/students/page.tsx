@@ -541,17 +541,17 @@ export default function StudentsPage() {
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
         {/* Search & Filter Bar */}
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-card flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
+        <div className="apple-card p-4 flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3">
           <div className="flex flex-1 flex-wrap items-center gap-2.5">
             {/* Search Input */}
             <div className="relative flex-1 min-w-[200px]">
-              <Search className="w-4 h-4 absolute left-3.5 top-3 text-slate-400" />
+              <Search className="w-4 h-4 absolute left-3.5 top-2.5 text-slate-400 dark:text-slate-500" />
               <input
                 type="text"
                 placeholder="Talabani qidirish (ism, familiya, telefon)..."
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
-                className="w-full pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
+                className="w-full pl-10 pr-4 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-infast-500/20 focus:border-infast-500 transition-all"
               />
             </div>
 
@@ -559,7 +559,7 @@ export default function StudentsPage() {
             <select
               value={selectedCourse}
               onChange={(e) => setSelectedCourse(e.target.value)}
-              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+              className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             >
               <option value="">Barcha Kurslar</option>
               {courses.map((c) => (
@@ -571,7 +571,7 @@ export default function StudentsPage() {
             <select
               value={selectedGroup}
               onChange={(e) => setSelectedGroup(e.target.value)}
-              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+              className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             >
               <option value="">Barcha Guruhlar</option>
               {groups.map((g) => (
@@ -583,7 +583,7 @@ export default function StudentsPage() {
             <select
               value={selectedStatus}
               onChange={(e) => setSelectedStatus(e.target.value)}
-              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+              className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             >
               <option value="">Barcha Statuslar</option>
               <option value="ACTIVE">Faol (ACTIVE)</option>
@@ -598,7 +598,7 @@ export default function StudentsPage() {
             <select
               value={selectedPaymentStatus}
               onChange={(e) => setSelectedPaymentStatus(e.target.value)}
-              className="px-3.5 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-semibold text-slate-700"
+              className="px-3 py-2 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-xl text-xs font-medium text-slate-800 dark:text-slate-200 focus:outline-none focus:ring-2 focus:ring-infast-500/20"
             >
               <option value="">Barcha To'lov Holatlari</option>
               <option value="PAID">To'langan</option>
@@ -608,46 +608,46 @@ export default function StudentsPage() {
           </div>
 
           {/* Action Buttons */}
-          <div className="flex items-center space-x-2 shrink-0">
+          <div className="flex items-center flex-wrap gap-2 shrink-0">
             <button
               onClick={handleGenerateAllPasswords}
               disabled={generatingPasswords}
-              className="px-3.5 py-2.5 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-amber-500/20 flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              className="px-3.5 py-2 bg-amber-500 hover:bg-amber-600 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98] disabled:opacity-50"
               title="Barcha o'quvchilar uchun tasodifiy 8 xonali yangi parol generatsiya qilish"
             >
-              <KeyRound className={`w-4 h-4 ${generatingPasswords ? 'animate-spin' : ''}`} />
-              <span>{generatingPasswords ? "Generatsiya qilinmoqda..." : "Barcha o'quvchi uchun parol generatsiya qilish"}</span>
+              <KeyRound className={`w-3.5 h-3.5 ${generatingPasswords ? 'animate-spin' : ''}`} />
+              <span>{generatingPasswords ? "Generatsiya qilinmoqda..." : "Parollarni generatsiya qilish"}</span>
             </button>
 
             <button
               onClick={handleCheckPayments}
               disabled={checkingPayments}
-              className="px-3.5 py-2.5 bg-sky-50 hover:bg-sky-100 text-sky-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              className="px-3 py-2 bg-sky-500/10 hover:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 font-medium text-xs rounded-xl flex items-center space-x-1.5 transition-all disabled:opacity-50 active:scale-[0.98]"
               title="Barcha talabalarning to'lov muddati va sanalarini tekshirish"
             >
-              <RefreshCw className={`w-4 h-4 ${checkingPayments ? 'animate-spin' : ''}`} />
+              <RefreshCw className={`w-3.5 h-3.5 ${checkingPayments ? 'animate-spin' : ''}`} />
               <span>{checkingPayments ? "Tekshirilmoqda..." : "To'lovlarni Tekshirish"}</span>
             </button>
 
             <button
               onClick={() => setShowImportModal(true)}
-              className="px-3.5 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all"
+              className="px-3 py-2 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.08] dark:hover:bg-white/[0.1] text-slate-700 dark:text-slate-200 border border-black/[0.06] dark:border-white/[0.08] font-medium text-xs rounded-xl flex items-center space-x-1.5 transition-all active:scale-[0.98]"
             >
-              <Upload className="w-4 h-4" />
-              <span>Import Excel</span>
+              <Upload className="w-3.5 h-3.5" />
+              <span>Import</span>
             </button>
 
             <button
               onClick={handleExport}
-              className="px-3.5 py-2.5 bg-emerald-50 hover:bg-emerald-100 text-emerald-700 font-semibold text-xs rounded-xl flex items-center space-x-1.5 transition-all"
+              className="px-3 py-2 bg-emerald-500/10 hover:bg-emerald-500/15 text-emerald-600 dark:text-emerald-400 border border-emerald-500/20 font-medium text-xs rounded-xl flex items-center space-x-1.5 transition-all active:scale-[0.98]"
             >
-              <Download className="w-4 h-4" />
-              <span>Export Excel</span>
+              <Download className="w-3.5 h-3.5" />
+              <span>Export</span>
             </button>
 
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md shadow-infast-500/20 flex items-center space-x-1.5 transition-all"
+              className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>Talaba Qo'shish</span>
@@ -657,7 +657,7 @@ export default function StudentsPage() {
 
         {/* Floating Bulk Action Bar */}
         {selectedStudentIds.length > 0 && (
-          <div className="bg-slate-900 text-white p-4 rounded-2xl shadow-xl flex items-center justify-between border border-slate-800 animate-in fade-in slide-in-from-bottom-2 duration-200">
+          <div className="bg-black/90 dark:bg-[#181820]/95 backdrop-blur-2xl text-white p-3.5 sm:p-4 rounded-3xl shadow-apple-float flex items-center justify-between border border-white/[0.12] animate-in fade-in slide-in-from-bottom-2 duration-200">
             <div className="flex items-center space-x-3">
               <span className="bg-infast-500 text-white text-xs font-extrabold px-3 py-1 rounded-xl">
                 {selectedStudentIds.length} ta tanlandi
@@ -699,11 +699,11 @@ export default function StudentsPage() {
         )}
 
         {/* Students Table Card */}
-        <div className="bg-white rounded-3xl border border-slate-100 shadow-card overflow-hidden">
+        <div className="apple-card overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="bg-slate-50/70 border-b border-slate-100 text-[11px] font-bold text-slate-400 uppercase tracking-wider">
+                <tr className="bg-black/[0.02] dark:bg-white/[0.03] border-b border-black/[0.06] dark:border-white/[0.08] text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">
                   <th className="py-3.5 px-4 w-10 text-center">
                     <input
                       type="checkbox"

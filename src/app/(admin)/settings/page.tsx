@@ -92,10 +92,10 @@ export default function SettingsPage() {
       <main className="p-6 space-y-6 max-w-4xl mx-auto">
         <form onSubmit={handleSaveSettings} className="space-y-6">
           {/* Academy Settings */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4">
-            <div className="flex items-center space-x-3 pb-3 border-b border-slate-100">
+          <div className="apple-card p-6 space-y-4">
+            <div className="flex items-center space-x-3 pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
               <Building className="w-5 h-5 text-infast-500" />
-              <h3 className="font-bold text-sm text-slate-900">Akademiya Ma'lumotlari</h3>
+              <h3 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Akademiya Ma'lumotlari</h3>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
@@ -132,11 +132,11 @@ export default function SettingsPage() {
           </div>
 
           {/* Telegram Integration Settings */}
-          <div className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+          <div className="apple-card p-6 space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-black/[0.06] dark:border-white/[0.08]">
               <div className="flex items-center space-x-3">
                 <Send className="w-5 h-5 text-sky-500" />
-                <h3 className="font-bold text-sm text-slate-900">Telegram Bot Integratsiyasi</h3>
+                <h3 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Telegram Bot Integratsiyasi</h3>
               </div>
               <span className="text-[10px] font-bold px-2.5 py-1 rounded-full bg-sky-50 text-sky-700 font-mono">
                 7925524286:AAE5aJ2f...
@@ -202,7 +202,7 @@ export default function SettingsPage() {
             <button
               type="submit"
               disabled={saving}
-              className="px-6 py-3 bg-infast-500 hover:bg-infast-600 text-white font-bold text-xs rounded-xl shadow-md transition-all"
+              className="px-6 py-2.5 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98] disabled:opacity-50"
             >
               {saving ? "Saqlanmoqda..." : "Sozlamalarni Saqlash"}
             </button>

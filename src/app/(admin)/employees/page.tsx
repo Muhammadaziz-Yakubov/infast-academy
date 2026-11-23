@@ -234,15 +234,15 @@ export default function EmployeesPage() {
   return (
     <div className="p-4 md:p-8 max-w-7xl mx-auto space-y-6">
       {/* Header */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-white dark:bg-slate-900 p-6 rounded-2xl border border-slate-200 dark:border-slate-800 shadow-sm">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 apple-card p-6">
         <div>
           <div className="flex items-center space-x-3">
-            <div className="w-10 h-10 rounded-xl bg-infast-500/10 text-infast-600 dark:text-infast-400 flex items-center justify-center">
+            <div className="w-10 h-10 rounded-2xl bg-infast-500/10 text-infast-600 dark:text-infast-400 flex items-center justify-center">
               <ShieldCheck className="w-6 h-6" />
             </div>
             <div>
-              <h1 className="text-xl font-bold text-slate-900 dark:text-white">Xodimlar boshqaruvi</h1>
-              <p className="text-xs text-slate-500 dark:text-slate-400">
+              <h1 className="text-xl font-bold tracking-tight text-slate-900 dark:text-white">Xodimlar boshqaruvi</h1>
+              <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
                 Tizim xodimlarini (Menejerlarni) ro'yxatga olish va ularga ruxsat berilgan bo'limlarni sozlash
               </p>
             </div>
@@ -251,7 +251,7 @@ export default function EmployeesPage() {
 
         <button
           onClick={handleOpenAddModal}
-          className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-sm rounded-xl transition-all shadow-md shadow-infast-500/20 active:scale-95"
+          className="flex items-center justify-center space-x-2 px-5 py-2.5 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm transition-all active:scale-[0.98]"
         >
           <UserPlus className="w-4 h-4" />
           <span>Yangi xodim qo'shish</span>

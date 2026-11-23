@@ -239,13 +239,13 @@ export default function GroupsPage() {
       <Header title="Guruhlar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        <div className="bg-white p-4 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between gap-3">
-          <h2 className="font-bold text-base text-slate-900">Barcha O'quv Guruhlari</h2>
+        <div className="apple-card p-4 flex items-center justify-between gap-3">
+          <h2 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Barcha O'quv Guruhlari</h2>
           <div className="flex items-center space-x-2">
             <button
               onClick={() => handleSendTodayReminders(false)}
               disabled={sendingCron}
-              className="px-3.5 py-2.5 bg-sky-500 hover:bg-sky-600 text-white font-bold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all disabled:opacity-50"
+              className="px-3.5 py-2 bg-sky-500/10 hover:bg-sky-500/15 text-sky-600 dark:text-sky-400 border border-sky-500/20 font-medium text-xs rounded-xl flex items-center space-x-1.5 transition-all disabled:opacity-50 active:scale-[0.98]"
               title="Bugun darsi bor guruhlarga Telegram eslatmasini yuborish"
             >
               <Send className="w-3.5 h-3.5" />
@@ -253,7 +253,7 @@ export default function GroupsPage() {
             </button>
             <button
               onClick={() => setShowAddModal(true)}
-              className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5 transition-all"
+              className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98]"
             >
               <Plus className="w-4 h-4" />
               <span>Guruh Yaratish</span>
@@ -264,12 +264,12 @@ export default function GroupsPage() {
         {/* Groups Cards Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {loading ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Yuklanmoqda...</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Yuklanmoqda...</div>
           ) : groups.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Guruhlar mavjud emas</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Guruhlar mavjud emas</div>
           ) : (
             groups.map((g) => (
-              <div key={g._id} className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card space-y-4 flex flex-col justify-between">
+              <div key={g._id} className="apple-card p-5 space-y-4 flex flex-col justify-between hover:shadow-apple-lg transition-all">
                 <div className="space-y-3">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-extrabold text-infast-600 bg-infast-50 px-3 py-1 rounded-xl">

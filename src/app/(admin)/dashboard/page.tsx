@@ -110,80 +110,80 @@ export default function DashboardPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
           {/* Total & Active Students */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
-            className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between"
+            className="apple-card p-5 flex items-center justify-between"
           >
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Talabalar soni</p>
-              <p className="text-2xl font-extrabold text-slate-900 mt-1">{loading ? '...' : metrics.totalStudents}</p>
-              <p className="text-xs text-emerald-600 font-semibold mt-1 flex items-center">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Talabalar soni</p>
+              <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">{loading ? '...' : metrics.totalStudents}</p>
+              <p className="text-xs text-emerald-600 dark:text-emerald-400 font-semibold mt-1 flex items-center">
                 <UserCheck className="w-3.5 h-3.5 mr-1" />
                 {loading ? '...' : metrics.activeStudents} ta faol talaba
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-infast-50 text-infast-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-infast-500/10 text-infast-600 dark:text-infast-400 flex items-center justify-center shrink-0">
               <Users className="w-6 h-6" />
             </div>
           </motion.div>
 
           {/* Today's & Monthly Revenue */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.05 }}
-            className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between"
+            className="apple-card p-5 flex items-center justify-between"
           >
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bugungi tushum</p>
-              <p className="text-xl font-extrabold text-slate-900 mt-1">{loading ? '...' : formatMoneyUz(metrics.todayRevenue)}</p>
-              <p className="text-xs text-slate-500 font-medium mt-1">
-                Oylik: <span className="font-semibold text-slate-800">{loading ? '...' : formatMoneyUz(metrics.monthlyRevenue)}</span>
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bugungi tushum</p>
+              <p className="text-xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">{loading ? '...' : formatMoneyUz(metrics.todayRevenue)}</p>
+              <p className="text-xs text-slate-500 dark:text-slate-400 font-medium mt-1">
+                Oylik: <span className="font-semibold text-slate-800 dark:text-slate-200">{loading ? '...' : formatMoneyUz(metrics.monthlyRevenue)}</span>
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 flex items-center justify-center shrink-0">
               <TrendingUp className="w-6 h-6" />
             </div>
           </motion.div>
 
           {/* Total Debt */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
-            className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between"
+            className="apple-card p-5 flex items-center justify-between"
           >
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Umumiy qarzdorlik</p>
-              <p className="text-xl font-extrabold text-rose-600 mt-1">{loading ? '...' : formatMoneyUz(metrics.totalDebt)}</p>
-              <p className="text-xs text-rose-500 font-semibold mt-1 flex items-center">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Umumiy qarzdorlik</p>
+              <p className="text-xl font-bold tracking-tight text-rose-600 dark:text-rose-400 mt-1">{loading ? '...' : formatMoneyUz(metrics.totalDebt)}</p>
+              <p className="text-xs text-rose-500 dark:text-rose-400 font-semibold mt-1 flex items-center">
                 <AlertCircle className="w-3.5 h-3.5 mr-1" />
                 {debtors.length} ta qarzdor talaba
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-rose-500/10 text-rose-600 dark:text-rose-400 flex items-center justify-center shrink-0">
               <DollarSign className="w-6 h-6" />
             </div>
           </motion.div>
 
           {/* Today's Attendance & Absents */}
           <motion.div
-            initial={{ opacity: 0, y: 15 }}
+            initial={{ opacity: 0, y: 12 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.15 }}
-            className="bg-white p-5 rounded-3xl border border-slate-100 shadow-card flex items-center justify-between"
+            className="apple-card p-5 flex items-center justify-between"
           >
             <div>
-              <p className="text-xs font-semibold text-slate-500 uppercase tracking-wider">Bugungi davomat</p>
-              <p className="text-2xl font-extrabold text-slate-900 mt-1">
+              <p className="text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Bugungi davomat</p>
+              <p className="text-2xl font-bold tracking-tight text-slate-900 dark:text-white mt-1">
                 {loading ? '...' : `${metrics.todayAttendance?.rate || 0}%`}
               </p>
-              <p className="text-xs text-amber-600 font-semibold mt-1 flex items-center">
+              <p className="text-xs text-amber-600 dark:text-amber-400 font-semibold mt-1 flex items-center">
                 <UserX className="w-3.5 h-3.5 mr-1" />
                 {loading ? '...' : metrics.todayAbsent} ta kelmagan
               </p>
             </div>
-            <div className="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-600 dark:text-amber-400 flex items-center justify-center shrink-0">
               <Calendar className="w-6 h-6" />
             </div>
           </motion.div>

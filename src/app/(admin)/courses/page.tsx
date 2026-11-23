@@ -119,11 +119,11 @@ export default function CoursesPage() {
       <Header title="Kurslar" />
 
       <main className="p-6 space-y-6 max-w-7xl mx-auto">
-        <div className="flex justify-between items-center bg-white p-4 rounded-3xl border border-slate-100 shadow-card">
-          <h2 className="font-bold text-base text-slate-900">Mavjud O'quv Yo'nalishlari</h2>
+        <div className="flex justify-between items-center apple-card p-4">
+          <h2 className="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Mavjud O'quv Yo'nalishlari</h2>
           <button
             onClick={() => setShowAddModal(true)}
-            className="px-4 py-2.5 bg-infast-500 hover:bg-infast-600 text-white font-semibold text-xs rounded-xl shadow-md flex items-center space-x-1.5"
+            className="px-4 py-2 bg-gradient-to-b from-infast-500 to-infast-600 hover:from-infast-500/95 hover:to-infast-600/95 text-white font-semibold text-xs rounded-xl shadow-sm flex items-center space-x-1.5 transition-all active:scale-[0.98]"
           >
             <Plus className="w-4 h-4" />
             <span>Kurs Yaratish</span>
@@ -132,12 +132,12 @@ export default function CoursesPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
           {loading ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Yuklanmoqda...</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Yuklanmoqda...</div>
           ) : courses.length === 0 ? (
-            <div className="col-span-full py-12 text-center text-slate-400">Kurslar mavjud emas</div>
+            <div className="col-span-full py-12 text-center text-slate-400 dark:text-slate-500">Kurslar mavjud emas</div>
           ) : (
             courses.map((c) => (
-              <div key={c._id} className="bg-white p-6 rounded-3xl border border-slate-100 shadow-card space-y-4 flex flex-col justify-between">
+              <div key={c._id} className="apple-card p-6 space-y-4 flex flex-col justify-between hover:shadow-apple-lg transition-all">
                 <div className="space-y-2">
                   <div className="flex items-center justify-between">
                     <span className="text-xs font-bold text-sky-600 bg-sky-50 px-2.5 py-1 rounded-xl">
