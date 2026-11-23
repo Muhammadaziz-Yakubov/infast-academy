@@ -102,11 +102,12 @@ api.post('/checkout', async (req, res) => {
                 href="/student-app"
                 className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 rounded-full text-xs sm:text-sm font-bold text-white bg-white/[0.06] hover:bg-white/[0.12] border border-white/15 active:scale-[0.98] transition-all backdrop-blur-xl"
               >
-                <span>📱 Student App ilova</span>
+                <span>📱 Student App</span>
               </Link>
-            </motion.div>
+
+              <Link
                 href="/#kurslar"
-                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-3.5 rounded-full text-xs font-semibold text-white bg-white/10 hover:bg-white/15 border border-white/15 active:scale-95 transition-all backdrop-blur-xl"
+                className="w-full sm:w-auto inline-flex items-center justify-center px-7 py-4 rounded-full text-xs sm:text-sm font-semibold text-white bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 active:scale-[0.98] transition-all backdrop-blur-xl"
               >
                 <span>Kurslarni ko‘rish</span>
               </Link>

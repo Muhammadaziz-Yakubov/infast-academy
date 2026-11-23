@@ -154,7 +154,7 @@ export function SalaryCalculator() {
         salaryUzs: '5,800,000 — 11,000,000 so‘m',
         annualUsd: '$6,000 — $10,200 / yil',
         experience: '0 — 1 yil',
-        demandIndex: '94% (O'suvchi)',
+        demandIndex: "94% (O'suvchi)",
         officialRequirements: ['Python Core & OOP', 'SQL & Relational DBs', 'Pandas & NumPy', 'FastAPI / Django asoslari', 'Avtomatlashtirish skriptlari'],
         sampleRoles: ['Junior Python Developer', 'Data Analyst Assistent', 'Automation Engineer'],
       },

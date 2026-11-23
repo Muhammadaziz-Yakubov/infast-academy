@@ -165,12 +165,16 @@ export default function PublicStudentPortfolioPage() {
       <nav className="border-b border-slate-800/80 bg-slate-950/80 backdrop-blur-xl sticky top-0 z-40">
         <div className="max-w-5xl mx-auto px-4 sm:px-6 py-3.5 flex items-center justify-between">
           <Link href="/portfolio" className="flex items-center space-x-2.5 group">
-            <div className="w-8 h-8 rounded-xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-sky-400 text-slate-950 font-black text-sm flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-              <Zap className="w-4 h-4 fill-slate-950" />
+            <div className="w-8 h-8 flex items-center justify-center relative">
+              <img
+                src="/logo-icon.png"
+                alt="InFast Logo"
+                className="w-8 h-8 object-contain drop-shadow-[0_0_10px_rgba(255,42,133,0.3)] group-hover:scale-105 transition-transform"
+              />
             </div>
             <div>
               <span className="font-extrabold text-sm text-white tracking-tight uppercase">INFAST IT-ACADEMY</span>
-              <span className="block text-[9px] text-emerald-400 font-mono">PORTFOLIO SHAXSIY PROFILI</span>
+              <span className="block text-[9px] bg-gradient-to-r from-[#FF2A85] to-[#00F0FF] bg-clip-text text-transparent font-mono font-bold">PORTFOLIO SHAXSIY PROFILI</span>
             </div>
           </Link>
 

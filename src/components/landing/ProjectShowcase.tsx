@@ -82,29 +82,36 @@ export function ProjectShowcase() {
   ];
 
   return (
-    <section className="py-24 bg-[#050508] text-white relative">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
+    <section className="py-24 bg-[#050508] text-white relative overflow-hidden">
+      {/* Ambient Glows */}
+      <div className="absolute top-1/2 left-0 w-96 h-96 bg-[#FF2A85]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute bottom-0 right-0 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-[140px] pointer-events-none" />
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16 relative z-10">
         {/* Header */}
         <div className="flex flex-col md:flex-row md:items-end justify-between gap-6">
           <div className="space-y-4 max-w-2xl">
-            <div className="inline-flex items-center space-x-2 bg-infast-500/10 border border-infast-500/20 px-3.5 py-1.5 rounded-full text-xs font-bold text-infast-400">
-              <Globe className="w-3.5 h-3.5" />
-              <span>LOYIHALAR SHOUKEYSI</span>
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#FF2A85]/10 to-[#00F0FF]/10 border border-white/10 px-4 py-1.5 rounded-full text-xs font-bold text-[#00F0FF] backdrop-blur-md">
+              <Globe className="w-3.5 h-3.5 text-[#FF2A85]" />
+              <span className="tracking-wider uppercase">Loyihalar Shoukeysi</span>
             </div>
             <h2 className="text-3xl sm:text-5xl font-black tracking-tight">
-              Darsda emas — <span className="text-infast-500">loyihada o‘rganamiz.</span>
+              Darsda emas —{' '}
+              <span className="bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] bg-clip-text text-transparent">
+                loyihada o‘rganamiz.
+              </span>
             </h2>
-            <p className="text-base text-slate-400">
+            <p className="text-base text-neutral-400">
               O'quvchilarimiz shunchaki misollar yozmaydi, balki portfolio uchun haqiqiy ishlab chiqarish loyihalarini yaratadi.
             </p>
           </div>
 
           <Link
             href="/natijalar"
-            className="inline-flex items-center px-6 py-3 rounded-2xl bg-slate-900 border border-slate-800 hover:border-slate-700 text-xs font-bold text-slate-200 transition-colors shrink-0"
+            className="inline-flex items-center px-6 py-3 rounded-full bg-white/[0.04] hover:bg-white/[0.08] border border-white/10 hover:border-white/20 text-xs font-bold text-white transition-all backdrop-blur-xl shrink-0 group"
           >
             <span>Barcha loyihalar</span>
-            <ArrowRight className="w-4 h-4 ml-2" />
+            <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform text-[#00F0FF]" />
           </Link>
         </div>
 
@@ -117,19 +124,19 @@ export function ProjectShowcase() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ duration: 0.5, delay: idx * 0.1 }}
-              className={`${proj.grid} p-8 rounded-3xl bg-slate-900/60 border border-slate-800 backdrop-blur-xl hover:border-infast-500/40 transition-all space-y-6 flex flex-col justify-between group overflow-hidden`}
+              className={`${proj.grid} p-8 rounded-3xl bg-neutral-900/40 hover:bg-neutral-900/60 border border-white/[0.08] hover:border-white/20 backdrop-blur-2xl transition-all duration-300 space-y-6 flex flex-col justify-between group overflow-hidden shadow-2xl hover:shadow-[0_0_30px_rgba(255,42,133,0.1)]`}
             >
               <div className="space-y-4">
                 <div className="flex items-center justify-between">
-                  <span className="text-xs font-bold text-infast-400 px-3 py-1 rounded-full bg-infast-500/10 border border-infast-500/20">
+                  <span className="text-xs font-bold text-[#00F0FF] px-3 py-1 rounded-full bg-[#00F0FF]/10 border border-[#00F0FF]/25">
                     {proj.category}
                   </span>
                 </div>
-                <h3 className="text-2xl font-bold text-white tracking-tight">{proj.title}</h3>
-                <p className="text-sm text-slate-400 leading-relaxed">{proj.description}</p>
+                <h3 className="text-2xl font-bold text-white tracking-tight group-hover:text-white transition-colors">{proj.title}</h3>
+                <p className="text-sm text-neutral-400 leading-relaxed">{proj.description}</p>
                 
                 {proj.image ? (
-                  <div className="relative rounded-2xl overflow-hidden border border-slate-800">
+                  <div className="relative rounded-2xl overflow-hidden border border-white/10">
                     <img src={proj.image} alt={proj.title} className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-500" />
                   </div>
                 ) : (
@@ -137,9 +144,9 @@ export function ProjectShowcase() {
                 )}
               </div>
 
-              <div className="pt-4 border-t border-slate-800/80 flex flex-wrap gap-2">
+              <div className="pt-4 border-t border-white/[0.06] flex flex-wrap gap-2">
                 {proj.tags.map((tag, i) => (
-                  <span key={i} className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-slate-800 text-slate-300">
+                  <span key={i} className="text-[11px] font-mono px-2.5 py-1 rounded-lg bg-white/[0.04] border border-white/[0.06] text-neutral-300">
                     #{tag}
                   </span>
                 ))}

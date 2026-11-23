@@ -143,13 +143,17 @@ export default function PublicTalentShowcaseDirectory() {
       <header className="border-b border-white/[0.08] bg-[#000000]/80 backdrop-blur-2xl sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-3 group">
-            <div className="w-10 h-10 rounded-2xl bg-gradient-to-tr from-emerald-500 via-teal-400 to-sky-400 text-slate-950 font-black text-base flex items-center justify-center shadow-lg shadow-emerald-500/20 group-hover:scale-105 transition-transform">
-              <Zap className="w-5 h-5 fill-slate-950" />
+            <div className="w-10 h-10 flex items-center justify-center relative">
+              <img
+                src="/logo-icon.png"
+                alt="InFast Logo"
+                className="w-9 h-9 object-contain drop-shadow-[0_0_12px_rgba(255,42,133,0.35)] group-hover:scale-105 transition-transform"
+              />
             </div>
             <div>
               <div className="flex items-center space-x-2">
                 <span className="font-black text-base text-white tracking-tight uppercase">INFAST</span>
-                <span className="text-xs font-mono font-bold text-emerald-400">IT-ACADEMY</span>
+                <span className="text-xs font-mono font-bold bg-gradient-to-r from-[#FF2A85] to-[#00F0FF] bg-clip-text text-transparent">IT-ACADEMY</span>
               </div>
               <span className="block text-[10px] text-slate-400 font-mono tracking-wider uppercase">
                 Talantlar & Portfoliolar Portali

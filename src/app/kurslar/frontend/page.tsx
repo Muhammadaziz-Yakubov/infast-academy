@@ -23,48 +23,52 @@ export default function FrontendCoursePage() {
   ];
 
   return (
-    <div className="min-h-screen bg-slate-950 text-slate-100 font-sans">
+    <div className="min-h-screen bg-[#050508] text-white font-sans relative overflow-hidden">
+      {/* GTA VI / Apple ambient mesh */}
+      <div className="absolute top-20 left-10 w-96 h-96 bg-[#FF2A85]/10 rounded-full blur-[140px] pointer-events-none" />
+      <div className="absolute top-80 right-10 w-96 h-96 bg-[#00F0FF]/10 rounded-full blur-[140px] pointer-events-none" />
+
       <Navbar />
 
-      <main className="pt-32 pb-20">
+      <main className="pt-32 pb-20 relative z-10">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 space-y-16">
           {/* Header */}
           <div className="space-y-6 max-w-3xl">
-            <div className="inline-flex items-center space-x-2 bg-infast-500/10 border border-infast-500/20 px-4 py-2 rounded-full text-xs font-bold text-infast-400">
-              <Code2 className="w-4 h-4" />
-              <span>FRONTEND DEVELOPMENT KURSI</span>
+            <div className="inline-flex items-center space-x-2 bg-gradient-to-r from-[#FF2A85]/15 to-[#00F0FF]/15 border border-white/10 px-4 py-2 rounded-full text-xs font-bold text-[#00F0FF] backdrop-blur-md">
+              <Code2 className="w-4 h-4 text-[#FF2A85]" />
+              <span className="tracking-wider uppercase">Frontend Development Kursi</span>
             </div>
             <h1 className="text-4xl sm:text-6xl font-black text-white leading-tight">
               React & Next.js 14 orqali <br />
-              <span className="text-infast-500">Frontend Dasturchi bo'ling.</span>
+              <span className="bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] bg-clip-text text-transparent">Frontend Dasturchi bo'ling.</span>
             </h1>
-            <p className="text-base sm:text-lg text-slate-400 leading-relaxed">
+            <p className="text-base sm:text-lg text-neutral-400 leading-relaxed">
               6 oy davomida zamonaviy interaktiv veb-saytlar va murakkab CRM platformalarni yaratishni real amaliy loyihalar ustida o'rganing.
             </p>
 
-            <div className="pt-2 flex flex-wrap gap-4 text-xs font-bold">
-              <span className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200">Davomiyligi: 6 Oy</span>
-              <span className="px-3 py-1.5 rounded-xl bg-slate-900 border border-slate-800 text-slate-200">Haftada: 3 Kun + Amaliyot</span>
-              <span className="px-3 py-1.5 rounded-xl bg-infast-500/10 text-infast-400 border border-infast-500/20">Daraja: Noldan Pro-gacha</span>
+            <div className="pt-2 flex flex-wrap gap-3 text-xs font-bold">
+              <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-neutral-200">Davomiyligi: 6 Oy</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-white/[0.04] border border-white/10 text-neutral-200">Haftada: 3 Kun + Amaliyot</span>
+              <span className="px-3.5 py-1.5 rounded-full bg-[#00F0FF]/10 text-[#00F0FF] border border-[#00F0FF]/25">Daraja: Noldan Pro-gacha</span>
             </div>
           </div>
 
           {/* Monthly Syllabus Modules */}
           <div className="space-y-8">
-            <h2 className="text-2xl sm:text-3xl font-black text-white">6 Oylik O'quv Dasturi</h2>
+            <h2 className="text-2xl sm:text-3xl font-black text-white tracking-tight">6 Oylik O'quv Dasturi</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               {modules.map((m, idx) => (
-                <div key={idx} className="p-6 rounded-3xl bg-slate-900/60 border border-slate-800 space-y-4">
+                <div key={idx} className="p-6 sm:p-8 rounded-3xl bg-neutral-900/40 border border-white/[0.08] backdrop-blur-2xl space-y-4 shadow-xl hover:border-white/20 transition-all">
                   <div className="flex items-center justify-between">
-                    <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-infast-500/10 text-infast-400 border border-infast-500/20">
+                    <span className="text-xs font-bold font-mono px-3 py-1 rounded-full bg-[#FF2A85]/10 text-[#FF2A85] border border-[#FF2A85]/20">
                       {m.month}
                     </span>
                   </div>
-                  <h3 className="text-xl font-bold text-white">{m.title}</h3>
-                  <ul className="space-y-2 text-xs text-slate-300">
+                  <h3 className="text-xl font-bold text-white tracking-tight">{m.title}</h3>
+                  <ul className="space-y-2.5 text-xs sm:text-sm text-neutral-300">
                     {m.topics.map((t, i) => (
-                      <li key={i} className="flex items-center space-x-2">
-                        <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+                      <li key={i} className="flex items-center space-x-2.5">
+                        <CheckCircle2 className="w-4 h-4 text-[#00F0FF] shrink-0" />
                         <span>{t}</span>
                       </li>
                     ))}
