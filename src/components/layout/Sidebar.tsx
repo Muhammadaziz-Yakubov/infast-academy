@@ -32,9 +32,9 @@ import {
 import { cn } from '@/lib/utils';
 
 const MARKETING_SUB_ITEMS = [
-  { name: '📋 Bugungi ishlar', href: '/marketing' },
-  { name: '🎯 Leadlar', href: '/marketing/lead-manbalari' },
-  { name: '🤝 Tavsiya dasturi', href: '/marketing/tavsiya' },
+  { name: '📊 Voronka & Natijalar', href: '/marketing' },
+  { name: '🎯 Leadlar & Arizalar', href: '/marketing/lead-manbalari' },
+  { name: '🤝 Tavsiya & Aksiyalar', href: '/marketing/tavsiya' },
 ];
 
 const NAV_ITEMS = [

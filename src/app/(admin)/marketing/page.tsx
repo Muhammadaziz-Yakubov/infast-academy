@@ -18,6 +18,8 @@ import {
 } from 'lucide-react';
 import { formatMoneyUz } from '@/lib/utils';
 
+import Link from 'next/link';
+
 export default function MarketingDashboardPage() {
   const [loading, setLoading] = useState(true);
   const [timeRange, setTimeRange] = useState('30days');
@@ -48,16 +50,38 @@ export default function MarketingDashboardPage() {
   const topChannels = data?.topChannels || [];
 
   return (
-    <div className="p-4 md:p-8 space-y-8 max-w-7xl mx-auto">
+    <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* 3 Core Marketing Pillars Navigation */}
+      <div className="flex p-1.5 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] gap-1 overflow-x-auto text-xs font-semibold">
+        <Link
+          href="/marketing"
+          className="px-4 py-2 rounded-xl bg-white dark:bg-[#1E1E24] text-slate-900 dark:text-white shadow-apple-sm font-bold whitespace-nowrap"
+        >
+          📊 Voronka & Natijalar
+        </Link>
+        <Link
+          href="/marketing/lead-manbalari"
+          className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
+        >
+          🎯 Leadlar & Arizalar
+        </Link>
+        <Link
+          href="/marketing/tavsiya"
+          className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
+        >
+          🤝 Tavsiya & Aksiyalar
+        </Link>
+      </div>
+
       {/* Header & Date Range Filter */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h1 className="text-2xl md:text-3xl font-black text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
+          <h1 className="text-2xl md:text-3xl font-bold text-slate-900 dark:text-white tracking-tight flex items-center gap-3">
             <span className="p-2.5 rounded-2xl bg-amber-500/10 text-amber-500">📊</span>
-            Bugungi ishlar
+            Marketing & Sotuv Voronkasi
           </h1>
           <p className="text-sm text-slate-500 dark:text-slate-400 mt-1">
-            Marketing, yangi leadlar va asosiy ko'rsatkichlar tahlili
+            Reklama byudjeti, mijoz jalb qilish narxi (CAC), ROI va real natijalar
           </p>
         </div>
 

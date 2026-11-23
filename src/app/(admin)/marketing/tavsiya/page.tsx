@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
+import Link from 'next/link';
 import {
   Users,
   Plus,
@@ -94,6 +95,28 @@ export default function TavsiyaDasturiPage() {
 
   return (
     <div className="p-4 md:p-8 space-y-6 max-w-7xl mx-auto">
+      {/* 3 Core Marketing Pillars Navigation */}
+      <div className="flex p-1.5 rounded-2xl bg-black/[0.04] dark:bg-white/[0.06] border border-black/[0.04] dark:border-white/[0.06] gap-1 overflow-x-auto text-xs font-semibold">
+        <Link
+          href="/marketing"
+          className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
+        >
+          📊 Voronka & Natijalar
+        </Link>
+        <Link
+          href="/marketing/lead-manbalari"
+          className="px-4 py-2 rounded-xl text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white transition-all whitespace-nowrap"
+        >
+          🎯 Leadlar & Arizalar
+        </Link>
+        <Link
+          href="/marketing/tavsiya"
+          className="px-4 py-2 rounded-xl bg-white dark:bg-[#1E1E24] text-slate-900 dark:text-white shadow-apple-sm font-bold whitespace-nowrap"
+        >
+          🤝 Tavsiya & Aksiyalar
+        </Link>
+      </div>
+
       {/* Toast */}
       {toast && (
         <div className="fixed top-20 right-8 z-50 bg-emerald-600 text-white px-4 py-3 rounded-xl shadow-lg flex items-center space-x-2 text-sm font-bold">
