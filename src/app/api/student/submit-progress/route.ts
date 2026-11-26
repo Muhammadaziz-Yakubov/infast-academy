@@ -18,7 +18,7 @@ export async function POST(request: Request) {
 
     await connectToDatabase();
     const body = await request.json();
-    const { lessonId, markTheoryRead, testAnswers, interactiveSubmission } = body;
+    const { lessonId, markTheoryRead, testAnswers, interactiveSubmission, markInteractiveCompleted } = body;
 
     if (!lessonId || !mongoose.Types.ObjectId.isValid(lessonId)) {
       return NextResponse.json({ error: "Yaroqli dars identifikatori talab qilinadi" }, { status: 400 });
@@ -192,9 +192,9 @@ export async function POST(request: Request) {
       };
     }
 
-    // ACTION C: Complete Interactive Practice & Finish Lesson
+    // ACTION C: Complete Interactive Activity & Finish Lesson
     let completedLesson = false;
-    if (interactiveSubmission) {
+    if (interactiveSubmission || markInteractiveCompleted) {
       if (!state.testPassed) {
         state.testPassed = true;
       }

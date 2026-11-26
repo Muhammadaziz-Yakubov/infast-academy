@@ -5,6 +5,8 @@ import { StudentProgress } from '@/models/StudentProgress';
 import { Lesson } from '@/models/Lesson';
 import { Module } from '@/models/Module';
 import { Course } from '@/models/Course';
+import { Group } from '@/models/Group';
+import { Branch } from '@/models/Branch';
 import { Payment } from '@/models/Payment';
 import { Attendance } from '@/models/Attendance';
 import { Notification } from '@/models/Notification';
@@ -30,6 +32,25 @@ export async function GET(request: Request) {
 
     if (!student) {
       return NextResponse.json({ error: "O'quvchi ma'lumotlari topilmadi" }, { status: 404 });
+    }
+
+    // Robust resolution of Group, Course, and Branch names
+    let courseName = (student.courseId as any)?.name;
+    if (!courseName && student.courseId) {
+      const c = await Course.findById(student.courseId).lean();
+      courseName = c?.name;
+    }
+
+    let groupName = (student.groupId as any)?.name;
+    if (!groupName && student.groupId) {
+      const g = await Group.findById(student.groupId).lean();
+      groupName = g?.name;
+    }
+
+    let branchName = (student.branchId as any)?.name;
+    if (!branchName && student.branchId) {
+      const b = await Branch.findById(student.branchId).lean();
+      branchName = b?.name;
     }
 
     // Fetch or create student progress
@@ -174,9 +195,15 @@ export async function GET(request: Request) {
         phone: student.phone,
         avatarUrl: student.avatarUrl,
         bio: student.bio,
+        courseId: (student.courseId as any)?._id || student.courseId,
+        groupId: (student.groupId as any)?._id || student.groupId,
+        branchId: (student.branchId as any)?._id || student.branchId,
         course: student.courseId,
         group: student.groupId,
         branch: student.branchId,
+        courseName: courseName || 'IT Kursi',
+        groupName: groupName || "Guruh",
+        branchName: branchName || "InFast Asosiy Filial",
         joinedDate: student.joinedDate,
         monthlyFee: student.monthlyFee || fee,
         paymentDueDay: student.paymentDueDay,

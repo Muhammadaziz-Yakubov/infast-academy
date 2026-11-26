@@ -207,7 +207,7 @@ export default function StudentCurriculumPage() {
                               )}
                             </div>
                             <p className="text-[11px] text-neutral-400 line-clamp-1">
-                              {lesson.description || "Nazariya, test va amaliy topshiriq"}
+                              {lesson.description || "Nazariya, quiz test va interaktiv mashg'ulot"}
                             </p>
                           </div>
                         </div>

@@ -168,18 +168,22 @@ export default function StudentProfilePage() {
             </button>
           </div>
 
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-3 border-t border-white/[0.06] text-xs">
+          <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3 border-t border-white/[0.06] text-xs">
             <div>
               <span className="text-neutral-500 block text-[10px]">Telefon:</span>
               <span className="text-neutral-200 font-semibold">{student.phone || "+998"}</span>
             </div>
             <div>
               <span className="text-neutral-500 block text-[10px]">Kurs:</span>
-              <span className="text-neutral-200 font-semibold">{course.name || student.courseName || "Dasturlash"}</span>
+              <span className="text-neutral-200 font-semibold">{student.courseName || course.name || "Frontend"}</span>
+            </div>
+            <div>
+              <span className="text-neutral-500 block text-[10px]">Guruh:</span>
+              <span className="text-neutral-200 font-semibold">{student.groupName || group.name || "3-guruh"}</span>
             </div>
             <div>
               <span className="text-neutral-500 block text-[10px]">Filial:</span>
-              <span className="text-neutral-200 font-semibold">{branch.name || "InFast Bosh"}</span>
+              <span className="text-neutral-200 font-semibold">{student.branchName || branch.name || "InFast Bosh Filial"}</span>
             </div>
           </div>
         </div>

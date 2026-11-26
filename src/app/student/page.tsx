@@ -58,7 +58,7 @@ export default function StudentDashboardPage() {
               Salom, {student.firstName || "Talaba"}! 👋
             </h1>
             <p className="text-xs sm:text-sm text-neutral-400 max-w-xl">
-              Kurs: <span className="font-semibold text-neutral-200">{student.courseName || student.courseId?.name || "IT Yo'nalishi"}</span> • Guruh: <span className="font-semibold text-neutral-200">{student.groupName || student.groupId?.name || "Asosiy"}</span>
+              Kurs: <span className="font-bold text-white">{student.courseName || student.course?.name || "Frontend Development"}</span> • Guruh: <span className="font-bold text-white">{student.groupName || student.group?.name || "3-guruh"}</span> • Filial: <span className="font-medium text-neutral-300">{student.branchName || student.branch?.name || "InFast Asosiy Filial"}</span>
             </p>
           </div>
 
@@ -157,7 +157,7 @@ export default function StudentDashboardPage() {
                     {currentLesson.title}
                   </h3>
                   <p className="text-xs text-neutral-400 line-clamp-2">
-                    {currentLesson.description || "Ushbu dars nazariyasi, testi va amaliy topshirig'ini yakunlang."}
+                    {currentLesson.description || "Ushbu dars nazariyasi, testi va interaktiv mashg'ulotini yakunlang."}
                   </p>
                 </div>
 
