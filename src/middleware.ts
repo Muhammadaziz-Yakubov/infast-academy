@@ -78,6 +78,17 @@ export async function middleware(request: NextRequest) {
   }
 
   const token = request.cookies.get('infast_session')?.value;
+  const studentToken = request.cookies.get('infast_student_session')?.value;
+
+  // Protect Student Web Portal pages
+  if (pathname === '/student' || pathname.startsWith('/student/')) {
+    const validStudent = await isValidToken(studentToken);
+    if (!validStudent) {
+      const loginUrl = new URL('/login', request.url);
+      return NextResponse.redirect(loginUrl);
+    }
+    return NextResponse.next();
+  }
 
   const isProtectedApi = PROTECTED_API_PREFIXES.some(
     (prefix) => pathname === prefix || pathname.startsWith(`${prefix}/`)
@@ -108,6 +119,11 @@ export async function middleware(request: NextRequest) {
       const dashboardUrl = new URL('/dashboard', request.url);
       return NextResponse.redirect(dashboardUrl);
     }
+    const validStudent = await isValidToken(studentToken);
+    if (validStudent) {
+      const studentUrl = new URL('/student', request.url);
+      return NextResponse.redirect(studentUrl);
+    }
   }
 
   const response = NextResponse.next();
@@ -123,6 +139,7 @@ export async function middleware(request: NextRequest) {
 export const config = {
   matcher: [
     '/login',
+    '/student/:path*',
     '/dashboard/:path*',
     '/branches/:path*',
     '/marketing/:path*',

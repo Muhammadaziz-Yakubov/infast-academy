@@ -72,9 +72,9 @@ export function Navbar() {
         <div className="hidden md:flex items-center space-x-3">
           <Link
             href="/login"
-            className="text-xs font-medium text-neutral-400 hover:text-white transition-colors px-3 py-1.5"
+            className="text-xs font-semibold text-white/80 hover:text-white transition-all px-4 py-2 rounded-full bg-white/[0.06] hover:bg-white/[0.12] border border-white/10 active:scale-95"
           >
-            Admin CRM
+            Kirish
           </Link>
           <Link
             href="/#ariza"
@@ -131,9 +131,9 @@ export function Navbar() {
               <Link
                 href="/login"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full flex items-center justify-center py-2.5 rounded-full text-xs font-medium text-neutral-400 bg-neutral-900 border border-neutral-800"
+                className="w-full flex items-center justify-center py-2.5 rounded-full text-xs font-semibold text-white bg-white/10 border border-white/15"
               >
-                Admin CRM Login
+                Kirish (CRM & Student)
               </Link>
             </div>
           </motion.div>

@@ -45,7 +45,16 @@ export default function LoginPage() {
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push('/dashboard');
+        if (data.role === 'STUDENT' || data.redirectUrl?.startsWith('/student')) {
+          if (data.token) {
+            try {
+              localStorage.setItem('student_token', data.token);
+            } catch (e) {}
+          }
+          router.push(data.redirectUrl || '/student');
+        } else {
+          router.push(data.redirectUrl || '/dashboard');
+        }
         router.refresh();
       } else {
         setError(data.error || "Login yoki parol noto'g'ri.");
@@ -99,7 +108,7 @@ export default function LoginPage() {
             INFAST <span className="bg-gradient-to-r from-[#FF2A85] via-[#FF7A00] to-[#00F0FF] bg-clip-text text-transparent">IT-ACADEMY</span>
           </h1>
           <p className="text-xs font-semibold text-slate-500 dark:text-slate-400 mt-1.5 tracking-tight">
-            Ma'muriyat va CRM Tizimiga Kirish
+            Yagona Kirish Portali • Xodimlar & Talabalar
           </p>
         </div>
 
@@ -117,7 +126,7 @@ export default function LoginPage() {
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
             <label className="block text-[11px] font-semibold text-slate-500 dark:text-slate-400 uppercase tracking-wider mb-2">
-              Login
+              Login yoki Telefon
             </label>
             <div className="relative">
               <User className="w-4 h-4 text-slate-400 dark:text-slate-500 absolute left-4 top-1/2 -translate-y-1/2" />
@@ -126,7 +135,7 @@ export default function LoginPage() {
                 required
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
-                placeholder="Admin login..."
+                placeholder="Login yoki telefon raqam (+998...)"
                 className="w-full pl-11 pr-4 py-3 bg-black/[0.03] dark:bg-white/[0.05] border border-black/[0.08] dark:border-white/[0.1] rounded-2xl text-sm font-medium text-slate-900 dark:text-white placeholder:text-slate-400 dark:placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-infast-500/20 focus:border-infast-500 transition-all"
               />
             </div>

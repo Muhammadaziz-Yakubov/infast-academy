@@ -88,7 +88,7 @@ export function Footer() {
           <p>© 2026 InFast IT-Academy. Barcha huquqlar himoyalangan.</p>
           <div className="flex items-center space-x-4">
             <Link href="/login" className="hover:text-neutral-300 transition-colors">
-              Admin CRM Portal
+              Kirish (Admin & Talaba)
             </Link>
           </div>
         </div>
