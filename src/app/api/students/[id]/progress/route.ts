@@ -41,12 +41,21 @@ export async function GET(request: Request, { params }: { params: { id: string }
     // Fetch or create StudentProgress
     let progress = await StudentProgress.findOne({ studentId: student._id, courseId });
 
-    // Fetch all active modules and lessons for this course
+    // Fetch all active modules and lessons for this course in exact curriculum order
     const modules = await Module.find({ courseId, status: 'ACTIVE' }).sort({ order: 1 }).lean();
+    const moduleOrderMap = new Map<string, number>();
+    modules.forEach((m: any, idx: number) => {
+      moduleOrderMap.set(m._id.toString(), m.order ?? idx);
+    });
+
     const moduleIds = modules.map((m: any) => m._id);
-    const lessons = await Lesson.find({ moduleId: { $in: moduleIds }, status: 'ACTIVE' })
-      .sort({ moduleId: 1, order: 1 })
-      .lean();
+    const lessons = await Lesson.find({ moduleId: { $in: moduleIds }, status: 'ACTIVE' }).lean();
+    lessons.sort((a: any, b: any) => {
+      const modA = moduleOrderMap.get(a.moduleId.toString()) ?? 0;
+      const modB = moduleOrderMap.get(b.moduleId.toString()) ?? 0;
+      if (modA !== modB) return modA - modB;
+      return (a.order || 0) - (b.order || 0);
+    });
 
     // If progress doesn't exist yet, initialize it
     if (!progress) {
@@ -78,6 +87,42 @@ export async function GET(request: Request, { params }: { params: { id: string }
       });
     }
 
+    const startingLessonIdStr = progress.startingLessonId?.toString();
+    const startingIdx = startingLessonIdStr
+      ? lessons.findIndex((les: any) => les._id.toString() === startingLessonIdStr)
+      : 0;
+
+    // Self-healing: if startingIdx > 0 and unlockedLessonIds or completedLessonIds contains prior lessons, clean them up
+    if (startingIdx > 0) {
+      const priorIds = new Set(lessons.slice(0, startingIdx).map((l: any) => l._id.toString()));
+      let needsSave = false;
+
+      const filteredUnlocked = (progress.unlockedLessonIds || []).filter(
+        (id: any) => !priorIds.has(id.toString())
+      );
+      if (filteredUnlocked.length !== (progress.unlockedLessonIds || []).length) {
+        progress.unlockedLessonIds = filteredUnlocked;
+        needsSave = true;
+      }
+
+      const filteredCompleted = (progress.completedLessonIds || []).filter(
+        (id: any) => !priorIds.has(id.toString())
+      );
+      if (filteredCompleted.length !== (progress.completedLessonIds || []).length) {
+        progress.completedLessonIds = filteredCompleted;
+        needsSave = true;
+      }
+
+      if (!progress.unlockedLessonIds.some((id: any) => id.toString() === startingLessonIdStr)) {
+        progress.unlockedLessonIds.push(lessons[startingIdx]._id);
+        needsSave = true;
+      }
+
+      if (needsSave) {
+        progress.save().catch((err: any) => console.error("Self-healing progress save error:", err));
+      }
+    }
+
     // Build lookup maps for fast state matching
     const completedSet = new Set(
       (progress.completedLessonIds || []).map((id: any) => id.toString())
@@ -90,7 +135,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
       stateMap.set(st.lessonId.toString(), st);
     });
 
-    const startingLessonIdStr = progress.startingLessonId?.toString();
     const currentLessonIdStr = progress.currentLessonId?.toString();
 
     // Group lessons by module
@@ -102,19 +146,24 @@ export async function GET(request: Request, { params }: { params: { id: string }
       const st = stateMap.get(lIdStr);
 
       let status = 'LOCKED';
-      if (completedSet.has(lIdStr)) {
-        status = 'COMPLETED';
-      } else if (unlockedSet.has(lIdStr)) {
-        status = st?.theoryRead || st?.testPassed ? 'IN_PROGRESS' : 'UNLOCKED';
-      }
+      let prerequisiteMet = false;
 
-      // Check prerequisite: previous lesson must be completed
-      let prerequisiteMet = true;
-      if (idx > 0) {
-        const startingIdx = startingLessonIdStr
-          ? lessons.findIndex((les: any) => les._id.toString() === startingLessonIdStr)
-          : 0;
-        if (idx > Math.max(0, startingIdx)) {
+      if (startingIdx > 0 && idx < startingIdx) {
+        // Strictly LOCKED for all lessons prior to starting lesson
+        status = 'LOCKED';
+        prerequisiteMet = false;
+      } else {
+        if (completedSet.has(lIdStr)) {
+          status = 'COMPLETED';
+          prerequisiteMet = true;
+        } else if (unlockedSet.has(lIdStr) || idx === startingIdx) {
+          status = st?.theoryRead || st?.testPassed ? 'IN_PROGRESS' : 'UNLOCKED';
+        }
+
+        // Prerequisite check: starting lesson is always met; subsequent lessons require previous completed
+        if (idx === startingIdx) {
+          prerequisiteMet = true;
+        } else if (idx > startingIdx) {
           const prevLessonId = lessons[idx - 1]._id.toString();
           prerequisiteMet = completedSet.has(prevLessonId);
         }

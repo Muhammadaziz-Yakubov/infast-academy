@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { connectToDatabase } from '@/lib/mongodb';
 import { Student } from '@/models/Student';
 import { Lesson } from '@/models/Lesson';
+import { Module } from '@/models/Module';
 import { StudentProgress } from '@/models/StudentProgress';
 import { getStudentSession } from '@/lib/auth';
 
@@ -38,6 +39,21 @@ export async function GET(request: Request, { params }: { params: { id: string }
       return NextResponse.json({ error: "Ushbu dars sizning kursingizga tegishli emas" }, { status: 403 });
     }
 
+    // Fetch modules and sort all active lessons in curriculum sequence
+    const modules = await Module.find({ courseId: studentCourseId, status: 'ACTIVE' }).sort({ order: 1 }).lean();
+    const moduleOrderMap = new Map<string, number>();
+    modules.forEach((m: any, idx: number) => {
+      moduleOrderMap.set(m._id.toString(), m.order ?? idx);
+    });
+
+    const allLessons = await Lesson.find({ courseId: studentCourseId, status: 'ACTIVE' }).lean();
+    allLessons.sort((a: any, b: any) => {
+      const modA = moduleOrderMap.get(a.moduleId.toString()) ?? 0;
+      const modB = moduleOrderMap.get(b.moduleId.toString()) ?? 0;
+      if (modA !== modB) return modA - modB;
+      return (a.order || 0) - (b.order || 0);
+    });
+
     // Fetch progress and verify unlock status
     let progress = await StudentProgress.findOne({
       studentId: session.id,
@@ -45,9 +61,6 @@ export async function GET(request: Request, { params }: { params: { id: string }
     });
 
     if (!progress) {
-      const allLessons = await Lesson.find({ courseId: studentCourseId, status: 'ACTIVE' })
-        .sort({ moduleId: 1, order: 1 })
-        .lean();
       const firstLesson = allLessons[0];
       progress = await StudentProgress.create({
         studentId: session.id,
@@ -76,9 +89,23 @@ export async function GET(request: Request, { params }: { params: { id: string }
       });
     }
 
-    const isUnlocked = (progress.unlockedLessonIds || []).some(
-      (id: any) => id.toString() === params.id
-    );
+    const requestedIdx = allLessons.findIndex((l: any) => l._id.toString() === params.id);
+    const startingLessonIdStr = progress.startingLessonId?.toString();
+    const startingIdx = startingLessonIdStr
+      ? allLessons.findIndex((l: any) => l._id.toString() === startingLessonIdStr)
+      : 0;
+
+    // Critical: If the requested lesson is before the starting lesson, it is strictly LOCKED
+    if (startingIdx > 0 && requestedIdx >= 0 && requestedIdx < startingIdx) {
+      return NextResponse.json(
+        { error: "Ushbu dars sizning boshlang'ich darsingizdan oldin joylashgan va yopiq." },
+        { status: 403 }
+      );
+    }
+
+    const isUnlocked =
+      (progress.unlockedLessonIds || []).some((id: any) => id.toString() === params.id) ||
+      (requestedIdx === startingIdx);
 
     if (!isUnlocked) {
       return NextResponse.json(

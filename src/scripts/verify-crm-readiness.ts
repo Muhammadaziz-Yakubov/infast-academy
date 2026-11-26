@@ -35,12 +35,23 @@ function testIdempotentUnlock(
 }
 
 function testStartingLessonAssignment(
+  allOrderedLessonIds: string[],
+  previousUnlockedIds: string[],
   previousCompletedIds: string[],
   newStartingLessonId: string
-): { completedIds: string[]; startingLessonId: string } {
-  // CRITICAL RULE: Assigning a new starting lesson does NOT retroactively complete prior lessons
-  const completedIds = [...previousCompletedIds];
+): { unlockedIds: string[]; completedIds: string[]; startingLessonId: string } {
+  const startIdx = allOrderedLessonIds.indexOf(newStartingLessonId);
+  const priorIds = new Set(allOrderedLessonIds.slice(0, startIdx >= 0 ? startIdx : 0));
+
+  // Prior lessons (1 to startIdx - 1) are strictly locked
+  const unlockedIds = previousUnlockedIds.filter((id) => !priorIds.has(id));
+  if (!unlockedIds.includes(newStartingLessonId)) {
+    unlockedIds.push(newStartingLessonId);
+  }
+  const completedIds = previousCompletedIds.filter((id) => !priorIds.has(id));
+
   return {
+    unlockedIds,
     completedIds,
     startingLessonId: newStartingLessonId,
   };
@@ -100,13 +111,16 @@ function runVerificationSuite() {
   assert.strictEqual(duplicateUnlock.updatedList.length, 2, 'Must not duplicate lesson in unlocked list');
   console.log('  ✓ Idempotent unlock verified: duplicate calls do not mutate or duplicate state.');
 
-  // Test 3: Starting lesson change without retroactive completions
+  // Test 3: Starting lesson change locks prior lessons and unlocks only starting lesson
   console.log('[3] Testing starting lesson assignment...');
-  const completedBefore = ['lesson-1'];
-  const assigned = testStartingLessonAssignment(completedBefore, 'lesson-5');
-  assert.strictEqual(assigned.startingLessonId, 'lesson-5');
-  assert.deepStrictEqual(assigned.completedIds, ['lesson-1'], 'Lessons 2, 3, 4 must NOT be retroactively completed');
-  console.log('  ✓ Starting lesson assignment verified: no retroactive completion.');
+  const allOrdered = ['lesson-1', 'lesson-2', 'lesson-3', 'lesson-4', 'lesson-5', 'lesson-30'];
+  const unlockedBefore = ['lesson-1'];
+  const completedBefore: string[] = [];
+  const assigned = testStartingLessonAssignment(allOrdered, unlockedBefore, completedBefore, 'lesson-30');
+  assert.strictEqual(assigned.startingLessonId, 'lesson-30');
+  assert.strictEqual(assigned.unlockedIds.includes('lesson-1'), false, 'Lesson 1 must be locked when Lesson 30 is starting');
+  assert.deepStrictEqual(assigned.unlockedIds, ['lesson-30'], 'Only starting lesson 30 must be unlocked');
+  console.log('  ✓ Starting lesson assignment verified: prior lessons locked, starting lesson unlocked.');
 
   // Test 4: Branch isolation
   console.log('[4] Testing branch access control...');
